@@ -21,7 +21,11 @@ export default function Desktop1() {
 
         <div className="form-container">
           <LoginInput label="*  Correo" className="form-input" />
-          <LoginInput label="* Contraseña" className="form-input" />
+          <LoginInput
+            type="password"
+            label="* Contraseña"
+            className="form-input"
+          />
         </div>
 
         <p className="forget-text">¿Olvidaste tu contraseña?</p>
