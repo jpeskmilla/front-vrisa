@@ -5,8 +5,15 @@ import Logo from "../../assets/vrisa_logo.png";
 import homepage from "../../assets/homepage.jpg";
 import "./homepage-styles.css";
 import { LoginInput } from "../../shared/components/Input";
+import { useNavigate } from "react-router-dom";
 
 export default function Desktop1() {
+  const navigate = useNavigate();
+
+  const handleRegisterClick = () => {
+    navigate("/register");
+  };
+
   return (
     <div className="landing-wrapper">
       <div className="image-container">
@@ -35,7 +42,10 @@ export default function Desktop1() {
         </button>
 
         <p className="register-text">
-          ¿No tienes cuenta? <span>Regístrate</span>
+          ¿No tienes cuenta?{" "}
+          <span onClick={handleRegisterClick} style={{ cursor: "pointer" }}>
+            Regístrate
+          </span>
         </p>
 
         <img src={Logo} alt="Logo" className="vrisa-logo" />
