@@ -1,0 +1,31 @@
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .all-\[unset\] {
+    all: unset;
+  }
+}
+
+:root {
+  --colecci-n-1-booleano: none;
+  --primario: rgba(57, 75, 189, 1);
+  --secundario: rgba(0, 0, 0, 1);
+  --terciario: rgba(201, 201, 201, 1);
+}
+
+:root {
+  --animate-spin: spin 1s linear infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in 1s var(--animation-delay, 0s) ease for;
+}
+
+.animate-fade-up {
+  animation: fade-up 1s var(--animation-delay, 0s) ease for;
+}
+
+.animate-marquee {
+  animation: marquee var(--duration) infinite linear;
+}

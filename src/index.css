@@ -1,3 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Importar estilos de HomePage para las variables CSS */
+@import "./app/pages/homepage-styles.css";

@@ -1,122 +1,144 @@
-@tailwind components;
-@tailwind utilities;
+/* ====== GLOBAL ====== */
 
-@layer components {
-  .all-\[unset\] {
-    all: unset;
-  }
+body {
+  font-family: "Inter", sans-serif;
+  background-color: #f3f4f6;
+  color: #111827;
+  margin: 0;
+  padding: 0;
 }
 
-:root {
-  --colecci-n-1-booleano: none;
-  --primario: rgba(57, 75, 189, 1);
-  --secundario: rgba(0, 0, 0, 1);
-  --terciario: rgba(201, 201, 201, 1);
+a {
+  color: #111827;
+  text-decoration: none;
 }
 
-:root {
-  --animate-spin: spin 1s linear infinite;
+a:hover {
+  text-decoration: underline;
 }
 
-.animate-fade-in {
-  animation: fade-in 1s var(--animation-delay, 0s) ease forwards;
+/* ====== LAYOUT PRINCIPAL ====== */
+
+.desktop1-container {
+  display: flex;
+  min-height: 100vh;
 }
 
-.animate-fade-up {
-  animation: fade-up 1s var(--animation-delay, 0s) ease forwards;
+/* Imagen izquierda */
+.desktop1-left {
+  width: 50%;
+  background-size: cover;
+  background-position: center;
 }
 
-.animate-marquee {
-  animation: marquee var(--duration) infinite linear;
+/* Formulario derecha */
+.desktop1-right {
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: #fafafa;
 }
 
-.animate-marquee-vertical {
-  animation: marquee-vertical var(--duration) linear infinite;
+/* Contenedor interior */
+.desktop1-card {
+  width: 100%;
+  max-width: 420px;
 }
 
-.animate-shimmer {
-  animation: shimmer 8s infinite;
+/* ====== TEXTO ====== */
+
+.desktop1-title {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 8px;
 }
 
-.animate-spin {
-  animation: var(--animate-spin);
+.desktop1-subtitle {
+  font-size: 16px;
+  font-weight: 400;
+  color: #6b7280;
+  margin-bottom: 32px;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(1turn);
-  }
+/* ====== LABELS ====== */
+
+.desktop1-label {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  display: block;
 }
 
-@keyframes image-glow {
-  0% {
-    opacity: 0;
-    animation-timing-function: cubic-bezier(0.74, 0.25, 0.76, 1);
-  }
-
-  10% {
-    opacity: 0.7;
-    animation-timing-function: cubic-bezier(0.12, 0.01, 0.08, 0.99);
-  }
-
-  to {
-    opacity: 0.4;
-  }
+.desktop1-label .required {
+  color: #ef4444;
+  margin-right: 4px;
 }
 
-@keyframes fade-in {
-  0% {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
+/* ====== INPUTS ====== */
 
-  to {
-    opacity: 1;
-    transform: none;
-  }
+.desktop1-input-wrapper {
+  position: relative;
+  margin-bottom: 20px;
 }
 
-@keyframes fade-up {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: none;
-  }
+.desktop1-input {
+  width: 100%;
+  height: 48px;
+  padding: 12px 40px 12px 12px;
+  border-radius: 8px;
+  border: 2px solid #3949e9;
+  font-size: 14px;
+  outline: none;
 }
 
-@keyframes shimmer {
-  0%,
-  90%,
-  to {
-    background-position: calc(-100% - var(--shimmer-width)) 0;
-  }
-
-  30%,
-  60% {
-    background-position: calc(100% + var(--shimmer-width)) 0;
-  }
+.desktop1-input::placeholder {
+  color: #9ca3af;
 }
 
-@keyframes marquee {
-  0% {
-    transform: translate(0);
-  }
-
-  to {
-    transform: translateX(calc(-100% - var(--gap)));
-  }
+.desktop1-input-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
-@keyframes marquee-vertical {
-  0% {
-    transform: translateY(0);
-  }
+/* ====== BOTÓN ====== */
 
-  to {
-    transform: translateY(calc(-100% - var(--gap)));
-  }
+.desktop1-button {
+  width: 100%;
+  background: #3949e9;
+  color: white;
+  padding: 14px 0;
+  text-align: center;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  margin-top: 6px;
+  font-size: 15px;
+}
+
+.desktop1-button:hover {
+  background: #2f3ec7;
+}
+
+/* ====== LINKS INFERIORES ====== */
+
+.desktop1-link {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+.desktop1-link a {
+  font-weight: 600;
+}
+
+/* ====== LOGO SUPERIOR ====== */
+
+.desktop1-logo {
+  width: 100px;
+  margin-bottom: 24px;
 }
