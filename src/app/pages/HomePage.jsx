@@ -1,6 +1,4 @@
-// src/components/Desktop1/Desktop1.jsx
 import React, { useState } from "react";
-// reemplaza por rutas reales de tus assets exportados desde Figma
 import Logo from "../../assets/vrisa_logo.png";
 import homepage from "../../assets/homepage.jpg";
 import "./homepage-styles.css";
@@ -8,6 +6,11 @@ import { LoginInput } from "../../shared/components/Input";
 import { useNavigate } from "react-router-dom";
 import { AuthAPI } from "../../shared/api";
 
+/**
+ * Componente de la página de inicio de sesión.
+ * Permite a los usuarios ingresar su correo y contraseña para iniciar sesión.
+ * También proporciona un enlace para registrarse si no tienen una cuenta.
+ */
 export default function Desktop1() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -26,6 +29,11 @@ export default function Desktop1() {
     setError(""); // Limpiar error al escribir
   };
 
+  
+  /**
+   * Función para manejar el envío del formulario de inicio de sesión.
+   * @param {*} e - evento del formulario.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -35,13 +43,14 @@ export default function Desktop1() {
       const response = await AuthAPI.login(formData.email, formData.password);
       
       // Guardar token en localStorage
-      if (response.token) {
-        localStorage.setItem("token", response.token);
+      if (response.access) {
+        localStorage.setItem("token", response.access);
+        localStorage.setItem("refreshToken", response.refresh);
+        // Redirigir después del login exitoso
+        navigate("/dashboard");
+      } else {
+        setError("Respuesta inesperada del servidor");
       }
-      
-      // Redirigir después del login exitoso
-      // TODO: Cambiar a la ruta del dashboard cuando esté disponible
-      navigate("/dashboard");
     } catch (err) {
       setError(err.message || "Error al iniciar sesión. Verifica tus credenciales.");
     } finally {

@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AuthAPI } from '../../shared/api';
 import './registerpage-styles.css';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   
   const [formData, setFormData] = useState({
     username: '',
@@ -33,9 +36,38 @@ export default function RegisterPage() {
     setIsDropdownOpen(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
+    setError("");
+    
+    if (formData.password !== formData.confirmPassword) {
+      setError("Las contraseñas no coinciden");
+      return;
+    }
+
+    setLoading(true);
+
+    try {        
+        const payload = {
+          email: formData.email,
+          password: formData.password,
+          first_name: formData.username, // Usando username como first_name temporalmente
+          last_name: "Something",  // Valor por defecto temporal
+          role_id: null,
+          institution_id: 1
+        };
+
+        await AuthAPI.register(payload);
+        
+        alert("Usuario registrado correctamente. Por favor inicia sesión.");
+        navigate("/");
+        
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Error al registrar usuario");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -202,7 +234,21 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          <button type="submit" className="submit-button">
+          {error && (
+            <div style={{ 
+              color: '#e53935', 
+              backgroundColor: '#ffebee', 
+              padding: '10px', 
+              borderRadius: '8px',
+              marginBottom: '16px',
+              textAlign: 'center',
+              fontSize: '0.9rem'
+            }}>
+              {error}
+            </div>
+          )}
+
+          <button type="submit" className="submit-button" disabled={loading} style={{ opacity: loading ? 0.7 : 1 }}>
             Registrarse como usuario general
           </button>
         </form>

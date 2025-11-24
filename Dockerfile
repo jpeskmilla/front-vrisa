@@ -1,28 +1,13 @@
-FROM node:20-alpine as build
+FROM node:20-alpine
 
 WORKDIR /app
 COPY package.json ./
 
-# Instalacion de dependencias
+# Instalar dependencias y copiar el código fuente
 RUN npm install
-# Copia del código fuente
 COPY . .
 
-# Por defecto apunta al backend local en el puerto 8000
-ARG VITE_API_URL="http://localhost:8000/api"
-ENV VITE_API_URL=$VITE_API_URL
+# Exponer el puerto interno de Vite (5173)
+EXPOSE 5173
 
-RUN npm run build
-
-# ==========================================
-# Etapa 2: Servidor de Producción (Nginx)
-# ==========================================
-FROM nginx:alpine
-
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-COPY --from=build /app/dist /usr/share/nginx/html
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["npm", "run", "dev", "--", "--host"]

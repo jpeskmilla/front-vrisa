@@ -1,6 +1,4 @@
-// src/shared/api/http.js
-
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 
 export async function apiFetch(endpoint, options = {}) {
   const token = localStorage.getItem("token");
@@ -18,13 +16,13 @@ export async function apiFetch(endpoint, options = {}) {
 
   // Manejo automático de errores
   if (!response.ok) {
-    let message = "Error en el servidor";
+    let errorMessage  = "Error en el servidor";
     try {
       const errorData = await response.json();
-      message = errorData.message || message;
+      errorMessage = errorData.message || errorData.detail || errorMessage;
     } catch (_) {}
 
-    throw new Error(message);
+    throw new Error(errorMessage);
   }
 
   // Intentamos parsear JSON, si no tiene body, devolvemos null
