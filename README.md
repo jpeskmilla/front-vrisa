@@ -36,3 +36,9 @@ La aplicación estará disponible en `http://localhost:5173`
 - `npm run build` - Construye la aplicación para producción
 - `npm run preview` - Previsualiza la build de producción
 - `npm run lint` - Ejecuta el linter para verificar el código
+
+
+## Levantar el proyecto en contenedor de Docker
+```
+docker compose -p vrisa up -d
+```
