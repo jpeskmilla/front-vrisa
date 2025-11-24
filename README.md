@@ -40,5 +40,8 @@ La aplicación estará disponible en `http://localhost:5173`
 
 ## Levantar el proyecto en contenedor de Docker
 ```
-docker compose -p vrisa up -d
+# Si es la primera vez, debe construirse la imagen
+docker compose up --build -d
+# En proximas veces, no es necesario reconstruir la imagen
+docker compose up -d
 ```
