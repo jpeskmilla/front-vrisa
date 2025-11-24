@@ -1,0 +1,11 @@
+services:
+  frontend:
+    image: vrisa-frontend:1.0.0
+    build:
+      context: .
+      args:
+        - VITE_API_URL=http://localhost:8000/api
+    container_name: vrisa-frontend
+    ports:
+      - "8088:80" # Mapea puerto 8088 de tu máquina al 80 del contenedor
+    restart: always
