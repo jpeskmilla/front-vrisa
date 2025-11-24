@@ -54,7 +54,7 @@ export default function RegisterPage() {
           first_name: formData.username, // Usando username como first_name temporalmente
           last_name: "Something",  // Valor por defecto temporal
           role_id: null,
-          institution_id: 1
+          institution_id: null
         };
 
         await AuthAPI.register(payload);
