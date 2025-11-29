@@ -116,7 +116,7 @@ export default function RegisterResearcherPage() {
   return (
     <div className="researcher-container">
       <header className="header">
-        <button className="back-button" onClick={() => navigate("/")}>
+        <button className="back-button" onClick={() => navigate("/mainpage")}>
           <span>‹</span> Volver
         </button>
         <div className="logo">VriSA</div>

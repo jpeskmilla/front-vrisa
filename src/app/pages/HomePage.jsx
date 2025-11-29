@@ -46,7 +46,7 @@ export default function HomePage() {
         localStorage.setItem("token", response.access);
         localStorage.setItem("refreshToken", response.refresh);
         // Redirigir después del login exitoso
-        navigate("/dashboard");
+        navigate("/mainpage");
       } else {
         setError("Respuesta inesperada del servidor");
       }
