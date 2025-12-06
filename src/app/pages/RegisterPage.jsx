@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ApiError } from '../../shared/api/http'; // Importamos la clase de error
 import { AuthAPI } from '../../shared/api';
 import './registerpage-styles.css';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
-  const [error, setError] = useState("");
+  const [errorMessages, setErrorMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -38,10 +39,10 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setErrorMessages("");
     
     if (formData.password !== formData.confirmPassword) {
-      setError("Las contraseñas no coinciden");
+      setErrorMessages(["Las contraseñas no coinciden."]);
       return;
     }
 
@@ -63,8 +64,21 @@ export default function RegisterPage() {
         navigate("/");
         
     } catch (err) {
-      console.error(err);
-      setError(err.message || "Error al registrar usuario");
+      if (err instanceof ApiError && err.status === 400 && err.data) {
+        const messages = [];
+        
+        // Django devuelve un objeto: { email: ["Error1"], password: ["Error2"] }
+        Object.entries(err.data).forEach(([field, errors]) => {
+          // Se itera sobre las claves para formar una lista plana de mensajes
+          const prefix = field === 'non_field_errors' ? '' : `${field}: `;
+          const errorText = Array.isArray(errors) ? errors.join(" ") : errors;
+          messages.push(`${prefix}${errorText}`);
+        });
+
+        setErrorMessages(messages);
+      } else {
+        setErrorMessages([err.message || "Ocurrió un error inesperado."]);
+      }
     } finally {
       setLoading(false);
     }
@@ -80,6 +94,7 @@ export default function RegisterPage() {
       </header>
 
       <div className="form-card">
+        
         <h1 className="form-title">¡Regístrate!</h1>
         <p className="form-subtitle">
           Crea una cuenta para gestionar tus estaciones o
@@ -234,17 +249,13 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {error && (
-            <div style={{ 
-              color: '#e53935', 
-              backgroundColor: '#ffebee', 
-              padding: '10px', 
-              borderRadius: '8px',
-              marginBottom: '16px',
-              textAlign: 'center',
-              fontSize: '0.9rem'
-            }}>
-              {error}
+          {errorMessages.length > 0 && (
+            <div className="alert-error-container">
+              <ul className="alert-list">
+                {errorMessages.map((msg, index) => (
+                  <li key={index}>{msg}</li>
+                ))}
+              </ul>
             </div>
           )}
 
