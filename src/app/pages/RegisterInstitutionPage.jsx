@@ -130,7 +130,7 @@ export default function RegisterInstitutionPage() {
   return (
     <div className="institution-container">
       <header className="header">
-        <button className="back-button" onClick={() => navigate("/mainpage")}>
+        <button className="back-button" onClick={() => navigate("/home")}>
           <span>‹</span> Volver
         </button>
         <div className="logo">VriSA</div>

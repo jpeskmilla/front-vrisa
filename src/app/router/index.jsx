@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // Páginas públicas
-import HomePage from "../pages/HomePage.jsx";
+import LoginPage from "../pages/LoginPage.jsx";
 import RegisterPage from "../pages/RegisterPage.jsx";
 import NotFoundPage from "../pages/NotFoundPage.jsx";
 import RegisterResearcherPage from "../pages/RegisterResearcherPage.jsx";
@@ -9,7 +9,7 @@ import RegisterInstitutionPage from "../pages/RegisterInstitutionPage.jsx";
 import RegisterStationPage from "../pages/RegisterStationPage.jsx";
 
 // Páginas protegidas
-import MainPage from "../pages/MainPage.jsx";
+import HomePage from "../pages/HomePage.jsx";
 import DashboardPage from "../pages/DashboardPage.jsx";
 import CompleteRegistrationPage from "../pages/CompleteRegistrationPage.jsx";
 
@@ -21,7 +21,7 @@ export default function AppRouter() {
     <BrowserRouter>
       <Routes>
         {/* Rutas públicas */}
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/register-researcher" element={<RegisterResearcherPage />} />
         <Route path="/register-institution" element={<RegisterInstitutionPage />} />
@@ -29,10 +29,10 @@ export default function AppRouter() {
         
         {/* Rutas protegidas */}
         <Route 
-          path="/mainpage" 
+          path="/home" 
           element={
             <ProtectedRoute>
-              <MainPage />
+              <HomePage />
             </ProtectedRoute>
           } 
         />
