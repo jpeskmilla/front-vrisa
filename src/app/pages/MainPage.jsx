@@ -89,6 +89,7 @@ const MainPage = () => {
               desc="Registra tu organización y gestiona redes de monitoreo."
               icon={<IconInstitution />}
               gradientClass="header-blue"
+              onClick={() => navigate('/register-institution')}
             />
             
             {/* Tarjeta 2 */}

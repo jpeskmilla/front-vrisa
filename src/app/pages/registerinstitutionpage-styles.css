@@ -1,0 +1,231 @@
+/**
+ * Estilos del formulario de registro de institucion.
+ */
+
+/* Contenedor general */
+.institution-container {
+  min-height: 100vh;
+  background-color: #4339f2;
+  font-family: "Inter", sans-serif;
+}
+
+/* Header superior */
+.header {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  color: white;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.logo {
+  flex: 1;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin-right: 60px;
+}
+
+/* Tarjeta del formulario */
+.form-card {
+  background: white;
+  border-radius: 24px 24px 0 0;
+  padding: 32px 24px;
+  min-height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form-title {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 8px;
+}
+
+.form-subtitle {
+  text-align: center;
+  font-size: 1rem;
+  color: #4b5563;
+  margin-bottom: 24px;
+}
+
+/* Formulario */
+form {
+  width: 100%;
+  max-width: 350px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-label {
+  display: block;
+  font-size: 1rem;
+  color: #1f2937;
+  margin-bottom: 6px;
+}
+
+.required {
+  color: #e53935;
+}
+
+/* Inputs */
+.form-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  border-color: #4339f2;
+}
+
+.form-input::placeholder {
+  color: #999;
+}
+
+/* Hint de colores */
+.color-hint {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-bottom: 12px;
+}
+
+/* Contenedor de colores */
+.colors-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.color-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Vista previa del color */
+.color-preview {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.color-text-input {
+  flex: 1;
+  text-transform: uppercase;
+  font-family: monospace;
+}
+
+.color-picker {
+  width: 50px;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: transparent;
+}
+
+.color-picker::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.color-picker::-webkit-color-swatch {
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+}
+
+/* Botón para eliminar color */
+.remove-color-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background-color: #fee;
+  color: #e53935;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+}
+
+.remove-color-btn:hover {
+  background-color: #fcc;
+}
+
+/* Botón para agregar color */
+.add-color-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #f3f4f6;
+  color: #4339f2;
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 4px;
+}
+
+.add-color-btn:hover {
+  background-color: #e5e7eb;
+  border-color: #4339f2;
+}
+
+/* Error box */
+.error-box {
+  color: #e53935;
+  background-color: #ffebee;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+/* Botón */
+.submit-button {
+  width: 100%;
+  padding: 18px;
+  background: #4339f2;
+  color: white;
+  border: none;
+  border-radius: 28px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 24px;
+  transition: opacity 0.2s ease;
+}
+
+.submit-button:hover {
+  opacity: 0.9;
+}
+
+.submit-button:disabled {
+  cursor: not-allowed;
+}

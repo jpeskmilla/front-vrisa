@@ -5,6 +5,7 @@ import HomePage from "../pages/HomePage.jsx";
 import RegisterPage from "../pages/RegisterPage.jsx";
 import NotFoundPage from "../pages/NotFoundPage.jsx";
 import RegisterResearcherPage from "../pages/RegisterResearcherPage.jsx";
+import RegisterInstitutionPage from "../pages/RegisterInstitutionPage.jsx";
 
 // Páginas protegidas
 import MainPage from "../pages/MainPage.jsx";
@@ -22,6 +23,7 @@ export default function AppRouter() {
         <Route path="/" element={<HomePage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/register-researcher" element={<RegisterResearcherPage />} />
+        <Route path="/register-institution" element={<RegisterInstitutionPage />} />
         
         {/* Rutas protegidas */}
         <Route 
