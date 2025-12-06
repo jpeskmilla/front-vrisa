@@ -174,7 +174,7 @@ export default function RegisterStationPage() {
   return (
     <div className="station-container">
       <header className="header">
-        <button className="back-button" onClick={() => navigate("/mainpage")}>
+        <button className="back-button" onClick={() => navigate("/home")}>
           <span>‹</span> Volver
         </button>
         <div className="logo">VriSA</div>
