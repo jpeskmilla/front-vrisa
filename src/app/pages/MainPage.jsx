@@ -89,6 +89,7 @@ const MainPage = () => {
               desc="Registra tu organización y gestiona redes de monitoreo."
               icon={<IconInstitution />}
               gradientClass="header-blue"
+              onClick={() => navigate('/register-institution')}
             />
             
             {/* Tarjeta 2 */}
@@ -97,6 +98,7 @@ const MainPage = () => {
               desc="Conecta tus sensores y estaciones a una red existente."
               icon={<IconStation />}
               gradientClass="header-purple"
+              onClick={() => navigate('/register-station')}
             />
 
             {/* Tarjeta 3 */}
