@@ -98,6 +98,7 @@ const MainPage = () => {
               desc="Conecta tus sensores y estaciones a una red existente."
               icon={<IconStation />}
               gradientClass="header-purple"
+              onClick={() => navigate('/register-station')}
             />
 
             {/* Tarjeta 3 */}
