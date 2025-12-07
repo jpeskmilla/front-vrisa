@@ -64,19 +64,15 @@ export default function AdminPanelPage() {
     }
   };
 
-  const handleApprove = async (requestId) => {
+  const handleApprove = async (item) => {
     if (!window.confirm("¿Estás seguro de aprobar esta institución?")) return;
 
     try {
       if (item.type === "INSTITUTION") {
-        // ID de la institución
         await InstitutionAPI.approveInstitution(item.id);
-      } else {
-        // ID de la solicitud
-        await InstitutionAPI.approveRequest(item.id);
       }
       alert("Institución aprobada con éxito");
-      fetchData(); // Recargar la lista
+      fetchData();
     } catch (error) {
       console.error("Error aprobando solicitud:", error);
       alert("Error al aprobar la solicitud.");
