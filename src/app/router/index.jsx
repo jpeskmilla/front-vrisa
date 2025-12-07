@@ -9,6 +9,7 @@ import RegisterStationPage from "../pages/RegisterStationPage.jsx";
 import RegisterUserPage from "../pages/RegisterUserPage.jsx";
 
 // Páginas protegidas
+import AdminPanelPage from "../pages/AdminPanelPage.jsx";
 import CompleteRegistrationPage from "../pages/CompleteRegistrationPage.jsx";
 import DashboardPage from "../pages/DashboardPage.jsx";
 import HomePage from "../pages/HomePage.jsx";
@@ -26,33 +27,41 @@ export default function AppRouter() {
         <Route path="/register-researcher" element={<RegisterResearcherPage />} />
         <Route path="/register-institution" element={<RegisterInstitutionPage />} />
         <Route path="/register-station" element={<RegisterStationPage />} />
-        
+
         {/* Rutas protegidas */}
-        <Route 
-          path="/home" 
+        <Route
+          path="/home"
           element={
             <ProtectedRoute>
               <HomePage />
             </ProtectedRoute>
-          } 
+          }
         />
-        <Route 
-          path="/dashboard" 
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminPanelPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
           element={
             <ProtectedRoute>
               <DashboardPage />
             </ProtectedRoute>
-          } 
+          }
         />
-        <Route 
-          path="/complete-registration" 
+        <Route
+          path="/complete-registration"
           element={
             <ProtectedRoute>
               <CompleteRegistrationPage />
             </ProtectedRoute>
-          } 
+          }
         />
-        
+
         {/* Ruta 404 */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

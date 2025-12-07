@@ -60,7 +60,7 @@ export default function LoginPage() {
 
         // TODO: esto depende de la modificación de los tokens JWT en el backend
         if (userData?.primary_role && userData.primary_role === 'super_admin') {
-          navigate("/admin/dashboard");
+          navigate("/admin");
         } else {
           navigate("/home");
         }
