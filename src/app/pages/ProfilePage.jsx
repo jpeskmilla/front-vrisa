@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { AuthAPI } from "../../shared/api"; // Ajusta la ruta según tu estructura
-import { formatApiErrors } from "../../shared/utils";
 import './profile-styles.css';
 
 /**
@@ -15,7 +13,6 @@ const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({});
   const [saveSuccess, setSaveSuccess] = useState(false);
-  const [errorMessages, setErrorMessages] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -32,7 +29,7 @@ const ProfilePage = () => {
             confirmPassword: ""
           });
         } else {
-          // Datos por defecto si no hay userData
+          // Datos por defecto
           const defaultData = {
             first_name: "Usuario",
             email: "usuario@example.com",
@@ -90,7 +87,6 @@ const ProfilePage = () => {
       const dataToSave = {
         first_name: formData.first_name,
         email: formData.email,
-        phone: formData.phone,
         userType: formData.userType,
         role_id: formData.role_id,
         institution_id: formData.institution_id
@@ -191,7 +187,7 @@ const ProfilePage = () => {
                 <h3 className="section-title">Información Personal</h3>
                 <div className="profile-grid">
                   <div className="profile-field">
-                    <label>Nombre de usuario</label>
+                    <label>Nombre</label>
                     {isEditing ? (
                       <input
                         type="text"
@@ -199,7 +195,7 @@ const ProfilePage = () => {
                         value={formData.first_name}
                         onChange={handleInputChange}
                         className="profile-input"
-                        placeholder="Ingresa tu nombre de usuario"
+                        placeholder="Ingresa tu nombre"
                       />
                     ) : (
                       <p>{user.first_name}</p>
@@ -221,46 +217,10 @@ const ProfilePage = () => {
                       <p>{user.email}</p>
                     )}
                   </div>
-
-                  <div className="profile-field">
-                    <label>Teléfono de contacto</label>
-                    {isEditing ? (
-                      <input
-                        type="tel"
-                        name="phone"
-                        value={formData.phone || ""}
-                        onChange={handleInputChange}
-                        className="profile-input"
-                        placeholder="+57 300 123 4567"
-                      />
-                    ) : (
-                      <p>{user.phone || "No especificado"}</p>
-                    )}
-                  </div>
-
-                  <div className="profile-field">
-                    <label>Tipo de usuario</label>
-                    {isEditing ? (
-                      <select
-                        name="userType"
-                        value={formData.userType || "Sin definir"}
-                        onChange={handleInputChange}
-                        className="profile-input"
-                      >
-                        <option value="Sin definir">Sin definir</option>
-                        <option value="Administrador de estación">Administrador de estación</option>
-                        <option value="Institución">Institución</option>
-                        <option value="Investigador">Investigador</option>
-                        <option value="Ciudadano">Ciudadano</option>
-                      </select>
-                    ) : (
-                      <p>{user.userType || "Sin definir"}</p>
-                    )}
-                  </div>
                 </div>
               </div>
 
-              {/* Sección de seguridad (solo en modo edición) */}
+              {/* Sección de seguridad*/}
               {isEditing && (
                 <div className="profile-section">
                   <h3 className="section-title">Cambiar Contraseña</h3>
@@ -316,33 +276,15 @@ const ProfilePage = () => {
 
               {/* Botones de acción */}
               {isEditing && (
-                <>
-                  {/* Mensajes de error */}
-                  {errorMessages.length > 0 && (
-                    <div className="alert-error-container">
-                      <ul className="alert-list">
-                        {errorMessages.map((msg, index) => (
-                          <li key={index}>{msg}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  <div className="profile-actions">
-                    <button className="cancel-btn" onClick={handleCancel}>
-                      Cancelar
-                    </button>
-                    <button 
-                      className="save-btn" 
-                      onClick={handleSave}
-                      disabled={loading}
-                      style={{ opacity: loading ? 0.7 : 1 }}
-                    >
-                      <IconCheck />
-                      {loading ? "Guardando..." : "Guardar cambios"}
-                    </button>
-                  </div>
-                </>
+                <div className="profile-actions">
+                  <button className="cancel-btn" onClick={handleCancel}>
+                    Cancelar
+                  </button>
+                  <button className="save-btn" onClick={handleSave}>
+                    <IconCheck />
+                    Guardar cambios
+                  </button>
+                </div>
               )}
             </div>
           </div>

@@ -7,6 +7,7 @@ import RegisterInstitutionPage from "../pages/RegisterInstitutionPage.jsx";
 import RegisterResearcherPage from "../pages/RegisterResearcherPage.jsx";
 import RegisterStationPage from "../pages/RegisterStationPage.jsx";
 import RegisterUserPage from "../pages/RegisterUserPage.jsx";
+import ProfilePage from "../pages/ProfilePage.jsx";
 
 // Páginas protegidas
 import AdminPanelPage from "../pages/AdminPanelPage.jsx";
@@ -27,6 +28,7 @@ export default function AppRouter() {
         <Route path="/register-researcher" element={<RegisterResearcherPage />} />
         <Route path="/register-institution" element={<RegisterInstitutionPage />} />
         <Route path="/register-station" element={<RegisterStationPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
 
         {/* Rutas protegidas */}
         <Route

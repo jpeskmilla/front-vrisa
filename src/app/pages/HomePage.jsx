@@ -70,7 +70,7 @@ const HomePage = () => {
           <nav className="sidebar-nav">
             <NavItem icon={<IconAlert />} label="Tableros" to="/dashboard"/>
             <NavItem icon={<IconReport />} label="Reportes" />
-            <NavItem icon={<IconProfile />} label="Perfil" />
+            <NavItem icon={<IconProfile />} label="Perfil" to="/profile"/>
           </nav>
         </aside>
 
