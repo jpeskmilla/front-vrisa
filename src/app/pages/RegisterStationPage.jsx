@@ -57,8 +57,8 @@ export default function RegisterStationPage() {
         const data = await AuthAPI.getInstitutions();
         setInstitutions(data);
       } catch (err) {
-        console.error("Error al cargar instituciones:", err);
-        setError("No se pudieron cargar las instituciones");
+        const messages = formatApiErrors(err, "Error al registrar la estación");
+        setErrorMessages(messages);
       } finally {
         setLoadingInstitutions(false);
       }

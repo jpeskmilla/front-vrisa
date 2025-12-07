@@ -106,7 +106,7 @@ export default function RegisterResearcherPage() {
       alert("Registro enviado correctamente. Espera validación.");
       navigate("/");
     } catch (err) {
-      const messages = formatApiErrors(err, "Error al registrar institución");
+      const messages = formatApiErrors(err, "Ocurrió un error inesperado");
       setErrorMessages(messages);
     } finally {
       setLoading(false);
