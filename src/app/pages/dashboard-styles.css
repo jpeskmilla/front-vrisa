@@ -492,3 +492,9 @@ button.nav-item:hover:not(.active) {
   background-color: #f1f5f9;
   color: #334155;
 }
+
+.pending-icon {
+  color: #ef4444;
+  background-color: transparent;
+  transition: background-color 0.2s ease;
+}

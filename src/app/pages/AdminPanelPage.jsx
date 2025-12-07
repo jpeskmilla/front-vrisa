@@ -109,7 +109,7 @@ export default function AdminPanelPage() {
               </div>
             </div>
             <div className="summary-card">
-              <div className="card-icon" style={{backgroundColor: "#fee2e2", color: "#ef4444"}}>
+              <div className="card-icon pending-icon">
                 <Clock size={24} />
               </div>
               <div className="card-info">
