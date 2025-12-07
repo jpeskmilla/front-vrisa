@@ -141,52 +141,32 @@ export default function RegisterResearcherPage() {
               placeholder="Ingresa tu nombre completo"
               value={formData.fullName}
               onChange={handleChange}
+              required
             />
           </div>
 
-          {/* Tipo de documento */}
+          {/* Tipo de documento*/}
           <div className="form-group">
             <label className="form-label">
               <span className="required">*</span> Tipo de documento
             </label>
 
-            <div className="dropdown-wrapper">
-              <button
-                type="button"
-                className={`dropdown-trigger ${
-                  isDropdownOpen ? "open" : ""
-                }`}
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              >
-                <span
-                  className={formData.documentType ? "" : "placeholder"}
-                >
-                  {formData.documentType || "Selecciona el tipo de documento"}
-                </span>
-                <span
-                  className={`dropdown-arrow ${
-                    isDropdownOpen ? "open" : ""
-                  }`}
-                >
-                  ▼
-                </span>
-              </button>
+          <select
+            name="documentType"
+            className="form-input"
+            value={formData.documentType}
+            onChange={(e) => setFormData({ ...formData, documentType: e.target.value })}
+            required
+          >
+            <option value="">Selecciona el tipo de documento</option>
+            {documentTypes.map((doc) => (
+              <option key={doc} value={doc}>
+                {doc}
+              </option>
+            ))}
+          </select>
+        </div>
 
-              {isDropdownOpen && (
-                <div className="dropdown-menu">
-                  {documentTypes.map((doc) => (
-                    <div
-                      key={doc}
-                      className="dropdown-item"
-                      onClick={() => handleSelect(doc)}
-                    >
-                      {doc}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
 
           {/* Número de documento */}
           <div className="form-group">
@@ -197,9 +177,10 @@ export default function RegisterResearcherPage() {
               type="text"
               name="documentNumber"
               className="form-input"
-              placeholder="Ingresa tu número"
+              placeholder="Ingresa tu número de documento"
               value={formData.documentNumber}
               onChange={handleChange}
+              required
             />
           </div>
 
@@ -215,6 +196,7 @@ export default function RegisterResearcherPage() {
               placeholder="Ingrese la institución a la que pertenece"
               value={formData.institution}
               onChange={handleChange}
+              required
             />
           </div>
 
@@ -230,6 +212,7 @@ export default function RegisterResearcherPage() {
               placeholder="correo@institucion.edu"
               value={formData.email}
               onChange={handleChange}
+              required
             />
           </div>
 
@@ -243,6 +226,7 @@ export default function RegisterResearcherPage() {
               accept="image/*"
               className="form-input"
               onChange={(e) => handleFileUpload(e, "frontCard")}
+              required
             />
           </div>
 
@@ -256,6 +240,7 @@ export default function RegisterResearcherPage() {
               accept="image/*"
               className="form-input"
               onChange={(e) => handleFileUpload(e, "backCard")}
+              required
             />
           </div>
 
