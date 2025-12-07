@@ -1,17 +1,17 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 // Páginas públicas
 import LoginPage from "../pages/LoginPage.jsx";
-import RegisterPage from "../pages/RegisterPage.jsx";
 import NotFoundPage from "../pages/NotFoundPage.jsx";
-import RegisterResearcherPage from "../pages/RegisterResearcherPage.jsx";
 import RegisterInstitutionPage from "../pages/RegisterInstitutionPage.jsx";
+import RegisterResearcherPage from "../pages/RegisterResearcherPage.jsx";
 import RegisterStationPage from "../pages/RegisterStationPage.jsx";
+import RegisterUserPage from "../pages/RegisterUserPage.jsx";
 
 // Páginas protegidas
-import HomePage from "../pages/HomePage.jsx";
-import DashboardPage from "../pages/DashboardPage.jsx";
 import CompleteRegistrationPage from "../pages/CompleteRegistrationPage.jsx";
+import DashboardPage from "../pages/DashboardPage.jsx";
+import HomePage from "../pages/HomePage.jsx";
 
 // Componentes de rutas
 import ProtectedRoute from "./ProtectedRoute.jsx";
@@ -22,7 +22,7 @@ export default function AppRouter() {
       <Routes>
         {/* Rutas públicas */}
         <Route path="/" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/register" element={<RegisterUserPage />} />
         <Route path="/register-researcher" element={<RegisterResearcherPage />} />
         <Route path="/register-institution" element={<RegisterInstitutionPage />} />
         <Route path="/register-station" element={<RegisterStationPage />} />

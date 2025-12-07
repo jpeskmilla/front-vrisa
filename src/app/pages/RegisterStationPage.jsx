@@ -1,15 +1,14 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthAPI } from "../../shared/api";
+import "./registerstationpage-styles.css";
+
 /**
  * Página de registro para estaciones de monitoreo ambiental.
  * Formulario en dos pasos: información básica y detalles del sensor.
  *
  * @component
  */
-
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { AuthAPI } from "../../shared/api";
-import "./registerstationpage-styles.css";
-
 export default function RegisterStationPage() {
   const navigate = useNavigate();
 

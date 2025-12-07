@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { ORGANIZATION_ROLES } from '../../shared/constants/roles';
 import './complete-registration-styles.css';
 
