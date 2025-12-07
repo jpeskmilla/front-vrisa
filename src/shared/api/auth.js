@@ -39,14 +39,3 @@ export function logout() {
   localStorage.removeItem("/token/");
   return Promise.resolve();
 }
-
-/**
- * Registra una nueva institución (Solicitud).
- * @param {FormData} formData - Datos del formulario incluyendo archivos.
- */
-export function registerInstitution(formData) {
-  return apiFetch("/institutions/register/", {
-    method: "POST",
-    body: formData
-  });
-}
