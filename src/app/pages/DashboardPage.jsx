@@ -77,7 +77,11 @@ export default function DashboardPage() {
   };
 
   // Verificar si el usuario necesita completar su registro
-  const needsRegistrationCompletion = user?.belongs_to_organization && !user?.registration_complete;
+  // Solo usuarios que pertenecen a una organización Y no han completado el registro
+  // Y que NO tienen ya una institución asignada (para evitar registros duplicados)
+  const isCitizen = !user?.belongs_to_organization || user?.requested_role === 'citizen';
+  const hasInstitutionAssigned = user?.institution_id || user?.institution;
+  const needsRegistrationCompletion = !isCitizen && !user?.registration_complete && !hasInstitutionAssigned;
 
   if (loading) {
     return (
