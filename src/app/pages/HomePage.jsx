@@ -1,6 +1,6 @@
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import './homepage-styles.css';
-import { useNavigate, Link } from "react-router-dom";
-import { useState, useEffect } from "react";
 
 /**
  * Página principal de la aplicación.

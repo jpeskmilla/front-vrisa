@@ -1,3 +1,9 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthAPI } from "../../shared/api";
+import { formatApiErrors } from "../../shared/utils";
+import "./registerresearcherpage-styles.css";
+
 /**
  * Página de registro para investigadores.
  * Permite ingresar información personal, institucional y cargar
@@ -5,12 +11,6 @@
  *
  * @component
  */
-
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { AuthAPI } from "../../shared/api";
-import "./registerresearcherpage-styles.css";
-
 export default function RegisterResearcherPage() {
   const navigate = useNavigate();
 
@@ -106,8 +106,8 @@ export default function RegisterResearcherPage() {
       alert("Registro enviado correctamente. Espera validación.");
       navigate("/");
     } catch (err) {
-      console.error(err);
-      setError(err.message || "Error al registrar investigador");
+      const messages = formatApiErrors(err, "Ocurrió un error inesperado");
+      setErrorMessages(messages);
     } finally {
       setLoading(false);
     }

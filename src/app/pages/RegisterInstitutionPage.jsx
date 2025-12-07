@@ -1,20 +1,20 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthAPI } from "../../shared/api";
+import { formatApiErrors } from "../../shared/utils";
+import "./registerinstitutionpage-styles.css";
+
 /**
  * Página de registro para instituciones.
  * Permite ingresar información institucional.
  *
  * @component
  */
-
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { AuthAPI } from "../../shared/api";
-import "./registerinstitutionpage-styles.css";
-
 export default function RegisterInstitutionPage() {
   const navigate = useNavigate();
 
   /** @state Manejo de errores del formulario */
-  const [error, setError] = useState("");
+  const [errorMessages, setErrorMessages] = useState("");
 
   /** @state Indicador de carga al enviar el formulario */
   const [loading, setLoading] = useState(false);
@@ -36,7 +36,7 @@ export default function RegisterInstitutionPage() {
    * @param {React.ChangeEvent<HTMLInputElement>} e - Evento del input
    */
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({...formData, [e.target.name]: e.target.value});
   };
 
   /**
@@ -47,7 +47,7 @@ export default function RegisterInstitutionPage() {
    */
   const handleFileUpload = (e, field) => {
     const file = e.target.files[0];
-    setFormData({ ...formData, [field]: file });
+    setFormData({...formData, [field]: file});
   };
 
   /**
@@ -59,14 +59,14 @@ export default function RegisterInstitutionPage() {
   const handleColorChange = (index, value) => {
     const newColors = [...formData.colors];
     newColors[index] = value;
-    setFormData({ ...formData, colors: newColors });
+    setFormData({...formData, colors: newColors});
   };
 
   /**
    * Agrega un nuevo color al array
    */
   const addColor = () => {
-    setFormData({ ...formData, colors: [...formData.colors, "#FFFFFF"] });
+    setFormData({...formData, colors: [...formData.colors, "#FFFFFF"]});
   };
 
   /**
@@ -77,7 +77,7 @@ export default function RegisterInstitutionPage() {
   const removeColor = (index) => {
     if (formData.colors.length > 1) {
       const newColors = formData.colors.filter((_, i) => i !== index);
-      setFormData({ ...formData, colors: newColors });
+      setFormData({...formData, colors: newColors});
     }
   };
 
@@ -89,20 +89,29 @@ export default function RegisterInstitutionPage() {
    */
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setErrorMessages("");
 
     if (!formData.logo) {
-      setError("Debes adjuntar el logo de la institución");
+      setErrorMessages("Debes adjuntar el logo de la institución");
       return;
     }
 
     if (!formData.name || !formData.physicAddress) {
-      setError("Todos los campos obligatorios deben estar completos");
+      setErrorMessages("Todos los campos obligatorios deben estar completos");
       return;
     }
 
     if (formData.colors.length === 0) {
-      setError("Debes agregar al menos un color");
+      setErrorMessages("Debes agregar al menos un color");
+      return;
+    }
+
+    const hexPattern = /^#[0-9A-Fa-f]{6}$/;
+    const uniqueColors = [...new Set(formData.colors)];
+    const invalidColors = uniqueColors.filter((color) => !hexPattern.test(color));
+
+    if (invalidColors.length > 0) {
+      setErrorMessages([`Los siguientes colores no son válidos: ${invalidColors.join(", ")}.`, "Usa el formato hexadecimal completo (ej: #FFFFFF)"]);
       return;
     }
 
@@ -113,15 +122,15 @@ export default function RegisterInstitutionPage() {
       payload.append("institute_name", formData.name);
       payload.append("physic_address", formData.physicAddress);
       payload.append("institute_logo", formData.logo);
-      payload.append("colors", JSON.stringify(formData.colors));
+      payload.append("colors", JSON.stringify(uniqueColors));
 
       await AuthAPI.registerInstitution(payload);
 
       alert("Registro enviado correctamente. Espera validación.");
       navigate("/");
     } catch (err) {
-      console.error(err);
-      setError(err.message || "Error al registrar institución");
+      const messages = formatApiErrors(err, "Error al registrar institución");
+      setErrorMessages(messages);
     } finally {
       setLoading(false);
     }
@@ -138,9 +147,7 @@ export default function RegisterInstitutionPage() {
 
       <div className="form-card">
         <h1 className="form-title">Registro de Institución</h1>
-        <p className="form-subtitle">
-          Ingresa la información para validar la solicitud como institución.
-        </p>
+        <p className="form-subtitle">Ingresa la información para validar la solicitud como institución.</p>
 
         <form onSubmit={handleSubmit}>
           {/* Nombre de la institución */}
@@ -180,13 +187,7 @@ export default function RegisterInstitutionPage() {
             <label className="form-label">
               <span className="required">*</span> Logo
             </label>
-            <input
-              type="file"
-              accept="image/*"
-              className="form-input"
-              onChange={(e) => handleFileUpload(e, "logo")}
-              required
-            />
+            <input type="file" accept="image/*" className="form-input" onChange={(e) => handleFileUpload(e, "logo")} required />
           </div>
 
           {/* Colores de la institución */}
@@ -194,14 +195,12 @@ export default function RegisterInstitutionPage() {
             <label className="form-label">
               <span className="required">*</span> Colores institucionales
             </label>
-            <p className="color-hint">
-              Elige un color de la paleta o ingresa su código hexadecimal (ej: #4339F2, #000000)
-            </p>
+            <p className="color-hint">Elige un color de la paleta o ingresa su código hexadecimal (ej: #4339F2, #000000)</p>
 
             <div className="colors-container">
               {formData.colors.map((color, index) => (
                 <div key={index} className="color-input-group">
-                  <div className="color-preview" style={{ backgroundColor: color }}></div>
+                  <div className="color-preview" style={{backgroundColor: color}}></div>
                   <input
                     type="text"
                     className="form-input color-text-input"
@@ -211,49 +210,34 @@ export default function RegisterInstitutionPage() {
                     pattern="^#[0-9A-Fa-f]{6}$"
                     title="Debe ser un código hexadecimal válido (ej: #FFFFFF)"
                   />
-                  <input
-                    type="color"
-                    className="color-picker"
-                    value={color}
-                    onChange={(e) => handleColorChange(index, e.target.value)}
-                  />
+                  <input type="color" className="color-picker" value={color} onChange={(e) => handleColorChange(index, e.target.value)} />
                   {formData.colors.length > 1 && (
-                    <button
-                      type="button"
-                      className="remove-color-btn"
-                      onClick={() => removeColor(index)}
-                      title="Eliminar color"
-                    >
+                    <button type="button" className="remove-color-btn" onClick={() => removeColor(index)} title="Eliminar color">
                       ✕
                     </button>
                   )}
                 </div>
               ))}
 
-              <button
-                type="button"
-                className="add-color-btn"
-                onClick={addColor}
-              >
+              <button type="button" className="add-color-btn" onClick={addColor}>
                 + Agregar otro color
               </button>
             </div>
           </div>
 
           {/* Error */}
-          {error && (
-            <div className="error-box">
-              {error}
+          {errorMessages.length > 0 && (
+            <div className="alert-error-container">
+              <ul className="alert-list">
+                {errorMessages.map((msg, index) => (
+                  <li key={index}>{msg}</li>
+                ))}
+              </ul>
             </div>
           )}
 
           {/* Botón */}
-          <button
-            type="submit"
-            className="submit-button"
-            disabled={loading}
-            style={{ opacity: loading ? 0.7 : 1 }}
-          >
+          <button type="submit" className="submit-button" disabled={loading} style={{opacity: loading ? 0.7 : 1}}>
             {loading ? "Enviando..." : "Enviar solicitud de registro"}
           </button>
         </form>

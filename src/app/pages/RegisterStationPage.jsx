@@ -1,15 +1,14 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthAPI } from "../../shared/api";
+import "./registerstationpage-styles.css";
+
 /**
  * Página de registro para estaciones de monitoreo ambiental.
  * Formulario en dos pasos: información básica y detalles del sensor.
  *
  * @component
  */
-
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { AuthAPI } from "../../shared/api";
-import "./registerstationpage-styles.css";
-
 export default function RegisterStationPage() {
   const navigate = useNavigate();
 
@@ -58,8 +57,8 @@ export default function RegisterStationPage() {
         const data = await AuthAPI.getInstitutions();
         setInstitutions(data);
       } catch (err) {
-        console.error("Error al cargar instituciones:", err);
-        setError("No se pudieron cargar las instituciones");
+        const messages = formatApiErrors(err, "Error al registrar la estación");
+        setErrorMessages(messages);
       } finally {
         setLoadingInstitutions(false);
       }

@@ -1,10 +1,10 @@
-import "./loginpage-styles.css";
+import { jwtDecode } from "jwt-decode";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import homepage from "../../assets/homepage.jpg";
 import Logo from "../../assets/vrisa_logo.png";
-import {jwtDecode} from "jwt-decode";
-import {useNavigate} from "react-router-dom";
-import {useState} from "react";
-import {AuthAPI} from "../../shared/api";
+import { AuthAPI } from "../../shared/api";
+import "./loginpage-styles.css";
 
 /**
  * Componente de la página de inicio de sesión.
