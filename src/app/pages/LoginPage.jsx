@@ -47,15 +47,30 @@ export default function LoginPage() {
         localStorage.setItem("token", response.access);
         localStorage.setItem("refreshToken", response.refresh);
         const decodedToken = jwtDecode(response.access);
+        
+        // Determinar si el usuario pertenece a una organización
+        // Si tiene institution_id O si el token indica que pertenece O si tiene un rol de organización
+        const belongsToOrg = decodedToken.belongs_to_organization ?? 
+          !!decodedToken.institution_id ?? 
+          (decodedToken.requested_role && decodedToken.requested_role !== 'citizen');
+        
+        // El registro está completo si ya tiene institución asignada o si es ciudadano
+        const isRegistrationComplete = decodedToken.registration_complete ?? 
+          !!decodedToken.institution_id ?? 
+          decodedToken.requested_role === 'citizen';
+
         const userData = {
           user_id: decodedToken.user_id,
           email: decodedToken.email,
-          first_name: decodedToken.full_name.split(" ")[0],
+          first_name: decodedToken.full_name?.split(" ")[0] || decodedToken.first_name || decodedToken.email.split("@")[0],
           institution_id: decodedToken.institution_id,
-          belongs_to_organization: !!decodedToken.institution_id,
-          registration_complete: true,
+          belongs_to_organization: belongsToOrg,
+          registration_complete: isRegistrationComplete,
           primary_role: decodedToken.primary_role,
+          requested_role: decodedToken.requested_role || decodedToken.role,
         };
+        
+        console.log('Login - userData guardado:', userData);
         localStorage.setItem("userData", JSON.stringify(userData));
 
         // TODO: esto depende de la modificación de los tokens JWT en el backend
