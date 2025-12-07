@@ -329,3 +329,36 @@ input[type="password"]::-ms-reveal {
 .alert-list li:last-child {
   margin-bottom: 0;
 }
+
+/* Citizen Info Section */
+.citizen-info {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border: 1px solid #86efac;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.citizen-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+  color: #166534;
+  margin-bottom: 8px;
+}
+
+.citizen-icon {
+  font-size: 1.25rem;
+}
+
+.citizen-badge strong {
+  color: #15803d;
+}
+
+.citizen-description {
+  font-size: 0.85rem;
+  color: #166534;
+  margin: 0;
+  line-height: 1.5;
+}

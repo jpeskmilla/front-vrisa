@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthAPI } from "../../shared/api";
 import { formatApiErrors } from "../../shared/utils";
+import { ORGANIZATION_ROLES } from "../../shared/constants/roles";
 import "./registeruserpage-styles.css";
 
 export default function RegisterUserPage() {
@@ -15,29 +16,54 @@ export default function RegisterUserPage() {
     phone: "",
     password: "",
     confirmPassword: "",
-    userType: "",
+    belongsToOrganization: null, // null = sin seleccionar, true = Sí, false = No
+    requestedRole: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const userTypes = ["Administrador de estación", "Institución", "Investigador", "Ciudadano"];
+  // Roles disponibles para usuarios que pertenecen a una organización
+  const organizationRoles = [
+    { value: ORGANIZATION_ROLES.STATION_ADMIN, label: "Administrador de estación" },
+    { value: ORGANIZATION_ROLES.RESEARCHER, label: "Investigador" },
+    { value: ORGANIZATION_ROLES.INSTITUTION, label: "Institución" },
+  ];
 
   const handleChange = (e) => {
     setFormData({...formData, [e.target.name]: e.target.value});
   };
 
-  const handleUserTypeSelect = (type) => {
-    setFormData({...formData, userType: type});
+  const handleOrganizationChange = (belongsToOrg) => {
+    setFormData({
+      ...formData, 
+      belongsToOrganization: belongsToOrg,
+      requestedRole: belongsToOrg ? "" : "citizen" // Si no pertenece, es ciudadano
+    });
+    setIsDropdownOpen(false);
+  };
+
+  const handleRoleSelect = (roleValue) => {
+    setFormData({...formData, requestedRole: roleValue});
     setIsDropdownOpen(false);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMessages("");
+    setErrorMessages([]);
 
     if (formData.password !== formData.confirmPassword) {
       setErrorMessages(["Las contraseñas no coinciden."]);
+      return;
+    }
+
+    if (formData.belongsToOrganization === null) {
+      setErrorMessages(["Por favor, indica si perteneces a una organización ambiental."]);
+      return;
+    }
+
+    if (formData.belongsToOrganization && !formData.requestedRole) {
+      setErrorMessages(["Por favor, selecciona el rol que deseas solicitar."]);
       return;
     }
 
@@ -47,8 +73,11 @@ export default function RegisterUserPage() {
       const payload = {
         email: formData.email,
         password: formData.password,
-        first_name: formData.username, // Usando username como first_name temporalmente
-        last_name: "Something", // Valor por defecto temporal
+        first_name: formData.username,
+        last_name: "Usuario", // Valor por defecto temporal
+        phone: formData.phone,
+        belongs_to_organization: formData.belongsToOrganization,
+        requested_role: formData.requestedRole || "citizen",
         role_id: null,
         institution_id: null,
       };
@@ -168,24 +197,86 @@ export default function RegisterUserPage() {
 
           <div className="form-group">
             <label className="form-label">
-              <span className="required">*</span> Tipo de usuario / Entidad (opcional)
+              <span className="required">*</span> ¿Pertenece usted a una organización ambiental?
+            </label>
+            <div className="radio-group">
+              <label 
+                className={`radio-option ${formData.belongsToOrganization === true ? "selected" : ""}`}
+                onClick={() => handleOrganizationChange(true)}
+              >
+                <input 
+                  type="radio" 
+                  name="belongsToOrganization" 
+                  checked={formData.belongsToOrganization === true}
+                  onChange={() => handleOrganizationChange(true)}
+                />
+                <span className="radio-circle"></span>
+                <span className="radio-label">Sí</span>
+              </label>
+              <label 
+                className={`radio-option ${formData.belongsToOrganization === false ? "selected" : ""}`}
+                onClick={() => handleOrganizationChange(false)}
+              >
+                <input 
+                  type="radio" 
+                  name="belongsToOrganization" 
+                  checked={formData.belongsToOrganization === false}
+                  onChange={() => handleOrganizationChange(false)}
+                />
+                <span className="radio-circle"></span>
+                <span className="radio-label">No</span>
+              </label>
+            </div>
+          </div>
+
+          {/* Select de rol solo visible si pertenece a una organización */}
+          {formData.belongsToOrganization === true && (
+            <div className="form-group slide-in">
+              <label className="form-label">
+                <span className="required">*</span> Escoja el rol que desea solicitar
             </label>
             <div className="dropdown-wrapper">
-              <button type="button" className={`dropdown-trigger ${isDropdownOpen ? "open" : ""}`} onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
-                <span className={formData.userType ? "" : "placeholder"}>{formData.userType || "Selecciona una opción"}</span>
+                <button 
+                  type="button" 
+                  className={`dropdown-trigger ${isDropdownOpen ? "open" : ""}`} 
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                >
+                  <span className={formData.requestedRole ? "" : "placeholder"}>
+                    {formData.requestedRole 
+                      ? organizationRoles.find(r => r.value === formData.requestedRole)?.label 
+                      : "Selecciona un rol"}
+                  </span>
                 <span className={`dropdown-arrow ${isDropdownOpen ? "open" : ""}`}>▼</span>
               </button>
               {isDropdownOpen && (
                 <div className="dropdown-menu">
-                  {userTypes.map((type) => (
-                    <div key={type} className="dropdown-item" onClick={() => handleUserTypeSelect(type)}>
-                      {type}
+                    {organizationRoles.map((role) => (
+                      <div 
+                        key={role.value} 
+                        className="dropdown-item" 
+                        onClick={() => handleRoleSelect(role.value)}
+                      >
+                        {role.label}
                     </div>
                   ))}
                 </div>
               )}
             </div>
           </div>
+          )}
+
+          {/* Mostrar mensaje si es ciudadano */}
+          {formData.belongsToOrganization === false && (
+            <div className="citizen-info slide-in">
+              <div className="citizen-badge">
+                <span className="citizen-icon">👤</span>
+                <span>Te registrarás como <strong>Ciudadano</strong></span>
+              </div>
+              <p className="citizen-description">
+                Como ciudadano tendrás acceso a consultar reportes de calidad del aire y datos de las estaciones de monitoreo.
+              </p>
+            </div>
+          )}
 
           {errorMessages.length > 0 && (
             <div className="alert-error-container">
@@ -198,7 +289,14 @@ export default function RegisterUserPage() {
           )}
 
           <button type="submit" className="submit-button" disabled={loading} style={{opacity: loading ? 0.7 : 1}}>
-            Registrarse como usuario general
+            {loading 
+              ? "Registrando..." 
+              : formData.belongsToOrganization === false 
+                ? "Registrarse como ciudadano" 
+                : formData.requestedRole 
+                  ? `Solicitar registro como ${organizationRoles.find(r => r.value === formData.requestedRole)?.label || 'usuario'}`
+                  : "Registrarse"
+            }
           </button>
         </form>
       </div>
