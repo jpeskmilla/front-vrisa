@@ -31,6 +31,59 @@
   /* Efecto para el botón de cierre de sesión */
   .logout-btn-text:hover { background: #fef2f2; }
   
+  /* Banner de registro */
+  .registration-banner {
+    background: linear-gradient(90deg, #ff9800 0%, #f57c00 100%);
+    padding: 16px 32px;
+    width: 100%;
+  }
+
+  .banner-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .banner-icon {
+    font-size: 1.5rem;
+  }
+
+  .banner-text {
+    flex: 1;
+    color: white;
+  }
+
+  .banner-text strong {
+    display: block;
+    font-size: 1rem;
+    margin-bottom: 2px;
+  }
+
+  .banner-text p {
+    margin: 0;
+    font-size: 0.9rem;
+    opacity: 0.95;
+  }
+
+  .banner-btn {
+    padding: 10px 24px;
+    background: white;
+    color: #f57c00;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .banner-btn:hover {
+    background: #fff8e1;
+    transform: translateY(-1px);
+  }
+
   /* Layout principal */
   .dashboard-main { display: flex; min-height: calc(100vh - 73px); }
   
@@ -61,6 +114,17 @@
   .nav-item:hover {
     background-color: #F5F3FF;
     color: #4C51BF;
+  }
+
+  .nav-item.highlight {
+    background: linear-gradient(90deg, #ff9800 0%, #f57c00 100%);
+    color: white;
+    font-weight: 600;
+  }
+
+  .nav-item.highlight:hover {
+    background: linear-gradient(90deg, #f57c00 0%, #e65100 100%);
+    color: white;
   }
   
   .nav-icon {
@@ -183,4 +247,108 @@
   @keyframes pointLeft {
     0%, 100% { transform: translateX(0); }
     50% { transform: translateX(-5px); } 
+  }
+
+  /* Vista para ciudadanos */
+  .citizen-welcome {
+    width: 100%;
+    max-width: 1000px;
+  }
+
+  .citizen-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-top: 24px;
+  }
+
+  .feature-card {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    border-color: #4339F2;
+  }
+
+  .feature-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 20px;
+    background: linear-gradient(135deg, #4339F2 0%, #6366f1 100%);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .feature-icon svg {
+    width: 32px;
+    height: 32px;
+    color: white;
+  }
+
+  .feature-card h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 12px 0;
+  }
+
+  .feature-card p {
+    font-size: 0.95rem;
+    color: #64748b;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .feature-card:hover h3 {
+    color: #4339F2;
+  }
+
+  /* Vista de rol único (cuando ya eligió rol en el registro) */
+  .single-role-view {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .single-role-card-container {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .single-role-card-container .role-card {
+    box-shadow: 0 8px 24px rgba(67, 57, 242, 0.15);
+    border: 2px solid #e0e7ff;
+  }
+
+  .single-role-card-container .role-card:hover {
+    border-color: #4339F2;
+    box-shadow: 0 12px 32px rgba(67, 57, 242, 0.2);
+  }
+
+  .single-role-card-container .role-select-btn {
+    background: linear-gradient(135deg, #4339F2 0%, #6366f1 100%);
+    color: white;
+    border: none;
+    padding: 14px 32px;
+    font-size: 1rem;
+  }
+
+  .single-role-card-container .role-select-btn:hover {
+    background: linear-gradient(135deg, #3730a3 0%, #4f46e5 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(67, 57, 242, 0.3);
   }
