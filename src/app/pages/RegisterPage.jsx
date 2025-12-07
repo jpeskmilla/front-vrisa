@@ -64,21 +64,8 @@ export default function RegisterPage() {
         navigate("/");
         
     } catch (err) {
-      if (err instanceof ApiError && err.status === 400 && err.data) {
-        const messages = [];
-        
-        // Django devuelve un objeto: { email: ["Error1"], password: ["Error2"] }
-        Object.entries(err.data).forEach(([field, errors]) => {
-          // Se itera sobre las claves para formar una lista plana de mensajes
-          const prefix = field === 'non_field_errors' ? '' : `${field}: `;
-          const errorText = Array.isArray(errors) ? errors.join(" ") : errors;
-          messages.push(`${prefix}${errorText}`);
-        });
-
-        setErrorMessages(messages);
-      } else {
-        setErrorMessages([err.message || "Ocurrió un error inesperado."]);
-      }
+      const messages = formatApiErrors(err, "Ocurrió un error inesperado");
+      setErrorMessages(messages);
     } finally {
       setLoading(false);
     }
