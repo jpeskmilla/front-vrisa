@@ -45,3 +45,8 @@ docker compose up --build -d
 # En proximas veces, no es necesario reconstruir la imagen
 docker compose up -d
 ```
+
+## Acceso a la página de inicio o login
+Una vez se tenga el contenedor del frontend levantado, se puede acceder a la página de inicio con: http://localhost:8088/
+
+> _Nota_: es importante utilizar localhost en lugar de algo como [ip-directa]:8088, porque el CORS del backend valida que la IP de entrada solo sea alguna asociada con localhost. De otra manera rechazará la conexión.
