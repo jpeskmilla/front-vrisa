@@ -37,6 +37,7 @@ La aplicación estará disponible en `http://localhost:5173`
 - `npm run preview` - Previsualiza la build de producción
 - `npm run lint` - Ejecuta el linter para verificar el código
 
+> Nota: dado que se está trabajando desde un contenedor de Docker, se necesita utilizar estos comandos desde dentro del contenedor, por ejemplo `docker-compose exec frontend npm install lucide-react`
 
 ## Levantar el proyecto en contenedor de Docker
 ```
