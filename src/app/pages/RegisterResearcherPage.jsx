@@ -15,7 +15,7 @@ export default function RegisterResearcherPage() {
   const navigate = useNavigate();
 
   /** @state Manejo de errores del formulario */
-  const [error, setError] = useState("");
+  const [errorMessages, setErrorMessages] = useState([]);
 
   /** @state Indicador de carga al enviar el formulario */
   const [loading, setLoading] = useState(false);
@@ -82,10 +82,10 @@ export default function RegisterResearcherPage() {
    */
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setErrorMessages("");
 
     if (!formData.frontCard || !formData.backCard) {
-      setError("Debes adjuntar ambos lados de la tarjeta profesional.");
+      setErrorMessages("Debes adjuntar ambos lados de la tarjeta profesional.");
       return;
     }
 
@@ -245,9 +245,9 @@ export default function RegisterResearcherPage() {
           </div>
 
           {/* Error */}
-          {error && (
+          {errorMessages && (
             <div className="error-box">
-              {error}
+              {errorMessages}
             </div>
           )}
 

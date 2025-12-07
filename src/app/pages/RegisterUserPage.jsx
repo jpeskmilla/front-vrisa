@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthAPI } from "../../shared/api";
+import { formatApiErrors } from "../../shared/utils";
 import "./registeruserpage-styles.css";
 
 export default function RegisterUserPage() {
