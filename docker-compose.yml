@@ -10,4 +10,3 @@ services:
       - "8088:5173"
     environment:
       - VITE_API_URL=http://localhost:8000/api
-    restart: always

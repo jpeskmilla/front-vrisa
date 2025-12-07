@@ -1,0 +1,239 @@
+/**
+ * Estilos del formulario de registro de estación de monitoreo.
+ */
+
+/* Contenedor general */
+.station-container {
+    min-height: 100vh;
+    background-color: #4339f2;
+    font-family: "Inter", sans-serif;
+  }
+  
+  /* Header superior */
+  .header {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    color: white;
+  }
+  
+  .back-button {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  
+  .logo {
+    flex: 1;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-right: 60px;
+  }
+  
+  /* Tarjeta del formulario */
+  .form-card {
+    background: white;
+    border-radius: 24px 24px 0 0;
+    padding: 32px 24px;
+    min-height: calc(100vh - 60px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .form-title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 8px;
+  }
+  
+  .form-subtitle {
+    text-align: center;
+    font-size: 1rem;
+    color: #4b5563;
+    margin-bottom: 24px;
+  }
+  
+  /* Indicador de pasos */
+  .steps-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 32px;
+    gap: 12px;
+  }
+  
+  .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+  }
+  
+  .step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #e5e7eb;
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s;
+  }
+  
+  .step.active .step-number {
+    background-color: #4339f2;
+    color: white;
+  }
+  
+  .step span {
+    font-size: 0.8rem;
+    color: #6b7280;
+    text-align: center;
+  }
+  
+  .step.active span {
+    color: #1f2937;
+    font-weight: 500;
+  }
+  
+  .step-line {
+    height: 2px;
+    width: 60px;
+    background-color: #e5e7eb;
+    margin-top: -26px;
+  }
+  
+  /* Formulario */
+  form {
+    width: 100%;
+    max-width: 350px;
+  }
+  
+  .form-group {
+    margin-bottom: 16px;
+  }
+  
+  .form-label {
+    display: block;
+    font-size: 1rem;
+    color: #1f2937;
+    margin-bottom: 6px;
+  }
+  
+  .required {
+    color: #e53935;
+  }
+  
+  /* Inputs */
+  .form-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+  }
+  
+  .form-input:focus {
+    border-color: #4339f2;
+  }
+  
+  .form-input::placeholder {
+    color: #999;
+  }
+  
+  select.form-input {
+    cursor: pointer;
+    background-color: white;
+  }
+  
+  /* Hint de formulario */
+  .form-hint {
+    display: block;
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-top: 4px;
+  }
+  
+  /* Texto de carga */
+  .loading-text {
+    padding: 12px 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    color: #6b7280;
+    text-align: center;
+    font-size: 14px;
+  }
+  
+  /* Error box */
+  .error-box {
+    color: #e53935;
+    background-color: #ffebee;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+  
+  /* Botón de volver al paso anterior */
+  .back-step-button {
+    flex: 1;
+    padding: 18px;
+    background: white;
+    color: #4339f2;
+    border: 2px solid #4339f2;
+    border-radius: 28px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .back-step-button:hover {
+    background: #f3f4f6;
+  }
+  
+  /* Botón de envío */
+  .submit-button {
+    flex: 1;
+    padding: 18px;
+    background: #4339f2;
+    color: white;
+    border: none;
+    border-radius: 28px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+  
+  .submit-button:hover {
+    opacity: 0.9;
+  }
+  
+  .submit-button:disabled {
+    cursor: not-allowed;
+  }
+  
+  form:has(.submit-button:only-of-type) .submit-button {
+    width: 100%;
+    margin-top: 24px;
+  }

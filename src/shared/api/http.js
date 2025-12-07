@@ -37,6 +37,15 @@ export async function apiFetch(endpoint, options = {}) {
   }
 
   if (!response.ok) {
+    if (response.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("userData");
+      
+      // Forzar recarga a la página de login
+      window.location.href = "/"; 
+      return; 
+    }
     const errorMessage = data?.message || data?.detail || "Error en el servidor";
 
     throw new ApiError(errorMessage, response.status, data);
