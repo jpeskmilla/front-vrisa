@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthAPI } from "../../shared/api";
+import { InstitutionAPI } from "../../shared/api";
 import { formatApiErrors } from "../../shared/utils";
 import "./registerinstitutionpage-styles.css";
 
@@ -124,10 +124,10 @@ export default function RegisterInstitutionPage() {
       payload.append("institute_logo", formData.logo);
       payload.append("colors", JSON.stringify(uniqueColors));
 
-      await AuthAPI.registerInstitution(payload);
+      await InstitutionAPI.registerInstitution(payload);
 
       alert("Registro enviado correctamente. Espera validación.");
-      navigate("/");
+      navigate("/home");
     } catch (err) {
       const messages = formatApiErrors(err, "Error al registrar institución");
       setErrorMessages(messages);

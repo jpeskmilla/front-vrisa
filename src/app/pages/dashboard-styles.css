@@ -472,5 +472,29 @@
   }
 }
 
+button.nav-item {
+  width: 100%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  font-size: 0.95rem;
+}
 
 
+button.nav-item.active {
+  background-color: #4339F2;
+  color: white;
+}
+
+button.nav-item:hover:not(.active) {
+  background-color: #f1f5f9;
+  color: #334155;
+}
+
+.pending-icon {
+  color: #ef4444;
+  background-color: transparent;
+  transition: background-color 0.2s ease;
+}

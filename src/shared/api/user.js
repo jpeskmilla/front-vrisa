@@ -20,3 +20,13 @@ export function updateUser(userId, data) {
     body: JSON.stringify(data),
   });
 }
+
+/**
+ * Obtiene estadísticas generales de usuarios (solo admins).
+ * Endpoint: GET /api/users/stats/
+ */
+export function getUserStats() {
+  return apiFetch("/users/stats/", {
+    method: "GET",
+  });
+}
