@@ -23,7 +23,7 @@ export function getIntegrationRequests() {
  * Aprueba una solicitud específica.
  * Endpoint: POST /api/institutions/requests/{id}/approve/
  */
-export function approveRequest(institutionId) {
+export function approveInstitution(institutionId) {
   return apiFetch(`/institutions/requests/${institutionId}/approve/`, {
     method: "POST",
   });
