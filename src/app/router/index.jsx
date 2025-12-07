@@ -14,6 +14,7 @@ import AdminPanelPage from "../pages/AdminPanelPage.jsx";
 import CompleteRegistrationPage from "../pages/CompleteRegistrationPage.jsx";
 import DashboardPage from "../pages/DashboardPage.jsx";
 import HomePage from "../pages/HomePage.jsx";
+import InstitutionAdminPage from "../pages/InstitutionAdminPage.jsx";
 
 // Componentes de rutas
 import ProtectedRoute from "./ProtectedRoute.jsx";
@@ -60,6 +61,14 @@ export default function AppRouter() {
           element={
             <ProtectedRoute>
               <CompleteRegistrationPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/institution-admin"
+          element={
+            <ProtectedRoute>
+              <InstitutionAdminPage />
             </ProtectedRoute>
           }
         />
