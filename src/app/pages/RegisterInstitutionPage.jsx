@@ -14,7 +14,7 @@ export default function RegisterInstitutionPage() {
   const navigate = useNavigate();
 
   /** @state Manejo de errores del formulario */
-  const [errorMessages, setErrorMessages] = useState("");
+  const [errorMessages, setErrorMessages] = useState([]);
 
   /** @state Indicador de carga al enviar el formulario */
   const [loading, setLoading] = useState(false);
