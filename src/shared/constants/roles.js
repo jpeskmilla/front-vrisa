@@ -5,7 +5,8 @@
 export const ORGANIZATION_ROLES = {
   STATION_ADMIN: 'station_admin',
   RESEARCHER: 'researcher',
-  INSTITUTION_WORKER: 'institution_worker'
+  INSTITUTION: 'institution',
+  INSTITUTION_WORKER: 'institution_worker' // Deprecado, usar INSTITUTION
 };
 
 /**
@@ -23,9 +24,9 @@ export const ORGANIZATION_ROLES_CONFIG = [
     description: 'Acceso a datos y reportes para investigación'
   },
   { 
-    value: ORGANIZATION_ROLES.INSTITUTION_WORKER, 
-    label: 'Trabajador de institución ambiental',
-    description: 'Personal de instituciones ambientales'
+    value: ORGANIZATION_ROLES.INSTITUTION, 
+    label: 'Institución',
+    description: 'Administrador de una institución ambiental'
   }
 ];
 
