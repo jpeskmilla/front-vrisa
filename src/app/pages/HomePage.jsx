@@ -68,7 +68,7 @@ const HomePage = () => {
         {/* Barra Lateral */}
         <aside className="dashboard-sidebar">
           <nav className="sidebar-nav">
-            <NavItem icon={<IconAlert />} label="Alertas" />
+            <NavItem icon={<IconAlert />} label="Tableros" to="/dashboard"/>
             <NavItem icon={<IconReport />} label="Reportes" />
             <NavItem icon={<IconProfile />} label="Perfil" />
           </nav>
@@ -146,9 +146,9 @@ function RoleCard({ title, desc, icon, gradientClass, onClick }) {
   );
 }
 
-function NavItem({ icon, label }) {
+function NavItem({ icon, label, to }) {
   return (
-    <Link to="#" className="nav-item">
+    <Link to={to || "#"} className="nav-item">
       <span className="nav-icon">{icon}</span>
       <span className="nav-text">{label}</span>
     </Link>
