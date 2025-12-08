@@ -1,13 +1,14 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import MainLayout from "../../shared/layout/MainLayout.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 
 // Páginas públicas
 import LoginPage from "../pages/LoginPage.jsx";
 import NotFoundPage from "../pages/NotFoundPage.jsx";
 import RegisterUserPage from "../pages/RegisterUserPage.jsx";
-
 // Páginas protegidas
 import AdminPanelPage from "../pages/AdminPanelPage.jsx";
+import AirQualityPage from "../pages/AirQualityPage.jsx";
 import DashboardPage from "../pages/DashboardPage.jsx";
 import HomePage from "../pages/HomePage.jsx";
 import InstitutionAdminPage from "../pages/InstitutionAdminPage.jsx";
@@ -37,16 +38,20 @@ export default function AppRouter() {
             </ProtectedRoute>
           }
         />
+        {/* Dashboard y submodulos */}
         <Route
-          path="/dashboard"
           element={
             <ProtectedRoute>
-              <DashboardPage />
+              <MainLayout />
             </ProtectedRoute>
           }
-        />
-
-        {/* Paneles de Administración */}
+        >
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/dashboard/air-quality" element={<AirQualityPage />} />
+          {/* <Route path="/dashboard/stations" element={<StationsPage />} /> */}
+          {/* <Route path="/dashboard/reports" element={<ReportsPage />} /> */}
+        </Route>
+        {/* Paneles de administración */}
         <Route
           path="/admin"
           element={
