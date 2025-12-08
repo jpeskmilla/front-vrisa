@@ -1,7 +1,7 @@
-import { Building, Building2, CheckCircle, ClipboardCheck, Clock, LayoutDashboard, LogOut, Users } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { InstitutionAPI, UserAPI } from "../../shared/api";
+import {Building, Building2, CheckCircle, ClipboardCheck, Clock, LayoutDashboard, LogOut, Users} from "lucide-react";
+import {useEffect, useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {InstitutionAPI, UserAPI} from "../../shared/api";
 import "./dashboard-styles.css";
 
 export default function AdminPanelPage() {
@@ -34,28 +34,18 @@ export default function AdminPanelPage() {
     try {
       setLoading(true);
       // Obtenemos las solicitudes de integración
-      const [requestsData, institutionsData, userStatsData] = await Promise.all([
-        InstitutionAPI.getIntegrationRequests(),
-        InstitutionAPI.getInstitutions(),
-        UserAPI.getUserStats() 
-    ]);
+      const [institutionsData, userStatsData] = await Promise.all([InstitutionAPI.getInstitutions(), UserAPI.getUserStats()]);
 
-      // Filtramos solo las pendientes para la vista principal
-      const pendingRequests = requestsData
-        .filter((r) => r.request_status === "PENDING")
-        .map((item) => ({...item, type: "REQUEST", name: `Solicitud de Integración: ${item.institution_name}`}));
-
+      // Filtramos solo las instituciones pendientes de aprobacion
       const pendingInstitutions = institutionsData
         .filter((i) => i.validation_status === "PENDING")
         .map((item) => ({...item, type: "INSTITUTION", name: `Registro Nuevo: ${item.institute_name}`}));
 
-      const allPending = [...pendingInstitutions, ...pendingRequests];
-
       // Actualizar estados con datos obtenidos
-      setPendingItems(allPending);
+      setPendingItems(pendingInstitutions);
       setStats({
         totalUsers: userStatsData.total_users,
-        pendingRequests: allPending.length,
+        pendingRequests: pendingInstitutions.length,
       });
     } catch (error) {
       console.error("Error cargando datos de administración:", error);
@@ -258,11 +248,7 @@ export default function AdminPanelPage() {
             </button>
 
             {/* Aprobaciones */}
-            <button
-              className={`nav-item ${activeTab === "approvals" ? "active" : ""}`}
-              onClick={() => setActiveTab("approvals")}
-              style={{justifyContent: "space-between"}}
-            >
+            <button className={`nav-item ${activeTab === "approvals" ? "active" : ""}`} onClick={() => setActiveTab("approvals")} style={{justifyContent: "space-between"}}>
               <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
                 <span className="nav-icon">
                   <ClipboardCheck size={20} />
