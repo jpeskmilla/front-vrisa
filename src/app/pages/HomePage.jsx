@@ -118,7 +118,7 @@ const HomePage = () => {
             </div>
             <button 
               className="banner-btn" 
-              onClick={() => navigate('/complete-registration')}
+              onClick={() => navigate(roleConfig[currentRole]?.route || '/complete-registration')}
             >
               Completar ahora
             </button>
@@ -166,7 +166,7 @@ const HomePage = () => {
                   desc={pendingRoleData.desc}
                   icon={pendingRoleData.icon}
                   gradientClass={pendingRoleData.gradientClass}
-                  onClick={() => navigate('/complete-registration')}
+                  onClick={() => navigate(roleConfig[currentRole]?.route || '/complete-registration')}
                   buttonText="Continuar Registro"
                 />
               </div>
