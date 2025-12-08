@@ -42,6 +42,7 @@ export default function Header() {
       </div>
 
       <div className="header-right">
+        {/* TODO: Implement notification functionality */}
         <button className="icon-btn" title="Notificaciones">
           <Bell size={22} />
         </button>
