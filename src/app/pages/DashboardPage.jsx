@@ -94,18 +94,6 @@ export default function DashboardPage() {
 
   return (
     <div className="dashboard-container">
-      {/* Header */}
-      <header className="dashboard-header">
-        <div className="header-left">
-          <h1 className="dashboard-logo">VriSA</h1>
-        </div>
-        <div className="header-right">
-          <span className="user-greeting">Hola, {user?.first_name || "Usuario"}</span>
-          <button className="logout-btn" onClick={handleLogout}>
-            Cerrar sesión
-          </button>
-        </div>
-      </header>
 
       {/* Banner de completar registro */}
       {needsRegistrationCompletion && (
@@ -125,40 +113,6 @@ export default function DashboardPage() {
 
       {/* Contenido principal */}
       <main className="dashboard-main">
-        {/* Sidebar */}
-        <aside className="dashboard-sidebar">
-          <nav className="sidebar-nav">
-            <Link to="/home" className="nav-item return-home">
-              <span className="nav-icon"><Home size={20} /></span>
-              <span className="nav-text">Ir al Inicio</span>
-            </Link>
-            
-            <div className="sidebar-divider"></div>
-
-            <Link to="/dashboard" className="nav-item active">
-              <span className="nav-icon"><LayoutDashboard size={20} /></span>
-              <span className="nav-text">Dashboard</span>
-            </Link>
-            <Link to="/dashboard/air-quality" className="nav-item">
-              <span className="nav-icon"><Wind size={20} /></span>
-              <span className="nav-text">Calidad del aire</span>
-            </Link>
-            <Link to="/dashboard/stations" className="nav-item">
-              <span className="nav-icon"><MapPin size={20} /></span>
-              <span className="nav-text">Estaciones</span>
-            </Link>
-            <Link to="/dashboard/reports" className="nav-item">
-              <span className="nav-icon"><FileText size={20} /></span>
-              <span className="nav-text">Reportes</span>
-            </Link>
-            {needsRegistrationCompletion && (
-              <Link to="/complete-registration" className="nav-item highlight">
-                <span className="nav-icon"><Edit size={20} /></span>
-                <span className="nav-text">Completar registro</span>
-              </Link>
-            )}
-          </nav>
-        </aside>
 
         {/* Área de contenido */}
         <section className="dashboard-content">
