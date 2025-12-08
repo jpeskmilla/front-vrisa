@@ -1,10 +1,9 @@
-import { 
-  Home, 
-  LayoutDashboard, 
-  Wind, 
-  MapPin, 
-  FileText, 
-  LogOut 
+import {
+  FileText,
+  Home, LayoutDashboard,
+  LogOut,
+  MapPin,
+  Wind
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import "./layout.css";
@@ -13,30 +12,28 @@ export default function Sidebar() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    if (window.confirm("¿Deseas cerrar sesión?")) {
-      localStorage.clear();
-      navigate("/");
-    }
+    localStorage.clear();
+    navigate("/");
   };
 
   return (
     <aside className="layout-sidebar">
       <nav className="sidebar-nav">
-        {/* Enlace para volver al Home */}
+        {/* Ir al Inicio */}
         <NavLink 
           to="/home" 
-          className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}
+          className="sidebar-link return-home"
         >
           <Home size={20} />
-          <span>Inicio</span>
+          <span>Ir al Inicio</span>
         </NavLink>
 
-        <div className="h-px bg-gray-200 my-2"></div>
+        <div className="sidebar-divider"></div>
 
-        {/* Links del Dashboard */}
+        {/* Links Principales */}
         <NavLink 
           to="/dashboard" 
-          end // 'end' hace que solo se active si la ruta es exacta, no hijas
+          end
           className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}
         >
           <LayoutDashboard size={20} />
@@ -67,12 +64,12 @@ export default function Sidebar() {
           <span>Reportes</span>
         </NavLink>
 
-        {/* Espaciador para empujar el logout al final */}
         <div className="sidebar-spacer"></div>
 
+        {/* Logout al final */}
         <button onClick={handleLogout} className="sidebar-link logout-link">
           <LogOut size={20} />
-          <span>Cerrar Sesión</span>
+          <span>Cerrar sesión</span>
         </button>
       </nav>
     </aside>
