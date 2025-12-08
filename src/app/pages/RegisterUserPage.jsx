@@ -97,101 +97,101 @@ export default function RegisterUserPage() {
   };
 
   return (
-    <div className="register-container">
-      <header className="header">
-        <button className="back-button" onClick={() => navigate("/")}>
+    <div className="register-user-container">
+      <header className="register-user-header">
+        <button className="register-user-back-button" onClick={() => navigate("/")}>
           <span>‹</span> Ir a Inicio
         </button>
-        <div className="logo">VriSA</div>
+        <div className="register-user-logo">VriSA</div>
       </header>
 
-      <div className="form-card">
-        <h1 className="form-title">¡Regístrate!</h1>
-        <p className="form-subtitle">Crea una cuenta para gestionar tus estaciones o acceder a reportes de calidad del aire</p>
+      <div className="register-user-form-card">
+        <h1 className="register-user-form-title">¡Regístrate!</h1>
+        <p className="register-user-form-subtitle">Crea una cuenta para gestionar tus estaciones o acceder a reportes de calidad del aire</p>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="register-user-form">
           
           {/* Nombre y Apellido */}
           <div style={{ display: 'flex', gap: '15px' }}>
-            <div className="form-group" style={{ flex: 1 }}>
-              <label className="form-label">
-                <span className="required">*</span> Nombre
+            <div className="register-user-form-group" style={{ flex: 1 }}>
+              <label className="register-user-form-label">
+                <span className="register-user-required">*</span> Nombre
               </label>
-              <input type="text" name="first_name" className="form-input" placeholder="Juan" value={formData.first_name} onChange={handleChange} required />
+              <input type="text" name="first_name" className="register-user-form-input" placeholder="Juan" value={formData.first_name} onChange={handleChange} required />
             </div>
-            <div className="form-group" style={{ flex: 1 }}>
-              <label className="form-label">
-                <span className="required">*</span> Apellido
+            <div className="register-user-form-group" style={{ flex: 1 }}>
+              <label className="register-user-form-label">
+                <span className="register-user-required">*</span> Apellido
               </label>
-              <input type="text" name="last_name" className="form-input" placeholder="Pérez" value={formData.last_name} onChange={handleChange} required />
+              <input type="text" name="last_name" className="register-user-form-input" placeholder="Pérez" value={formData.last_name} onChange={handleChange} required />
             </div>
           </div>
 
-          <div className="form-group">
-            <label className="form-label">
-              <span className="required">*</span> Correo electrónico
+          <div className="register-user-form-group">
+            <label className="register-user-form-label">
+              <span className="register-user-required">*</span> Correo electrónico
             </label>
-            <input type="email" name="email" className="form-input" placeholder="correo@ejemplo.com" value={formData.email} onChange={handleChange} required />
+            <input type="email" name="email" className="register-user-form-input" placeholder="correo@ejemplo.com" value={formData.email} onChange={handleChange} required />
           </div>
 
-          <div className="form-group">
-            <label className="form-label">
-              <span className="required">*</span> Teléfono de contacto
+          <div className="register-user-form-group">
+            <label className="register-user-form-label">
+              <span className="register-user-required">*</span> Teléfono de contacto
             </label>
-            <input type="tel" name="phone" className="form-input" placeholder="Ingresa tu número de teléfono" value={formData.phone} onChange={handleChange} required />
+            <input type="tel" name="phone" className="register-user-form-input" placeholder="Ingresa tu número de teléfono" value={formData.phone} onChange={handleChange} required />
           </div>
 
-          <div className="form-group">
-            <label className="form-label">
-              <span className="required">*</span> Contraseña
+          <div className="register-user-form-group">
+            <label className="register-user-form-label">
+              <span className="register-user-required">*</span> Contraseña
             </label>
-            <div className="input-wrapper">
+            <div className="register-user-input-wrapper">
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
-                className="form-input"
+                className="register-user-form-input"
                 placeholder="Establezca una contraseña"
                 value={formData.password}
                 onChange={handleChange}
                 required
               />
-              <button type="button" className="password-toggle" onClick={() => setShowPassword(!showPassword)}>
+              <button type="button" className="register-user-password-toggle" onClick={() => setShowPassword(!showPassword)}>
                 {showPassword ? <EyeOff size={22} color="#666" /> : <Eye size={22} color="#666" />}
               </button>
             </div>
           </div>
 
-          <div className="form-group">
-            <label className="form-label">
-              <span className="required">*</span> Confirmar contraseña
+          <div className="register-user-form-group">
+            <label className="register-user-form-label">
+              <span className="register-user-required">*</span> Confirmar contraseña
             </label>
-            <div className="input-wrapper">
+            <div className="register-user-input-wrapper">
               <input
                 type={showConfirmPassword ? "text" : "password"}
                 name="confirmPassword"
-                className={`form-input ${formData.confirmPassword && formData.password === formData.confirmPassword ? "input-valid" : ""}`}
+                className={`register-user-form-input ${formData.confirmPassword && formData.password === formData.confirmPassword ? "register-user-input-valid" : ""}`}
                 placeholder="Confirme su contraseña"
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
               />
               {formData.confirmPassword && formData.password === formData.confirmPassword ? (
-                <div className="valid-icon">✓</div>
+                <div className="register-user-valid-icon">✓</div>
               ) : (
-                <button type="button" className="password-toggle" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                <button type="button" className="register-user-password-toggle" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
                   {showConfirmPassword ? <EyeOff size={22} color="#666" /> : <Eye size={22} color="#666" />}
                 </button>
               )}
             </div>
           </div>
 
-          <div className="form-group">
-            <label className="form-label">
-              <span className="required">*</span> ¿Pertenece usted a una organización ambiental?
+          <div className="register-user-form-group">
+            <label className="register-user-form-label">
+              <span className="register-user-required">*</span> ¿Pertenece usted a una organización ambiental?
             </label>
-            <div className="radio-group">
+            <div className="register-user-radio-group">
               <label 
-                className={`radio-option ${formData.belongsToOrganization === true ? "selected" : ""}`}
+                className={`register-user-radio-option ${formData.belongsToOrganization === true ? "selected" : ""}`}
                 onClick={() => handleOrganizationChange(true)}
               >
                 <input 
@@ -200,11 +200,11 @@ export default function RegisterUserPage() {
                   checked={formData.belongsToOrganization === true}
                   onChange={() => {}}
                 />
-                <span className="radio-circle"></span>
-                <span className="radio-label">Sí</span>
+                <span className="register-user-radio-circle"></span>
+                <span className="register-user-radio-label">Sí</span>
               </label>
               <label 
-                className={`radio-option ${formData.belongsToOrganization === false ? "selected" : ""}`}
+                className={`register-user-radio-option ${formData.belongsToOrganization === false ? "selected" : ""}`}
                 onClick={() => handleOrganizationChange(false)}
               >
                 <input 
@@ -213,22 +213,22 @@ export default function RegisterUserPage() {
                   checked={formData.belongsToOrganization === false}
                   onChange={() => {}}
                 />
-                <span className="radio-circle"></span>
-                <span className="radio-label">No</span>
+                <span className="register-user-radio-circle"></span>
+                <span className="register-user-radio-label">No</span>
               </label>
             </div>
           </div>
 
           {/* Select de rol solo visible si pertenece a una organización */}
           {formData.belongsToOrganization === true && (
-            <div className="form-group slide-in">
-              <label className="form-label">
-                <span className="required">*</span> Escoja el rol que desea solicitar
+            <div className="register-user-form-group register-user-slide-in">
+              <label className="register-user-form-label">
+                <span className="register-user-required">*</span> Escoja el rol que desea solicitar
             </label>
-            <div className="dropdown-wrapper">
+            <div className="register-user-dropdown-wrapper">
                 <button 
                   type="button" 
-                  className={`dropdown-trigger ${isDropdownOpen ? "open" : ""}`} 
+                  className={`register-user-dropdown-trigger ${isDropdownOpen ? "open" : ""}`} 
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 >
                   <span className={formData.requestedRole ? "" : "placeholder"}>
@@ -236,14 +236,14 @@ export default function RegisterUserPage() {
                       ? organizationRoles.find(r => r.value === formData.requestedRole)?.label 
                       : "Selecciona un rol"}
                   </span>
-                <span className={`dropdown-arrow ${isDropdownOpen ? "open" : ""}`}>▼</span>
+                <span className={`register-user-dropdown-arrow ${isDropdownOpen ? "open" : ""}`}>▼</span>
               </button>
               {isDropdownOpen && (
-                <div className="dropdown-menu">
+                <div className="register-user-dropdown-menu">
                     {organizationRoles.map((role) => (
                       <div 
                         key={role.value} 
-                        className="dropdown-item" 
+                        className="register-user-dropdown-item" 
                         onClick={() => handleRoleSelect(role.value)}
                       >
                         {role.label}
@@ -257,20 +257,20 @@ export default function RegisterUserPage() {
 
           {/* Mostrar mensaje si es ciudadano (Cuadro verde) */}
           {formData.belongsToOrganization === false && (
-            <div className="citizen-info slide-in">
-              <div className="citizen-badge">
-                <span className="citizen-icon">👤</span>
+            <div className="register-user-citizen-info register-user-slide-in">
+              <div className="register-user-citizen-badge">
+                <span className="register-user-citizen-icon">👤</span>
                 <span>Te registrarás como <strong>Ciudadano</strong></span>
               </div>
-              <p className="citizen-description">
+              <p className="register-user-citizen-description">
                 Como ciudadano tendrás acceso a consultar reportes de calidad del aire y datos de las estaciones de monitoreo.
               </p>
             </div>
           )}
 
           {errorMessages.length > 0 && (
-            <div className="alert-error-container">
-              <ul className="alert-list">
+            <div className="register-user-alert-error-container">
+              <ul className="register-user-alert-list">
                 {errorMessages.map((msg, index) => (
                   <li key={index}>{msg}</li>
                 ))}
@@ -279,7 +279,7 @@ export default function RegisterUserPage() {
           )}
 
           {/* Botón con texto dinámico */}
-          <button type="submit" className="submit-button" disabled={loading} style={{opacity: loading ? 0.7 : 1}}>
+          <button type="submit" className="register-user-submit-button" disabled={loading} style={{opacity: loading ? 0.7 : 1}}>
             {loading 
               ? "Registrando..." 
               : formData.belongsToOrganization === false 

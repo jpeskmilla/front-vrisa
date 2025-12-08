@@ -58,7 +58,7 @@ export default function RegisterStationPage() {
         setInstitutions(data);
       } catch (err) {
         const messages = formatApiErrors(err, "Error al registrar la estación");
-        setErrorMessages(messages);
+        setError(messages);
       } finally {
         setLoadingInstitutions(false);
       }
@@ -171,49 +171,49 @@ export default function RegisterStationPage() {
   };
 
   return (
-    <div className="station-container">
-      <header className="header">
-        <button className="back-button" onClick={() => navigate("/home")}>
+    <div className="register-station-container">
+      <header className="register-station-header">
+        <button className="register-station-back-button" onClick={() => navigate("/home")}>
           <span>‹</span> Volver
         </button>
-        <div className="logo">VriSA</div>
+        <div className="register-station-logo">VriSA</div>
       </header>
 
-      <div className="form-card">
-        <h1 className="form-title">Registro de Estación de Monitoreo</h1>
-        <p className="form-subtitle">
+      <div className="register-station-form-card">
+        <h1 className="register-station-form-title">Registro de Estación de Monitoreo</h1>
+        <p className="register-station-form-subtitle">
           Ingresa la información para validar la solicitud como estación de monitoreo.
         </p>
-        <p className="form-subtitle">
+        <p className="register-station-form-subtitle">
           {step === 1 
             ? "Paso 1: Información básica de la estación"
             : "Paso 2: Detalles del sensor base"}
         </p>
 
         {/* Indicador de pasos */}
-        <div className="steps-indicator">
-          <div className={`step ${step >= 1 ? "active" : ""}`}>
-            <div className="step-number">1</div>
+        <div className="register-station-steps-indicator">
+          <div className={`register-station-step ${step >= 1 ? "active" : ""}`}>
+            <div className="register-station-step-number">1</div>
             <span>Información básica</span>
           </div>
-          <div className="step-line"></div>
-          <div className={`step ${step >= 2 ? "active" : ""}`}>
-            <div className="step-number">2</div>
+          <div className="register-station-step-line"></div>
+          <div className={`register-station-step ${step >= 2 ? "active" : ""}`}>
+            <div className="register-station-step-number">2</div>
             <span>Sensor base</span>
           </div>
         </div>
 
         {/* PASO 1: Información básica */}
         {step === 1 && (
-          <form onSubmit={handleNextStep}>
-            <div className="form-group">
-              <label className="form-label">
-                <span className="required">*</span> Nombre de la estación
+          <form onSubmit={handleNextStep} className="register-station-form">
+            <div className="register-station-form-group">
+              <label className="register-station-form-label">
+                <span className="register-station-required">*</span> Nombre de la estación
               </label>
               <input
                 type="text"
                 name="stationName"
-                className="form-input"
+                className="register-station-form-input"
                 placeholder="Ingresa el nombre único de la estación"
                 value={basicData.stationName}
                 onChange={handleBasicChange}
@@ -221,15 +221,15 @@ export default function RegisterStationPage() {
               />
             </div>
 
-            <div className="form-group">
-              <label className="form-label">
-                <span className="required">*</span> Latitud
+            <div className="register-station-form-group">
+              <label className="register-station-form-label">
+                <span className="register-station-required">*</span> Latitud
               </label>
               <input
                 type="number"
                 step="any"
                 name="geographicLat"
-                className="form-input"
+                className="register-station-form-input"
                 placeholder="Ej: 3.451647"
                 value={basicData.geographicLat}
                 onChange={handleBasicChange}
@@ -237,15 +237,15 @@ export default function RegisterStationPage() {
               />
             </div>
 
-            <div className="form-group">
-              <label className="form-label">
-                <span className="required">*</span> Longitud
+            <div className="register-station-form-group">
+              <label className="register-station-form-label">
+                <span className="register-station-required">*</span> Longitud
               </label>
               <input
                 type="number"
                 step="any"
                 name="geographicLong"
-                className="form-input"
+                className="register-station-form-input"
                 placeholder="Ej: -76.531985"
                 value={basicData.geographicLong}
                 onChange={handleBasicChange}
@@ -253,30 +253,30 @@ export default function RegisterStationPage() {
               />
             </div>
 
-            <div className="form-group">
-              <label className="form-label">
+            <div className="register-station-form-group">
+              <label className="register-station-form-label">
                 Dirección de referencia
               </label>
               <input
                 type="text"
                 name="addressReference"
-                className="form-input"
+                className="register-station-form-input"
                 placeholder="Opcional: Puntos de referencia visuales"
                 value={basicData.addressReference}
                 onChange={handleBasicChange}
               />
             </div>
             
-            <div className="form-group">
-              <label className="form-label">
-                <span className="required">*</span> Institución asociada
+            <div className="register-station-form-group">
+              <label className="register-station-form-label">
+                <span className="register-station-required">*</span> Institución asociada
               </label>
               {loadingInstitutions ? (
-                <div className="loading-text">Cargando instituciones...</div>
+                <div className="register-station-loading-text">Cargando instituciones...</div>
               ) : (
                 <select
                   name="institutionId"
-                  className="form-input"
+                  className="register-station-form-input"
                   value={basicData.institutionId}
                   onChange={handleBasicChange}
                   required
@@ -291,9 +291,9 @@ export default function RegisterStationPage() {
               )}
             </div>
 
-            {error && <div className="error-box">{error}</div>}
+            {error && <div className="register-station-error-box">{error}</div>}
 
-            <button type="submit" className="submit-button">
+            <button type="submit" className="register-station-submit-button">
               Continuar al paso 2 →
             </button>
           </form>
@@ -301,15 +301,15 @@ export default function RegisterStationPage() {
 
         {/* PASO 2: Detalles del sensor */}
         {step === 2 && (
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label className="form-label">
-                <span className="required">*</span> Modelo del sensor
+          <form onSubmit={handleSubmit} className="register-station-form">
+            <div className="register-station-form-group">
+              <label className="register-station-form-label">
+                <span className="register-station-required">*</span> Modelo del sensor
               </label>
               <input
                 type="text"
                 name="sensorModel"
-                className="form-input"
+                className="register-station-form-input"
                 placeholder="Modelo técnico del dispositivo"
                 value={sensorData.sensorModel}
                 onChange={handleSensorChange}
@@ -317,14 +317,14 @@ export default function RegisterStationPage() {
               />
             </div>
 
-            <div className="form-group">
-              <label className="form-label">
-                <span className="required">*</span> Fabricante
+            <div className="register-station-form-group">
+              <label className="register-station-form-label">
+                <span className="register-station-required">*</span> Fabricante
               </label>
               <input
                 type="text"
                 name="sensorManufacturer"
-                className="form-input"
+                className="register-station-form-input"
                 placeholder="Fabricante del dispositivo"
                 value={sensorData.sensorManufacturer}
                 onChange={handleSensorChange}
@@ -332,14 +332,14 @@ export default function RegisterStationPage() {
               />
             </div>
 
-            <div className="form-group">
-              <label className="form-label">
-                <span className="required">*</span> Número de serie
+            <div className="register-station-form-group">
+              <label className="register-station-form-label">
+                <span className="register-station-required">*</span> Número de serie
               </label>
               <input
                 type="text"
                 name="sensorSerial"
-                className="form-input"
+                className="register-station-form-input"
                 placeholder="Número de serie único o MAC Address"
                 value={sensorData.sensorSerial}
                 onChange={handleSensorChange}
@@ -347,40 +347,42 @@ export default function RegisterStationPage() {
               />
             </div>
 
-            <div className="form-group">
-              <label className="form-label">
-                <span className="required">*</span> Certificado de calibración
+            <div className="register-station-form-group">
+              <label className="register-station-form-label">
+                <span className="register-station-required">*</span> Certificado de calibración
               </label>
               <input
                 type="file"
                 accept=".pdf,image/*"
-                className="form-input"
+                className="register-station-form-input"
                 onChange={handleFileUpload}
                 required
               />
-              <small className="form-hint">
+              <small className="register-station-form-hint">
                 Documento PDF o imagen que certifique la calibración
               </small>
             </div>
 
-            {error && <div className="error-box">{error}</div>}
+            {error && <div className="register-station-error-box">{error}</div>}
 
-            <button
-                type="button"
-                className="back-step-button"
-                onClick={handleBackStep}
-              >
-                ← Volver al paso 1
-            </button>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button
+                  type="button"
+                  className="register-station-back-step-button"
+                  onClick={handleBackStep}
+                >
+                  ← Volver al paso 1
+              </button>
 
-            <button
-                type="submit"
-                className="submit-button"
-                disabled={loading}
-                style={{ opacity: loading ? 0.7 : 1 }}
-              >
-                {loading ? "Enviando..." : "Enviar solicitud"}
-            </button>
+              <button
+                  type="submit"
+                  className="register-station-submit-button"
+                  disabled={loading}
+                  style={{ opacity: loading ? 0.7 : 1 }}
+                >
+                  {loading ? "Enviando..." : "Enviar solicitud"}
+              </button>
+            </div>
           </form>
         )}
       </div>
