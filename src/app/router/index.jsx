@@ -8,7 +8,7 @@ import RegisterResearcherPage from "../pages/RegisterResearcherPage.jsx";
 import RegisterStationPage from "../pages/RegisterStationPage.jsx";
 import RegisterUserPage from "../pages/RegisterUserPage.jsx";
 import ProfilePage from "../pages/ProfilePage.jsx";
-
+import AirQualityPage from "../pages/AirQualityPage.jsx";
 // Páginas protegidas
 import AdminPanelPage from "../pages/AdminPanelPage.jsx";
 import CompleteRegistrationPage from "../pages/CompleteRegistrationPage.jsx";
@@ -56,6 +56,10 @@ export default function AppRouter() {
             </ProtectedRoute>
           }
         />
+        <Route element={<MainLayout />}>
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/dashboard/air-quality" element={<AirQualityPage />} />
+        </Route>
         <Route
           path="/complete-registration"
           element={
