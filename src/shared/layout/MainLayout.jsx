@@ -1,17 +1,19 @@
 import { Outlet } from "react-router-dom";
-import Sidebar from "./Sidebar"; 
-import Header from "./Header";   
+import Header from "./Header";
+import Sidebar from "./Sidebar";
+import "./layout.css";
 
 export default function MainLayout() {
   return (
-    <div className="dashboard-container">
+    <div className="main-layout">
       <Header />
-      <main className="dashboard-main">
+      <div className="layout-body">
         <Sidebar />
-        <section className="dashboard-content">
-          <Outlet /> {/* Aquí se renderizarán las páginas hijas */}
-        </section>
-      </main>
+        <main className="layout-content">
+          {/* Aquí se renderiza AirQualityPage, DashboardPage, etc. */}
+          <Outlet /> 
+        </main>
+      </div>
     </div>
   );
 }
