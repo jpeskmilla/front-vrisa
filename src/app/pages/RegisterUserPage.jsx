@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthAPI } from "../../shared/api";
 import { formatApiErrors } from "../../shared/utils";
 import { ORGANIZATION_ROLES } from "../../shared/constants/roles";
+import { Eye, EyeOff } from "lucide-react"; 
 import "./registeruserpage-styles.css";
 
 export default function RegisterUserPage() {
@@ -11,23 +12,24 @@ export default function RegisterUserPage() {
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
-    username: "",
+    first_name: "",
+    last_name: "",
     email: "",
     phone: "",
     password: "",
     confirmPassword: "",
-    belongsToOrganization: null, // null = sin seleccionar, true = Sí, false = No
+    belongsToOrganization: null, 
     requestedRole: "",
   });
+  
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // Roles disponibles para usuarios que pertenecen a una organización
   const organizationRoles = [
     { value: ORGANIZATION_ROLES.STATION_ADMIN, label: "Administrador de estación" },
     { value: ORGANIZATION_ROLES.RESEARCHER, label: "Investigador" },
-    { value: ORGANIZATION_ROLES.INSTITUTION, label: "Institución" },
+    { value: ORGANIZATION_ROLES.INSTITUTION, label: "Representante de Institución" },
   ];
 
   const handleChange = (e) => {
@@ -38,7 +40,7 @@ export default function RegisterUserPage() {
     setFormData({
       ...formData, 
       belongsToOrganization: belongsToOrg,
-      requestedRole: belongsToOrg ? "" : "citizen" // Si no pertenece, es ciudadano
+      requestedRole: "" 
     });
     setIsDropdownOpen(false);
   };
@@ -57,6 +59,7 @@ export default function RegisterUserPage() {
       return;
     }
 
+    // Validaciones de UX
     if (formData.belongsToOrganization === null) {
       setErrorMessages(["Por favor, indica si perteneces a una organización ambiental."]);
       return;
@@ -70,16 +73,15 @@ export default function RegisterUserPage() {
     setLoading(true);
 
     try {
+      // 2. Construimos el Payload limpio para el nuevo Backend
       const payload = {
         email: formData.email,
         password: formData.password,
-        first_name: formData.username,
-        last_name: "Usuario", // Valor por defecto temporal
+        first_name: formData.first_name,
+        last_name: formData.last_name,
         phone: formData.phone,
-        belongs_to_organization: formData.belongsToOrganization,
-        requested_role: formData.requestedRole || "citizen",
-        role_id: null,
-        institution_id: null,
+        // Si dijo "No", mandamos 'citizen'. Si dijo "Sí", mandamos el rol elegido.
+        requested_role: formData.belongsToOrganization === false ? 'citizen' : formData.requestedRole
       };
 
       await AuthAPI.register(payload);
@@ -108,25 +110,35 @@ export default function RegisterUserPage() {
         <p className="form-subtitle">Crea una cuenta para gestionar tus estaciones o acceder a reportes de calidad del aire</p>
 
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label className="form-label">
-              <span className="required">*</span> Nombre de usuario
-            </label>
-            <input type="text" name="username" className="form-input" placeholder="Ingresa un nombre de usuario" value={formData.username} onChange={handleChange} />
+          
+          {/* Nombre y Apellido */}
+          <div style={{ display: 'flex', gap: '15px' }}>
+            <div className="form-group" style={{ flex: 1 }}>
+              <label className="form-label">
+                <span className="required">*</span> Nombre
+              </label>
+              <input type="text" name="first_name" className="form-input" placeholder="Juan" value={formData.first_name} onChange={handleChange} required />
+            </div>
+            <div className="form-group" style={{ flex: 1 }}>
+              <label className="form-label">
+                <span className="required">*</span> Apellido
+              </label>
+              <input type="text" name="last_name" className="form-input" placeholder="Pérez" value={formData.last_name} onChange={handleChange} required />
+            </div>
           </div>
 
           <div className="form-group">
             <label className="form-label">
               <span className="required">*</span> Correo electrónico
             </label>
-            <input type="email" name="email" className="form-input" placeholder="correo@ejemplo.com" value={formData.email} onChange={handleChange} />
+            <input type="email" name="email" className="form-input" placeholder="correo@ejemplo.com" value={formData.email} onChange={handleChange} required />
           </div>
 
           <div className="form-group">
             <label className="form-label">
               <span className="required">*</span> Teléfono de contacto
             </label>
-            <input type="tel" name="phone" className="form-input" placeholder="Ingresa tu número de teléfono" value={formData.phone} onChange={handleChange} />
+            <input type="tel" name="phone" className="form-input" placeholder="Ingresa tu número de teléfono" value={formData.phone} onChange={handleChange} required />
           </div>
 
           <div className="form-group">
@@ -141,21 +153,10 @@ export default function RegisterUserPage() {
                 placeholder="Establezca una contraseña"
                 value={formData.password}
                 onChange={handleChange}
+                required
               />
               <button type="button" className="password-toggle" onClick={() => setShowPassword(!showPassword)}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  {showPassword ? (
-                    <>
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                      <circle cx="12" cy="12" r="3" />
-                    </>
-                  ) : (
-                    <>
-                      <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" />
-                      <line x1="1" y1="1" x2="23" y2="23" />
-                    </>
-                  )}
-                </svg>
+                {showPassword ? <EyeOff size={22} color="#666" /> : <Eye size={22} color="#666" />}
               </button>
             </div>
           </div>
@@ -172,24 +173,13 @@ export default function RegisterUserPage() {
                 placeholder="Confirme su contraseña"
                 value={formData.confirmPassword}
                 onChange={handleChange}
+                required
               />
               {formData.confirmPassword && formData.password === formData.confirmPassword ? (
                 <div className="valid-icon">✓</div>
               ) : (
                 <button type="button" className="password-toggle" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    {showConfirmPassword ? (
-                      <>
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                        <circle cx="12" cy="12" r="3" />
-                      </>
-                    ) : (
-                      <>
-                        <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" />
-                        <line x1="1" y1="1" x2="23" y2="23" />
-                      </>
-                    )}
-                  </svg>
+                  {showConfirmPassword ? <EyeOff size={22} color="#666" /> : <Eye size={22} color="#666" />}
                 </button>
               )}
             </div>
@@ -208,7 +198,7 @@ export default function RegisterUserPage() {
                   type="radio" 
                   name="belongsToOrganization" 
                   checked={formData.belongsToOrganization === true}
-                  onChange={() => handleOrganizationChange(true)}
+                  onChange={() => {}}
                 />
                 <span className="radio-circle"></span>
                 <span className="radio-label">Sí</span>
@@ -221,7 +211,7 @@ export default function RegisterUserPage() {
                   type="radio" 
                   name="belongsToOrganization" 
                   checked={formData.belongsToOrganization === false}
-                  onChange={() => handleOrganizationChange(false)}
+                  onChange={() => {}}
                 />
                 <span className="radio-circle"></span>
                 <span className="radio-label">No</span>
@@ -265,7 +255,7 @@ export default function RegisterUserPage() {
           </div>
           )}
 
-          {/* Mostrar mensaje si es ciudadano */}
+          {/* Mostrar mensaje si es ciudadano (Cuadro verde) */}
           {formData.belongsToOrganization === false && (
             <div className="citizen-info slide-in">
               <div className="citizen-badge">
@@ -288,13 +278,14 @@ export default function RegisterUserPage() {
             </div>
           )}
 
+          {/* Botón con texto dinámico */}
           <button type="submit" className="submit-button" disabled={loading} style={{opacity: loading ? 0.7 : 1}}>
             {loading 
               ? "Registrando..." 
               : formData.belongsToOrganization === false 
                 ? "Registrarse como ciudadano" 
                 : formData.requestedRole 
-                  ? `Solicitar registro como ${organizationRoles.find(r => r.value === formData.requestedRole)?.label || 'usuario'}`
+                  ? `Solicitar registro como ${organizationRoles.find(r => r.value === formData.requestedRole)?.label.split(" ")[0]}...`
                   : "Registrarse"
             }
           </button>
