@@ -5,8 +5,7 @@
 export const ORGANIZATION_ROLES = {
   STATION_ADMIN: 'station_admin',
   RESEARCHER: 'researcher',
-  INSTITUTION: 'institution',
-  INSTITUTION_WORKER: 'institution_worker' // Deprecado, usar INSTITUTION
+  INSTITUTION: 'institution_member'
 };
 
 /**
