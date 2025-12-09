@@ -52,7 +52,6 @@ export default function RegisterStationPage() {
    * Carga las instituciones
    */
   useEffect(() => {
-<<<<<<< HEAD
   const fetchInstitutions = async () => {
     try {
       const data = await InstitutionAPI.getInstitutions();
@@ -64,19 +63,6 @@ export default function RegisterStationPage() {
       setLoadingInstitutions(false);
     }
   };
-=======
-    const fetchInstitutions = async () => {
-      try {
-        const data = await AuthAPI.getInstitutions();
-        setInstitutions(data);
-      } catch (err) {
-        const messages = formatApiErrors(err, "Error al registrar la estación");
-        setError(messages);
-      } finally {
-        setLoadingInstitutions(false);
-      }
-    };
->>>>>>> c28735bc13b445cc310a150512636088c4df7ce3
 
     fetchInstitutions();
   }, []);
