@@ -1,12 +1,11 @@
 import { apiFetch } from "./http";
 
-// Función placeholder para evitar errores
 export const getGeneralReports = () => {
   return apiFetch("/measurements/reports/");
 };
 
 /**
- * Función genérica para descargar archivos (blobs)
+ * Función genérica mejorada para descargar archivos respetando el nombre del servidor.
  */
 const downloadBlob = async (endpoint) => {
     const token = localStorage.getItem("token");
@@ -19,23 +18,40 @@ const downloadBlob = async (endpoint) => {
 
     if (!response.ok) throw new Error("Error generando el reporte");
 
+    // 1. Extraer el nombre del archivo del header Content-Disposition
+    const disposition = response.headers.get('Content-Disposition');
+    let filename = "reporte_vrisa.pdf"; // Fallback
+
+    if (disposition && disposition.indexOf('attachment') !== -1) {
+        // Regex para sacar filename="algo.pdf"
+        const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+        const matches = filenameRegex.exec(disposition);
+        if (matches != null && matches[1]) {
+            filename = matches[1].replace(/['"]/g, '');
+        }
+    }
+
     const blob = await response.blob();
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    // Intentar sacar el nombre del archivo del header o usar genérico
-    a.download = "reporte_vrisa.pdf"; 
+    a.download = filename; // Usamos el nombre extraído
     document.body.appendChild(a);
     a.click();
     a.remove();
 };
 
-export const downloadAirQualityReport = (stationId, date) => {
-    return downloadBlob(`/measurements/reports/air-quality/?station_id=${stationId}&date=${date}`);
+// Actualizamos las funciones para aceptar variableCode opcional
+export const downloadAirQualityReport = (stationId, date, variableCode = "") => {
+    let url = `/measurements/reports/air-quality/?station_id=${stationId}&date=${date}`;
+    if (variableCode) url += `&variable_code=${variableCode}`;
+    return downloadBlob(url);
 };
 
-export const downloadTrendsReport = (stationId, startDate, endDate) => {
-    return downloadBlob(`/measurements/reports/trends/?station_id=${stationId}&start_date=${startDate}&end_date=${endDate}`);
+export const downloadTrendsReport = (stationId, startDate, endDate, variableCode = "") => {
+    let url = `/measurements/reports/trends/?station_id=${stationId}&start_date=${startDate}&end_date=${endDate}`;
+    if (variableCode) url += `&variable_code=${variableCode}`;
+    return downloadBlob(url);
 };
 
 export const downloadAlertsReport = (stationId = "") => {
