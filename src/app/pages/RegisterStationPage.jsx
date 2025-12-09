@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthAPI, InstitutionAPI } from "../../shared/api";
+import { AuthAPI, InstitutionAPI, StationAPI } from "../../shared/api";
 import "./registerstationpage-styles.css";
 
 /**
@@ -158,7 +158,7 @@ export default function RegisterStationPage() {
       payload.append("sensor_serial", sensorData.sensorSerial);
       payload.append("calibration_certificate", sensorData.calibrationCertificate);
 
-      await AuthAPI.registerStation(payload);
+      await StationAPI.registerStation(payload);
 
       alert("Estación registrada exitosamente. Espera validación del administrador.");
       navigate("/");

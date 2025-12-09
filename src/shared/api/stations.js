@@ -1,6 +1,17 @@
 import { apiFetch } from "./http";
 
 /**
+ * Registra una nueva estación de monitoreo.
+ * @param {FormData} stationData - Datos de la estación y sensor (FormData)
+ */
+export const registerStation = (stationData) => {
+  return apiFetch("/stations/", {
+    method: "POST",
+    body: stationData,
+  });
+};
+
+/**
  * Obtiene el listado de estaciones disponibles.
  * Endpoint: /api/stations/
  */

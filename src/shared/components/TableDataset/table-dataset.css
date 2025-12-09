@@ -17,8 +17,10 @@
 
 .dataset-table {
     width: 100%;
+    min-width: 100%; /* Asegura que ocupe todo el ancho disponible */
     border-collapse: collapse;
     text-align: left;
+    table-layout: fixed; /* Distribuye el ancho de manera uniforme entre las columnas */
 }
 
 /* --- HEADER --- */
@@ -35,6 +37,8 @@
     color: #64748b; /* Texto gris */
     letter-spacing: 0.05em;
     vertical-align: middle;
+    white-space: normal;
+    word-wrap: break-word;
 }
 
 /* --- BODY --- */
@@ -60,6 +64,9 @@
     font-size: 0.9rem;
     color: #1e293b; /* Texto oscuro */
     vertical-align: middle;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
 }
 
 /* --- FOOTER --- */
