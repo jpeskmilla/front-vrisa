@@ -114,30 +114,30 @@ export default function RegisterResearcherPage() {
   };
 
   return (
-    <div className="researcher-container">
-      <header className="header">
-        <button className="back-button" onClick={() => navigate("/home")}>
+    <div className="register-researcher-container">
+      <header className="register-researcher-header">
+        <button className="register-researcher-back-button" onClick={() => navigate("/home")}>
           <span>‹</span> Volver
         </button>
-        <div className="logo">VriSA</div>
+        <div className="register-researcher-logo">VriSA</div>
       </header>
 
-      <div className="form-card">
-        <h1 className="form-title">Registro de Investigador</h1>
-        <p className="form-subtitle">
+      <div className="register-researcher-form-card">
+        <h1 className="register-researcher-form-title">Registro de Investigador</h1>
+        <p className="register-researcher-form-subtitle">
           Ingresa tu información para validar tu perfil como investigador.
         </p>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="register-researcher-form">
           {/* Nombre completo */}
-          <div className="form-group">
-            <label className="form-label">
-              <span className="required">*</span> Nombre completo
+          <div className="register-researcher-form-group">
+            <label className="register-researcher-form-label">
+              <span className="register-researcher-required">*</span> Nombre completo
             </label>
             <input
               type="text"
               name="fullName"
-              className="form-input"
+              className="register-researcher-form-input"
               placeholder="Ingresa tu nombre completo"
               value={formData.fullName}
               onChange={handleChange}
@@ -146,14 +146,14 @@ export default function RegisterResearcherPage() {
           </div>
 
           {/* Tipo de documento*/}
-          <div className="form-group">
-            <label className="form-label">
-              <span className="required">*</span> Tipo de documento
+          <div className="register-researcher-form-group">
+            <label className="register-researcher-form-label">
+              <span className="register-researcher-required">*</span> Tipo de documento
             </label>
 
           <select
             name="documentType"
-            className="form-input"
+            className="register-researcher-form-input"
             value={formData.documentType}
             onChange={(e) => setFormData({ ...formData, documentType: e.target.value })}
             required
@@ -169,14 +169,14 @@ export default function RegisterResearcherPage() {
 
 
           {/* Número de documento */}
-          <div className="form-group">
-            <label className="form-label">
-              <span className="required">*</span> Número de documento
+          <div className="register-researcher-form-group">
+            <label className="register-researcher-form-label">
+              <span className="register-researcher-required">*</span> Número de documento
             </label>
             <input
               type="text"
               name="documentNumber"
-              className="form-input"
+              className="register-researcher-form-input"
               placeholder="Ingresa tu número de documento"
               value={formData.documentNumber}
               onChange={handleChange}
@@ -185,14 +185,14 @@ export default function RegisterResearcherPage() {
           </div>
 
           {/* Institución */}
-          <div className="form-group">
-            <label className="form-label">
-              <span className="required">*</span> Institución a a la que pertenece
+          <div className="register-researcher-form-group">
+            <label className="register-researcher-form-label">
+              <span className="register-researcher-required">*</span> Institución a a la que pertenece
             </label>
             <input
               type="text"
               name="institution"
-              className="form-input"
+              className="register-researcher-form-input"
               placeholder="Ingrese la institución a la que pertenece"
               value={formData.institution}
               onChange={handleChange}
@@ -201,14 +201,14 @@ export default function RegisterResearcherPage() {
           </div>
 
           {/* Correo institucional */}
-          <div className="form-group">
-            <label className="form-label">
-              <span className="required">*</span> Correo institucional
+          <div className="register-researcher-form-group">
+            <label className="register-researcher-form-label">
+              <span className="register-researcher-required">*</span> Correo institucional
             </label>
             <input
               type="email"
               name="email"
-              className="form-input"
+              className="register-researcher-form-input"
               placeholder="correo@institucion.edu"
               value={formData.email}
               onChange={handleChange}
@@ -217,28 +217,28 @@ export default function RegisterResearcherPage() {
           </div>
 
           {/* Tarjeta profesional frontal */}
-          <div className="form-group">
-            <label className="form-label">
-              <span className="required">*</span> Tarjeta profesional (frontal)
+          <div className="register-researcher-form-group">
+            <label className="register-researcher-form-label">
+              <span className="register-researcher-required">*</span> Tarjeta profesional (frontal)
             </label>
             <input
               type="file"
               accept="image/*"
-              className="form-input"
+              className="register-researcher-form-input"
               onChange={(e) => handleFileUpload(e, "frontCard")}
               required
             />
           </div>
 
           {/* Tarjeta profesional trasera */}
-          <div className="form-group">
-            <label className="form-label">
-              <span className="required">*</span> Tarjeta profesional (trasera)
+          <div className="register-researcher-form-group">
+            <label className="register-researcher-form-label">
+              <span className="register-researcher-required">*</span> Tarjeta profesional (trasera)
             </label>
             <input
               type="file"
               accept="image/*"
-              className="form-input"
+              className="register-researcher-form-input"
               onChange={(e) => handleFileUpload(e, "backCard")}
               required
             />
@@ -246,7 +246,7 @@ export default function RegisterResearcherPage() {
 
           {/* Error */}
           {errorMessages && (
-            <div className="error-box">
+            <div className="register-researcher-error-box">
               {errorMessages}
             </div>
           )}
@@ -254,7 +254,7 @@ export default function RegisterResearcherPage() {
           {/* Botón */}
           <button
             type="submit"
-            className="submit-button"
+            className="register-researcher-submit-button"
             disabled={loading}
             style={{ opacity: loading ? 0.7 : 1 }}
           >

@@ -137,28 +137,28 @@ export default function RegisterInstitutionPage() {
   };
 
   return (
-    <div className="institution-container">
-      <header className="header">
-        <button className="back-button" onClick={() => navigate("/home")}>
+    <div className="register-institution-container">
+      <header className="register-institution-header">
+        <button className="register-institution-back-button" onClick={() => navigate("/home")}>
           <span>‹</span> Volver
         </button>
-        <div className="logo">VriSA</div>
+        <div className="register-institution-logo">VriSA</div>
       </header>
 
-      <div className="form-card">
-        <h1 className="form-title">Registro de Institución</h1>
-        <p className="form-subtitle">Ingresa la información para validar la solicitud como institución.</p>
+      <div className="register-institution-form-card">
+        <h1 className="register-institution-form-title">Registro de Institución</h1>
+        <p className="register-institution-form-subtitle">Ingresa la información para validar la solicitud como institución.</p>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="register-institution-form">
           {/* Nombre de la institución */}
-          <div className="form-group">
-            <label className="form-label">
-              <span className="required">*</span> Nombre oficial de la institución
+          <div className="register-institution-form-group">
+            <label className="register-institution-form-label">
+              <span className="register-institution-required">*</span> Nombre oficial de la institución
             </label>
             <input
               type="text"
               name="name"
-              className="form-input"
+              className="register-institution-form-input"
               placeholder="Ingresa el nombre oficial de la institución"
               value={formData.name}
               onChange={handleChange}
@@ -167,14 +167,14 @@ export default function RegisterInstitutionPage() {
           </div>
 
           {/* Dirección física */}
-          <div className="form-group">
-            <label className="form-label">
-              <span className="required">*</span> Dirección física
+          <div className="register-institution-form-group">
+            <label className="register-institution-form-label">
+              <span className="register-institution-required">*</span> Dirección física
             </label>
             <input
               type="text"
               name="physicAddress"
-              className="form-input"
+              className="register-institution-form-input"
               placeholder="Ingresa la dirección física"
               value={formData.physicAddress}
               onChange={handleChange}
@@ -183,43 +183,43 @@ export default function RegisterInstitutionPage() {
           </div>
 
           {/* Logo de la institución */}
-          <div className="form-group">
-            <label className="form-label">
-              <span className="required">*</span> Logo
+          <div className="register-institution-form-group">
+            <label className="register-institution-form-label">
+              <span className="register-institution-required">*</span> Logo
             </label>
-            <input type="file" accept="image/*" className="form-input" onChange={(e) => handleFileUpload(e, "logo")} required />
+            <input type="file" accept="image/*" className="register-institution-form-input" onChange={(e) => handleFileUpload(e, "logo")} required />
           </div>
 
           {/* Colores de la institución */}
-          <div className="form-group">
-            <label className="form-label">
-              <span className="required">*</span> Colores institucionales
+          <div className="register-institution-form-group">
+            <label className="register-institution-form-label">
+              <span className="register-institution-required">*</span> Colores institucionales
             </label>
-            <p className="color-hint">Elige un color de la paleta o ingresa su código hexadecimal (ej: #4339F2, #000000)</p>
+            <p className="register-institution-color-hint">Elige un color de la paleta o ingresa su código hexadecimal (ej: #4339F2, #000000)</p>
 
-            <div className="colors-container">
+            <div className="register-institution-colors-container">
               {formData.colors.map((color, index) => (
-                <div key={index} className="color-input-group">
-                  <div className="color-preview" style={{backgroundColor: color}}></div>
+                <div key={index} className="register-institution-color-input-group">
+                  <div className="register-institution-color-preview" style={{backgroundColor: color}}></div>
                   <input
                     type="text"
-                    className="form-input color-text-input"
+                    className="register-institution-form-input register-institution-color-text-input"
                     placeholder="#FFFFFF"
                     value={color}
                     onChange={(e) => handleColorChange(index, e.target.value)}
                     pattern="^#[0-9A-Fa-f]{6}$"
                     title="Debe ser un código hexadecimal válido (ej: #FFFFFF)"
                   />
-                  <input type="color" className="color-picker" value={color} onChange={(e) => handleColorChange(index, e.target.value)} />
+                  <input type="color" className="register-institution-color-picker" value={color} onChange={(e) => handleColorChange(index, e.target.value)} />
                   {formData.colors.length > 1 && (
-                    <button type="button" className="remove-color-btn" onClick={() => removeColor(index)} title="Eliminar color">
+                    <button type="button" className="register-institution-remove-color-btn" onClick={() => removeColor(index)} title="Eliminar color">
                       ✕
                     </button>
                   )}
                 </div>
               ))}
 
-              <button type="button" className="add-color-btn" onClick={addColor}>
+              <button type="button" className="register-institution-add-color-btn" onClick={addColor}>
                 + Agregar otro color
               </button>
             </div>
@@ -227,8 +227,8 @@ export default function RegisterInstitutionPage() {
 
           {/* Error */}
           {errorMessages.length > 0 && (
-            <div className="alert-error-container">
-              <ul className="alert-list">
+            <div className="register-institution-alert-error-container">
+              <ul className="register-institution-alert-list">
                 {errorMessages.map((msg, index) => (
                   <li key={index}>{msg}</li>
                 ))}
@@ -237,7 +237,7 @@ export default function RegisterInstitutionPage() {
           )}
 
           {/* Botón */}
-          <button type="submit" className="submit-button" disabled={loading} style={{opacity: loading ? 0.7 : 1}}>
+          <button type="submit" className="register-institution-submit-button" disabled={loading} style={{opacity: loading ? 0.7 : 1}}>
             {loading ? "Enviando..." : "Enviar solicitud de registro"}
           </button>
         </form>

@@ -1,4 +1,4 @@
-.register-container {
+.register-user-container {
   min-height: 100vh;
   height: 100vh;
   background-color: #4339F2;
@@ -9,14 +9,14 @@
   flex-direction: column;
 }
 
-.header {
+.register-user-header {
   display: flex;
   align-items: center;
   padding: 16px 20px;
   color: white;
 }
 
-.back-button {
+.register-user-back-button {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -27,7 +27,7 @@
   cursor: pointer;
 }
 
-.logo {
+.register-user-logo {
   flex: 1;
   text-align: center;
   font-size: 24px;
@@ -35,7 +35,7 @@
   margin-right: 60px;
 }
 
-.form-card {
+.register-user-form-card {
   background: white;
   border-radius: 24px 24px 0 0;
   padding: 32px 24px 48px;
@@ -46,7 +46,7 @@
   overflow-y: visible;
 }
 
-.form-title {
+.register-user-form-title {
   text-align: center;
   font-size: 2rem;
   font-weight: 700;
@@ -54,38 +54,38 @@
   margin-bottom: 8px;
 }
 
-.form-subtitle {
+.register-user-form-subtitle {
   text-align: center;
   font-size: 1rem;
   color: #4b5563;
   margin-bottom: 24px;
 }
 
-form {
+.register-user-form {
   width: 100%;
   max-width: 350px;
 }
 
-.form-group {
+.register-user-form-group {
   margin-bottom: 16px;
 }
 
-.form-label {
+.register-user-form-label {
   display: block;
   font-size: 1rem;
   color: #1f2937;
   margin-bottom: 6px;
 }
 
-.required {
+.register-user-required {
   color: #e53935;
 }
 
-.input-wrapper {
+.register-user-input-wrapper {
   position: relative;
 }
 
-.form-input {
+.register-user-form-input {
   width: 100%;
   padding: 12px 16px;
   border: 1px solid #e0e0e0;
@@ -96,15 +96,15 @@ form {
   box-sizing: border-box;
 }
 
-.form-input:focus {
+.register-user-form-input:focus {
   border-color: #4339F2;
 }
 
-.form-input::placeholder {
+.register-user-form-input::placeholder {
   color: #999;
 }
 
-.password-toggle {
+.register-user-password-toggle {
   position: absolute;
   right: 12px;
   top: 50%;
@@ -117,8 +117,8 @@ form {
   font-size: 0;
 }
 
-.form-input::-webkit-credentials-auto-fill-button,
-.form-input::-webkit-clear-button {
+.register-user-form-input::-webkit-credentials-auto-fill-button,
+.register-user-form-input::-webkit-clear-button {
   display: none;
 }
 
@@ -126,11 +126,11 @@ input[type="password"]::-ms-reveal {
   display: none;
 }
 
-.input-valid {
+.register-user-input-valid {
   border-color: #4339F2;
 }
 
-.valid-icon {
+.register-user-valid-icon {
   position: absolute;
   right: 12px;
   top: 50%;
@@ -146,11 +146,11 @@ input[type="password"]::-ms-reveal {
   font-size: 12px;
 }
 
-.dropdown-wrapper {
+.register-user-dropdown-wrapper {
   position: relative;
 }
 
-.dropdown-trigger {
+.register-user-dropdown-trigger {
   width: 100%;
   padding: 12px 16px;
   border: 1px solid #e0e0e0;
@@ -165,26 +165,26 @@ input[type="password"]::-ms-reveal {
   box-sizing: border-box;
 }
 
-.dropdown-trigger.open {
+.register-user-dropdown-trigger.open {
   border-radius: 8px 8px 0 0;
   border-bottom: none;
 }
 
-.dropdown-trigger .placeholder {
+.register-user-dropdown-trigger .placeholder {
   color: #999;
 }
 
-.dropdown-arrow {
+.register-user-dropdown-arrow {
   font-size: 10px;
   color: #666;
   transition: transform 0.2s;
 }
 
-.dropdown-arrow.open {
+.register-user-dropdown-arrow.open {
   transform: rotate(180deg);
 }
 
-.dropdown-menu {
+.register-user-dropdown-menu {
   position: absolute;
   top: 100%;
   left: 0;
@@ -197,25 +197,25 @@ input[type="password"]::-ms-reveal {
   overflow: hidden;
 }
 
-.dropdown-item {
+.register-user-dropdown-item {
   padding: 12px 16px;
   cursor: pointer;
   font-size: 14px;
   color: #333;
 }
 
-.dropdown-item:hover {
+.register-user-dropdown-item:hover {
   background: #f5f5f5;
 }
 
 /* Radio Button Group Styles */
-.radio-group {
+.register-user-radio-group {
   display: flex;
   gap: 24px;
   margin-top: 8px;
 }
 
-.radio-option {
+.register-user-radio-option {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -228,21 +228,21 @@ input[type="password"]::-ms-reveal {
   justify-content: center;
 }
 
-.radio-option:hover {
+.register-user-radio-option:hover {
   border-color: #4339F2;
   background-color: #f8f7ff;
 }
 
-.radio-option.selected {
+.register-user-radio-option.selected {
   border-color: #4339F2;
   background-color: #f0efff;
 }
 
-.radio-option input[type="radio"] {
+.register-user-radio-option input[type="radio"] {
   display: none;
 }
 
-.radio-circle {
+.register-user-radio-circle {
   width: 20px;
   height: 20px;
   border: 2px solid #d1d5db;
@@ -251,11 +251,11 @@ input[type="password"]::-ms-reveal {
   transition: all 0.2s ease;
 }
 
-.radio-option.selected .radio-circle {
+.register-user-radio-option.selected .register-user-radio-circle {
   border-color: #4339F2;
 }
 
-.radio-option.selected .radio-circle::after {
+.register-user-radio-option.selected .register-user-radio-circle::after {
   content: '';
   position: absolute;
   top: 50%;
@@ -267,18 +267,18 @@ input[type="password"]::-ms-reveal {
   border-radius: 50%;
 }
 
-.radio-label {
+.register-user-radio-label {
   font-size: 15px;
   font-weight: 500;
   color: #374151;
 }
 
-.radio-option.selected .radio-label {
+.register-user-radio-option.selected .register-user-radio-label {
   color: #4339F2;
 }
 
 /* Slide-in Animation */
-.slide-in {
+.register-user-slide-in {
   animation: slideIn 0.3s ease-out;
 }
 
@@ -293,7 +293,7 @@ input[type="password"]::-ms-reveal {
   }
 }
 
-.submit-button {
+.register-user-submit-button {
   width: 100%;
   padding: 18px;
   background: #4339F2;
@@ -307,11 +307,11 @@ input[type="password"]::-ms-reveal {
   transition: opacity 0.2s ease;
 }
 
-.submit-button:hover {
+.register-user-submit-button:hover {
   opacity: 0.9;
 }
 
-.alert-error-container {
+.register-user-alert-error-container {
   background-color: #fee2e2;
   border: 1px solid #ef4444;
   color: #b91c1c;
@@ -328,16 +328,16 @@ input[type="password"]::-ms-reveal {
   animation: slideIn 0.3s ease-out;
 }
 
-.alert-list li {
+.register-user-alert-list li {
   margin-bottom: 4px;
 }
 
-.alert-list li:last-child {
+.register-user-alert-list li:last-child {
   margin-bottom: 0;
 }
 
 /* Citizen Info Section */
-.citizen-info {
+.register-user-citizen-info {
   background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
   border: 1px solid #86efac;
   border-radius: 12px;
@@ -345,7 +345,7 @@ input[type="password"]::-ms-reveal {
   margin-bottom: 16px;
 }
 
-.citizen-badge {
+.register-user-citizen-badge {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -354,15 +354,15 @@ input[type="password"]::-ms-reveal {
   margin-bottom: 8px;
 }
 
-.citizen-icon {
+.register-user-citizen-icon {
   font-size: 1.25rem;
 }
 
-.citizen-badge strong {
+.register-user-citizen-badge strong {
   color: #15803d;
 }
 
-.citizen-description {
+.register-user-citizen-description {
   font-size: 0.85rem;
   color: #166534;
   margin: 0;
