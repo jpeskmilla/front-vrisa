@@ -3,21 +3,21 @@
  */
 
 /* Contenedor general */
-.researcher-container {
+.register-researcher-container {
   min-height: 100vh;
   background-color: #4339f2;
   font-family: "Inter", sans-serif;
 }
 
 /* Header superior */
-.header {
+.register-researcher-header {
   display: flex;
   align-items: center;
   padding: 16px 20px;
   color: white;
 }
 
-.back-button {
+.register-researcher-back-button {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -28,7 +28,7 @@
   cursor: pointer;
 }
 
-.logo {
+.register-researcher-logo {
   flex: 1;
   text-align: center;
   font-size: 24px;
@@ -37,7 +37,7 @@
 }
 
 /* Tarjeta del formulario */
-.form-card {
+.register-researcher-form-card {
   background: white;
   border-radius: 24px 24px 0 0;
   padding: 32px 24px;
@@ -47,7 +47,7 @@
   align-items: center;
 }
 
-.form-title {
+.register-researcher-form-title {
   text-align: center;
   font-size: 2rem;
   font-weight: 700;
@@ -55,7 +55,7 @@
   margin-bottom: 8px;
 }
 
-.form-subtitle {
+.register-researcher-form-subtitle {
   text-align: center;
   font-size: 1rem;
   color: #4b5563;
@@ -63,28 +63,28 @@
 }
 
 /* Formulario */
-form {
+.register-researcher-form {
   width: 100%;
   max-width: 350px;
 }
 
-.form-group {
+.register-researcher-form-group {
   margin-bottom: 16px;
 }
 
-.form-label {
+.register-researcher-form-label {
   display: block;
   font-size: 1rem;
   color: #1f2937;
   margin-bottom: 6px;
 }
 
-.required {
+.register-researcher-required {
   color: #e53935;
 }
 
 /* Inputs */
-.form-input {
+.register-researcher-form-input {
   width: 100%;
   padding: 12px 16px;
   border: 1px solid #e0e0e0;
@@ -95,20 +95,20 @@ form {
   box-sizing: border-box;
 }
 
-.form-input:focus {
+.register-researcher-form-input:focus {
   border-color: #4339f2;
 }
 
-.form-input::placeholder {
+.register-researcher-form-input::placeholder {
   color: #999;
 }
 
 /* Dropdown */
-.dropdown-wrapper {
+.register-researcher-dropdown-wrapper {
   position: relative;
 }
 
-.dropdown-trigger {
+.register-researcher-dropdown-trigger {
   width: 100%;
   padding: 12px 16px;
   border: 1px solid #e0e0e0;
@@ -122,26 +122,26 @@ form {
   align-items: center;
 }
 
-.dropdown-trigger.open {
+.register-researcher-dropdown-trigger.open {
   border-radius: 8px 8px 0 0;
   border-bottom: none;
 }
 
-.dropdown-trigger .placeholder {
+.register-researcher-dropdown-trigger .placeholder {
   color: #999;
 }
 
-.dropdown-arrow {
+.register-researcher-dropdown-arrow {
   font-size: 10px;
   color: #666;
   transition: transform 0.2s;
 }
 
-.dropdown-arrow.open {
+.register-researcher-dropdown-arrow.open {
   transform: rotate(180deg);
 }
 
-.dropdown-menu {
+.register-researcher-dropdown-menu {
   position: absolute;
   top: 100%;
   left: 0;
@@ -153,19 +153,19 @@ form {
   z-index: 10;
 }
 
-.dropdown-item {
+.register-researcher-dropdown-item {
   padding: 12px 16px;
   cursor: pointer;
   font-size: 14px;
   color: #333;
 }
 
-.dropdown-item:hover {
+.register-researcher-dropdown-item:hover {
   background: #f5f5f5;
 }
 
 /* Error box */
-.error-box {
+.register-researcher-error-box {
   color: #e53935;
   background-color: #ffebee;
   padding: 10px;
@@ -176,7 +176,7 @@ form {
 }
 
 /* Botón */
-.submit-button {
+.register-researcher-submit-button {
   width: 100%;
   padding: 18px;
   background: #4339f2;
@@ -190,6 +190,6 @@ form {
   transition: opacity 0.2s ease;
 }
 
-.submit-button:hover {
+.register-researcher-submit-button:hover {
   opacity: 0.9;
 }
