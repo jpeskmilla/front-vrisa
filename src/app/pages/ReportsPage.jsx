@@ -1,17 +1,23 @@
-import { useState, useEffect } from "react";
-import { Download, Filter, Calendar, Search } from "lucide-react";
-import { StationAPI, ReportAPI, MeasurementAPI } from "../../shared/api";
-import "./dashboard-styles.css";
+import { Activity, Calendar, Download, FileText, Filter, Search } from "lucide-react";
+import { useEffect, useState } from "react";
+import { MeasurementAPI, ReportAPI, StationAPI } from "../../shared/api";
+import { ControlBar, ControlSelect } from "../../shared/components/ControlBar";
+import { TableDataset } from "../../shared/components/TableDataset";
+import "./reports-page.css";
 
+/**
+ * Página de Reportes - Historial y Descarga de Informes PDF.
+ * @returns {JSX.Element} Componente de la página de reportes.
+ */
 export default function ReportsPage() {
   const [stations, setStations] = useState([]);
   const [variables, setVariables] = useState([]);
   
   // Estados de Filtros
   const [selectedStation, setSelectedStation] = useState("");
-  const [selectedVariable, setSelectedVariable] = useState(""); // "" = Todas
-  const [reportCategory, setReportCategory] = useState("QUALITY"); // QUALITY | TRENDS | ALERTS
-  const [timeFilter, setTimeFilter] = useState("WEEKLY"); // WEEKLY | MONTHLY
+  const [selectedVariable, setSelectedVariable] = useState("");
+  const [reportCategory, setReportCategory] = useState("QUALITY"); 
+  const [timeFilter, setTimeFilter] = useState("WEEKLY"); 
   
   const [downloadingId, setDownloadingId] = useState(null);
 
@@ -35,19 +41,12 @@ export default function ReportsPage() {
     loadMetadata();
   }, []);
 
-  /**
-   * Genera el listado virtual de reportes.
-   * AHORA: Genera solo fechas relevantes (Nov-Dic) para que tenga sentido con tu simulación.
-   */
+  // Generación de datos virtuales
   const generateVirtualReports = () => {
     const reports = [];
     const stationName = stations.find(s => s.station_id == selectedStation)?.station_name || "Estación";
-    
-    // Punto de anclaje: Hoy
     const today = new Date();
-    
-    // Generamos solo 4 periodos hacia atrás para no llenar de fechas vacías
-    const periodsToGenerate = 4; 
+    const periodsToGenerate = 5; 
 
     for (let i = 0; i < periodsToGenerate; i++) {
       let start = new Date();
@@ -55,17 +54,15 @@ export default function ReportsPage() {
       let label = "";
 
       if (timeFilter === "WEEKLY") {
-        // Semanas hacia atrás
         start.setDate(today.getDate() - (i * 7) - 7); 
         end.setDate(today.getDate() - (i * 7));
-        label = `Semana: ${formatDate(start)} al ${formatDate(end)}`;
+        label = `Reporte Semanal`;
       } else {
-        // Meses hacia atrás
         start.setMonth(today.getMonth() - i);
         start.setDate(1);
         end.setMonth(today.getMonth() - i + 1);
-        end.setDate(0); // Último día del mes actual en iteración
-        label = `Mes: ${start.toLocaleString('es-ES', { month: 'long', year: 'numeric' })}`;
+        end.setDate(0); 
+        label = `Reporte Mensual`;
       }
 
       reports.push({
@@ -109,136 +106,117 @@ export default function ReportsPage() {
 
   const virtualReports = generateVirtualReports();
 
+  // === COLUMNAS DE LA TABLA ===
+  const tableColumns = [
+    {
+      header: "REPORTE GENERADO",
+      cell: (row) => (
+        <div>
+          <div style={{fontWeight: '600', color: '#1e293b'}}>{row.name}</div>
+          <div style={{fontSize: '0.8rem', color: '#64748b', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px'}}>
+             <FileText size={12}/> Creado el {row.createdOn}
+          </div>
+        </div>
+      )
+    },
+    {
+      header: "ESTACIÓN",
+      accessorKey: "customer",
+    },
+    {
+      header: "RANGO DE FECHAS",
+      cell: (row) => (
+        <span className="date-range-badge">
+            {row.range}
+        </span>
+      )
+    },
+    {
+      header: "ACCIONES",
+      className: "text-right",
+      cell: (row) => (
+        <button 
+            onClick={() => handleDownload(row)}
+            disabled={downloadingId === row.id}
+            className="btn-download"
+        >
+            <Download size={16} />
+            {downloadingId === row.id ? "Generando..." : "Descargar PDF"}
+        </button>
+      )
+    }
+  ];
+
+  // Opciones Selects
+  const stationOptions = stations.map(s => ({ value: s.station_id, label: s.station_name }));
+  const variableOptions = [{ value: "", label: "Todas las variables" }, ...variables.map(v => ({ value: v.code, label: `${v.name} (${v.code})` }))];
+  const periodOptions = [{ value: "WEEKLY", label: "Semanal" }, { value: "MONTHLY", label: "Mensual" }];
+
   return (
     <div className="dashboard-container" style={{ maxWidth: '100%', overflowX: 'hidden' }}>
       
-      {/* Header */}
-      <div className="content-header">
-        <h2>Historial de Reportes</h2>
-        <p>Descarga informes oficiales filtrados por estación y variable.</p>
+      <div className="content-header mb-6">
+        <h2 style={{fontSize: '1.5rem', fontWeight: '700', marginBottom: '8px'}}>Historial de Reportes</h2>
+        <p style={{color: '#64748b'}}>Descarga informes oficiales y certificados de las estaciones de monitoreo.</p>
       </div>
 
-      {/* TABS Superiores */}
-      <div className="flex gap-6 border-b border-gray-200 mb-6">
+      {/* Tabs usando las nuevas clases CSS */}
+      <div className="reports-tabs-container">
         {["QUALITY", "TRENDS", "ALERTS"].map((cat) => (
-          <button 
-            key={cat}
-            className={`pb-3 px-2 font-medium transition-colors border-b-2 ${reportCategory === cat ? 'border-brand-500 text-brand-500' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
-            onClick={() => setReportCategory(cat)}
-          >
-            {cat === "QUALITY" ? "Calidad del Aire" : cat === "TRENDS" ? "Tendencias" : "Alertas Críticas"}
-          </button>
+            <button 
+                key={cat}
+                className={`reports-tab-btn ${reportCategory === cat ? 'active' : ''}`}
+                onClick={() => setReportCategory(cat)}
+            >
+                {cat === "QUALITY" ? "Calidad del Aire" : cat === "TRENDS" ? "Tendencias" : "Alertas Críticas"}
+            </button>
         ))}
       </div>
 
-      {/* BARRA DE FILTROS (Estilo Card) */}
-      <div className="bg-white p-5 rounded-lg border border-gray-200 shadow-sm mb-6 flex flex-wrap gap-4 items-end">
-        
-        {/* Estación */}
-        <div className="flex-1 min-w-[200px]">
-          <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Estación de Origen</label>
-          <div className="relative">
-            <Search size={16} className="absolute left-3 top-3 text-gray-400" />
-            <select 
-              className="w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-brand-500 bg-white text-gray-700 text-sm"
-              value={selectedStation}
-              onChange={(e) => setSelectedStation(e.target.value)}
-            >
-              {stations.map(s => <option key={s.station_id} value={s.station_id}>{s.station_name}</option>)}
-            </select>
-          </div>
-        </div>
-
-        {/* Variable (NUEVO) */}
-        <div className="flex-1 min-w-[200px]">
-            <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Variable Específica</label>
-            <div className="relative">
-                <Filter size={16} className="absolute left-3 top-3 text-gray-400" />
-                <select 
-                    className="w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-brand-500 bg-white text-gray-700 text-sm"
-                    value={selectedVariable}
-                    onChange={(e) => setSelectedVariable(e.target.value)}
-                    disabled={reportCategory === "ALERTS"} // Alertas suelen ser generales
-                >
-                    <option value="">Todas las variables</option>
-                    {variables.map(v => (
-                        <option key={v.code} value={v.code}>{v.name} ({v.code})</option>
-                    ))}
-                </select>
+      <ControlBar>
+        <div className="flex items-center gap-6 flex-wrap">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#e0e7ff', color: '#4339F2' }}>
+                <Activity size={20} />
             </div>
+
+            <ControlSelect 
+                label="Estación"
+                value={selectedStation}
+                onChange={(e) => setSelectedStation(e.target.value)}
+                options={stationOptions}
+                icon={Search}
+            />
+
+            <ControlSelect 
+                label="Variable"
+                value={selectedVariable}
+                onChange={(e) => setSelectedVariable(e.target.value)}
+                options={variableOptions}
+                icon={Filter}
+                disabled={reportCategory === "ALERTS"}
+            />
         </div>
 
-        {/* Periodo */}
-        <div>
-            <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Tipo de Periodo</label>
-            <div className="flex bg-gray-100 p-1 rounded-lg">
-                <button 
-                    onClick={() => setTimeFilter("WEEKLY")}
-                    className={`px-4 py-1.5 text-sm rounded-md transition-all ${timeFilter === "WEEKLY" ? "bg-white shadow text-brand-500 font-bold" : "text-gray-500"}`}
-                >
-                    Semanal
-                </button>
-                <button 
-                    onClick={() => setTimeFilter("MONTHLY")}
-                    className={`px-4 py-1.5 text-sm rounded-md transition-all ${timeFilter === "MONTHLY" ? "bg-white shadow text-brand-500 font-bold" : "text-gray-500"}`}
-                >
-                    Mensual
-                </button>
-            </div>
+        <div className="flex items-center gap-4">
+             <div style={{ height: '30px', width: '1px', backgroundColor: '#e2e8f0' }} className="hidden md:block"></div> 
+             <ControlSelect 
+                label="Periodo"
+                value={timeFilter}
+                onChange={(e) => setTimeFilter(e.target.value)}
+                options={periodOptions}
+                icon={Calendar}
+            />
         </div>
-      </div>
+      </ControlBar>
 
-      {/* TABLA LIMPIA */}
-      <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-            <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                <th className="py-3 px-5 text-gray-600 text-xs font-bold uppercase tracking-wider">Reporte Generado</th>
-                <th className="py-3 px-5 text-gray-600 text-xs font-bold uppercase tracking-wider">Estación</th>
-                <th className="py-3 px-5 text-gray-600 text-xs font-bold uppercase tracking-wider">Filtro Variable</th>
-                <th className="py-3 px-5 text-gray-600 text-xs font-bold uppercase tracking-wider">Rango de Fechas</th>
-                <th className="py-3 px-5 text-right text-gray-600 text-xs font-bold uppercase tracking-wider">Descarga</th>
-                </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-                {virtualReports.map((report) => (
-                <tr key={report.id} className="hover:bg-blue-50 transition-colors group">
-                    <td className="py-4 px-5">
-                        <div className="font-semibold text-gray-800 text-sm">{report.name}</div>
-                        <div className="text-xs text-gray-400 mt-1">Creado el {report.createdOn}</div>
-                    </td>
-                    <td className="py-4 px-5 text-sm text-gray-600">
-                        {report.customer}
-                    </td>
-                    <td className="py-4 px-5">
-                        {selectedVariable ? (
-                             <span className="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs font-bold">{selectedVariable}</span>
-                        ) : (
-                            <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs font-bold">Todas</span>
-                        )}
-                    </td>
-                    <td className="py-4 px-5 text-sm font-mono text-gray-500">
-                        {report.range}
-                    </td>
-                    <td className="py-4 px-5 text-right">
-                        <button 
-                            onClick={() => handleDownload(report)}
-                            disabled={downloadingId === report.id}
-                            className="bg-white border border-gray-300 hover:bg-brand-500 hover:text-white hover:border-brand-500 text-gray-700 text-sm font-medium py-1.5 px-4 rounded transition-all disabled:opacity-50 shadow-sm"
-                        >
-                            {downloadingId === report.id ? "Procesando..." : "Descargar PDF"}
-                        </button>
-                    </td>
-                </tr>
-                ))}
-            </tbody>
-            </table>
-        </div>
-      </div>
+      <TableDataset 
+        columns={tableColumns}
+        data={virtualReports}
+        emptyMessage="No hay reportes disponibles para los filtros seleccionados."
+      />
       
-      <p className="mt-4 text-center text-xs text-gray-400">
-        * Mostrando historial de los últimos periodos disponibles en la base de datos de VriSA.
+      <p style={{marginTop: '24px', textAlign: 'center', fontSize: '0.8rem', color: '#94a3b8'}}>
+        * Mostrando historial simulado basado en datos reales de VriSA.
       </p>
     </div>
   );
