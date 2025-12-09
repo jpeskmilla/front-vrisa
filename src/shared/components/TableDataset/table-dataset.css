@@ -1,0 +1,98 @@
+/* Contenedor principal de la tabla para los bordes redondeados */
+.table-dataset-container {
+    width: 100%;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0; /* Gris borde */
+    border-radius: 16px; /* Vértices redondeados */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    overflow: hidden; /* IMPORTANTE: Para recortar las esquinas internas */
+    display: flex;
+    flex-direction: column;
+}
+
+.table-dataset-wrapper {
+    overflow-x: auto;
+    width: 100%;
+}
+
+.dataset-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+/* --- HEADER --- */
+.dataset-table thead {
+    background-color: #f8fafc; /* Fondo GRIS del header */
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.dataset-table th {
+    padding: 16px 24px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #64748b; /* Texto gris */
+    letter-spacing: 0.05em;
+    vertical-align: middle;
+}
+
+/* --- BODY --- */
+.dataset-table tbody {
+    background-color: #ffffff; /* Fondo BLANCO del cuerpo */
+}
+
+.dataset-table tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: background-color 0.1s;
+}
+
+.dataset-table tr:last-child {
+    border-bottom: none;
+}
+
+.dataset-table tr:hover {
+    background-color: #f8fafc; /* Hover muy suave */
+}
+
+.dataset-table td {
+    padding: 16px 24px;
+    font-size: 0.9rem;
+    color: #1e293b; /* Texto oscuro */
+    vertical-align: middle;
+}
+
+/* --- FOOTER --- */
+.table-dataset-footer {
+    background-color: #ffffff;
+    border-top: 1px solid #e2e8f0;
+    padding: 12px 24px;
+    font-size: 0.85rem;
+    color: #64748b;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* --- LOADING / EMPTY STATES --- */
+.table-loading, .table-empty {
+    padding: 48px;
+    text-align: center;
+    color: #64748b;
+    background-color: #ffffff;
+}
+
+.spinner {
+    border: 3px solid #e2e8f0;
+    border-top: 3px solid #4339F2;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 12px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

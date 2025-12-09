@@ -1,0 +1,100 @@
+/* Contenedor principal (La tarjeta blanca) */
+.cb-container {
+    background-color: #ffffff;
+    padding: 1rem 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+/* Grupo de inputs (para alinear label + select) */
+.cb-input-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* La etiqueta pequeña (LABEL) */
+.cb-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #94a3b8;
+    white-space: nowrap;
+}
+
+/* El wrapper relativo para el icono y el select */
+.cb-select-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* El SELECT en sí mismo */
+.cb-select {
+    appearance: none;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #334155;
+    /* Padding: Arriba, Derecha (espacio flecha), Abajo, Izquierda (espacio icono) */
+    padding: 0.6rem 2.5rem 0.6rem 1rem; 
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s ease;
+    min-width: 160px;
+    width: 100%;
+}
+
+/* Ajuste de padding si tiene icono a la izquierda */
+.cb-select.has-icon {
+    padding-left: 2.5rem; 
+}
+
+.cb-select:hover:not(:disabled) {
+    background-color: #ffffff;
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.cb-select:focus:not(:disabled) {
+    border-color: #4339F2;
+    box-shadow: 0 0 0 3px rgba(67, 57, 242, 0.1);
+    background-color: #ffffff;
+}
+
+.cb-select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #f1f5f9;
+}
+
+/* Icono Izquierdo */
+.cb-icon-left {
+    position: absolute;
+    left: 12px;
+    pointer-events: none;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+}
+
+/* Icono Derecho (Flecha) */
+.cb-icon-right {
+    position: absolute;
+    right: 12px;
+    pointer-events: none;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+}

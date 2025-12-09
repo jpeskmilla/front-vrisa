@@ -16,6 +16,8 @@ import ProfilePage from "../pages/ProfilePage.jsx";
 import RegisterInstitutionPage from "../pages/RegisterInstitutionPage.jsx";
 import RegisterResearcherPage from "../pages/RegisterResearcherPage.jsx";
 import RegisterStationPage from "../pages/RegisterStationPage.jsx";
+import ReportsPage from "../pages/ReportsPage.jsx"; 
+
 
 /**
  * Componente de enrutador principal de la aplicación.
@@ -49,7 +51,7 @@ export default function AppRouter() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/dashboard/air-quality" element={<AirQualityPage />} />
           {/* <Route path="/dashboard/stations" element={<StationsPage />} /> */}
-          {/* <Route path="/dashboard/reports" element={<ReportsPage />} /> */}
+          {<Route path="/dashboard/reports" element={<ReportsPage />} />}
         </Route>
         {/* Paneles de administración */}
         <Route
