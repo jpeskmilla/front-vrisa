@@ -117,9 +117,12 @@ export const downloadTrendsReport = (stationId, startDate, endDate, variableCode
  * Descarga el Reporte de Alertas Críticas (valores que han excedido los límites de la norma).
  * Por defecto analiza las últimas 24 horas.
  * 
- * @param {number|string}- (Opcional) ID de la estación. Si se omite, busca en todas las estaciones.
+ * @param {number|string} stationId - (Opcional) ID de la estación. Si se omite, busca en todas las estaciones.
+ * @param {string} startDate - Fecha de inicio del análisis (YYYY-MM-DD).
+ * @param {string} endDate - Fecha de fin del análisis (YYYY-MM-DD).
  * @returns {Promise<void>} Promesa resuelta al iniciar la descarga.
  */
-export const downloadAlertsReport = (stationId = "") => {
-    return downloadBlob(`/measurements/reports/alerts/?station_id=${stationId}`);
+export const downloadAlertsReport = (stationId = "", startDate, endDate) => {
+    let url = `/measurements/reports/alerts/?station_id=${stationId}&start_date=${startDate}&end_date=${endDate}`;
+    return downloadBlob(url);
 };

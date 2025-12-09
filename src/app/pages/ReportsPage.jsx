@@ -30,7 +30,7 @@ export default function ReportsPage() {
         setStations(stationsData);
         setVariables(variablesData);
 
-        if (stationsData.length > 0) setSelectedStation(stationsData[0].station_id);
+        if (stationsData.length > 0) setSelectedStation("Todas las estaciones");
       } catch (error) {
         console.error("Error cargando metadatos:", error);
       }
@@ -41,7 +41,7 @@ export default function ReportsPage() {
   // Generación de datos virtuales
   const generateVirtualReports = () => {
     const reports = [];
-    const stationName = stations.find((s) => s.station_id == selectedStation)?.station_name || "Estación";
+    const stationName = stations.find((s) => s.station_id == selectedStation)?.station_name || "Todas";
     const today = new Date();
     const periodsToGenerate = 5;
 
@@ -82,8 +82,6 @@ export default function ReportsPage() {
   };
 
   const handleDownload = async (report) => {
-    if (!selectedStation) return alert("Seleccione una estación.");
-
     setDownloadingId(report.id);
     try {
       if (reportCategory === "QUALITY") {
@@ -91,10 +89,10 @@ export default function ReportsPage() {
       } else if (reportCategory === "TRENDS") {
         await ReportAPI.downloadTrendsReport(selectedStation, report.startDate, report.endDate, selectedVariable);
       } else if (reportCategory === "ALERTS") {
-        await ReportAPI.downloadAlertsReport(selectedStation);
+        await ReportAPI.downloadAlertsReport(selectedStation, report.startDate, report.endDate,);
       }
     } catch (error) {
-      console.error("Error descarga:", error);
+      formatApiErrors(error, "Error al generar el PDF");
       alert("Error al generar el PDF.");
     } finally {
       setDownloadingId(null);
@@ -137,7 +135,7 @@ export default function ReportsPage() {
   ];
 
   // Opciones Selects
-  const stationOptions = stations.map((s) => ({value: s.station_id, label: s.station_name}));
+  const stationOptions = [{value: "", label: "Todas las estaciones"}, ...stations.map((s) => ({value: s.station_id, label: s.station_name}))];
   const variableOptions = [{value: "", label: "Todas las variables"}, ...variables.map((v) => ({value: v.code, label: `${v.name} (${v.code})`}))];
   const periodOptions = [
     {value: "WEEKLY", label: "Semanal"},
