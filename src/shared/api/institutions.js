@@ -12,26 +12,18 @@ export function registerInstitution(formData) {
 }
 
 /**
- * Obtiene todas las solicitudes de integración.
- * Endpoint: GET /api/institutions/requests/
+ * Obtiene el listado de instituciones registradas.
  */
-export function getIntegrationRequests() {
-  return apiFetch("/institutions/requests/");
+export function getInstitutions() {
+  return apiFetch("/institutions/institutes/");
 }
 
 /**
- * Aprueba una solicitud específica.
+ * Aprueba la creación de una institución específica.
  * Endpoint: POST /api/institutions/requests/{id}/approve/
  */
 export function approveInstitution(institutionId) {
   return apiFetch(`/institutions/requests/${institutionId}/approve/`, {
     method: "POST",
   });
-}
-
-/**
- * Obtiene el listado de instituciones registradas.
- */
-export function getInstitutions() {
-  return apiFetch("/institutions/institutes/");
 }

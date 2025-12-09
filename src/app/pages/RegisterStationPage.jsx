@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthAPI } from "../../shared/api";
+import { AuthAPI, InstitutionAPI } from "../../shared/api";
 import "./registerstationpage-styles.css";
 
 /**
@@ -52,17 +52,17 @@ export default function RegisterStationPage() {
    * Carga las instituciones
    */
   useEffect(() => {
-    const fetchInstitutions = async () => {
-      try {
-        const data = await AuthAPI.getInstitutions();
-        setInstitutions(data);
-      } catch (err) {
-        const messages = formatApiErrors(err, "Error al registrar la estación");
-        setError(messages);
-      } finally {
-        setLoadingInstitutions(false);
-      }
-    };
+  const fetchInstitutions = async () => {
+    try {
+      const data = await InstitutionAPI.getInstitutions();
+      setInstitutions(data);
+    } catch (err) {
+      console.error("Error cargando instituciones:", err);
+      setError("No se pudieron cargar las instituciones.");
+    } finally {
+      setLoadingInstitutions(false);
+    }
+  };
 
     fetchInstitutions();
   }, []);
@@ -284,7 +284,7 @@ export default function RegisterStationPage() {
                   <option value="">Selecciona una institución</option>
                   {institutions.map((inst) => (
                     <option key={inst.id} value={inst.id}>
-                      {inst.name}
+                      {inst.institute_name}
                     </option>
                   ))}
                 </select>
