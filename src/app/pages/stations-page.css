@@ -1,0 +1,214 @@
+/* =========================================
+   STATIONS PAGE - Página de Estación
+   ========================================= */
+
+.stations-container {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* --- Header --- */
+.stations-header {
+  margin-bottom: 32px;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #4339F2 0%, #6366f1 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(67, 57, 242, 0.3);
+}
+
+.stations-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.stations-subtitle {
+  font-size: 1rem;
+  color: #64748b;
+  margin: 4px 0 0 0;
+}
+
+/* --- Stats Cards --- */
+.stations-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.stat-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+.stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+}
+
+.stat-icon.active {
+  background-color: #dcfce7;
+  color: #16a34a;
+}
+
+.stat-icon.maintenance {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.stat-icon.total {
+  background-color: #e0e7ff;
+  color: #4339F2;
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+/* --- Sensors Section --- */
+.sensors-section {
+  margin-top: 8px;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 16px;
+}
+
+/* --- Sensor Cell --- */
+.sensor-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sensor-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background-color: #f1f5f9;
+  color: #64748b;
+}
+
+.sensor-model {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.sensor-serial {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-family: monospace;
+  margin-top: 2px;
+}
+
+/* --- Status Badges --- */
+.sensor-status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-active {
+  background-color: #dcfce7;
+  color: #16a34a;
+}
+
+.status-inactive {
+  background-color: #f1f5f9;
+  color: #64748b;
+}
+
+.status-maintenance {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+/* --- Date Badge --- */
+.date-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  color: #475569;
+  font-size: 0.85rem;
+}
+
+/* --- Error Message --- */
+.error-message {
+  padding: 16px 24px;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  color: #dc2626;
+  text-align: center;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .stations-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .stations-title {
+    font-size: 1.5rem;
+  }
+  
+  .header-icon {
+    width: 48px;
+    height: 48px;
+  }
+}
+
