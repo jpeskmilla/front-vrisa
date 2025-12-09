@@ -1,80 +1,190 @@
-import React, { useState } from "react";
-import { Download, Filter, Activity, TrendingUp, AlertTriangle } from "lucide-react";
-import "./dashboard-styles.css"; // Usa tus estilos existentes
+import { useState, useEffect } from "react";
+import { Download, Filter, Activity, TrendingUp, AlertTriangle, Calendar } from "lucide-react";
+import { StationAPI, ReportAPI } from "../../shared/api"; // Asegúrate que ReportAPI esté exportado en index
+import "./dashboard-styles.css";
 
 export default function ReportsPage() {
-  // Datos falsos para que VEAS la página funcionado de inmediato
-  const stations = [
-    { id: 1, name: "Estación Norte" },
-    { id: 2, name: "Estación Sur" },
-    { id: 3, name: "Estación Centro" }
-  ];
-
+  const [stations, setStations] = useState([]);
   const [selectedStation, setSelectedStation] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
-  const handleDownload = (tipo) => {
-    alert(`Aquí se descargaría el reporte de: ${tipo}`);
-    // Aquí luego conectaremos con el Backend que hicimos antes
+  // Fechas por defecto: Últimos 7 días
+  const today = new Date().toISOString().split('T')[0];
+  const lastWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+  const [dates, setDates] = useState({
+    start: lastWeek,
+    end: today
+  });
+
+  // Cargar estaciones al inicio
+  useEffect(() => {
+    const fetchStations = async () => {
+      try {
+        const data = await StationAPI.getStations();
+        setStations(data);
+      } catch (error) {
+        console.error("Error cargando estaciones:", error);
+      }
+    };
+    fetchStations();
+  }, []);
+
+  const handleDownload = async (reportType) => {
+    if (!selectedStation && reportType !== 'Alertas') {
+      alert("Por favor selecciona una estación primero.");
+      return;
+    }
+
+    setDownloading(true);
+    try {
+      // Lógica de descarga según el tipo
+      if (reportType === "Calidad Aire") {
+        // Reporte diario (usamos la fecha de fin como referencia)
+        await ReportAPI.downloadAirQualityReport(selectedStation, dates.end);
+      } 
+      else if (reportType === "Tendencias") {
+        // Reporte de rango
+        await ReportAPI.downloadTrendsReport(selectedStation, dates.start, dates.end);
+      } 
+      else if (reportType === "Alertas") {
+        // Reporte de últimas 24h (puede ser global o por estación)
+        await ReportAPI.downloadAlertsReport(selectedStation);
+      }
+    } catch (error) {
+      console.error("Error descargando reporte:", error);
+      alert("No se pudo generar el reporte. Verifica que existan datos para el rango seleccionado.");
+    } finally {
+      setDownloading(false);
+    }
   };
 
   return (
     <div className="dashboard-container">
       <div className="content-header">
-        <h2>Reportes y Descargas</h2>
-        <p>Genera archivos PDF con la información histórica.</p>
+        <h2>Centro de Reportes</h2>
+        <p>Generación de informes PDF históricos y de cumplimiento normativo.</p>
       </div>
 
-      <div style={{ padding: "20px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "20px" }}>
+      <div className="p-6 grid grid-cols-1 gap-6">
         
-        {/* Selector Global */}
-        <div style={{ gridColumn: "1 / -1", background: "white", padding: "20px", borderRadius: "10px", display: "flex", gap: "10px", alignItems: "center" }}>
-            <Filter size={20} color="#4F46E5"/>
-            <select 
-                style={{ flex: 1, padding: "8px", borderRadius: "5px", border: "1px solid #ccc" }}
-                value={selectedStation}
-                onChange={(e) => setSelectedStation(e.target.value)}
-            >
-                <option value="">Selecciona una estación...</option>
-                {stations.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-            </select>
-        </div>
-
-        {/* Tarjeta 1: Calidad del Aire */}
-        <div className="summary-card" style={{ flexDirection: "column", alignItems: "flex-start", gap: "15px", height: "auto" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <div style={{ background: "#E0E7FF", padding: "8px", borderRadius: "8px" }}><Activity color="#4339F2"/></div>
-                <h3 style={{ margin: 0 }}>Estado Ambiental</h3>
+        {/* Barra de Filtros */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-wrap gap-4 items-end">
+            
+            {/* Selector de Estación */}
+            <div className="flex-1 min-w-[200px]">
+                <label className="text-sm font-medium text-gray-700 mb-1 block">Estación de Monitoreo</label>
+                <div className="flex items-center gap-2 border rounded-lg p-2 bg-gray-50">
+                    <Filter size={18} className="text-brand-500"/>
+                    <select 
+                        className="bg-transparent w-full outline-none text-gray-700"
+                        value={selectedStation}
+                        onChange={(e) => setSelectedStation(e.target.value)}
+                    >
+                        <option value="">-- Seleccionar Estación --</option>
+                        {stations.map(s => (
+                            <option key={s.station_id} value={s.station_id}>
+                                {s.station_name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
             </div>
-            <p style={{ fontSize: "0.9em", color: "#666" }}>Reporte diario de variables y cumplimiento normativo.</p>
-            <button onClick={() => handleDownload("Calidad Aire")} style={{ width: "100%", padding: "10px", background: "#4339F2", color: "white", border: "none", borderRadius: "6px", cursor: "pointer", display: "flex", justifyContent: "center", gap: "5px" }}>
-                <Download size={16}/> Descargar PDF
-            </button>
-        </div>
 
-        {/* Tarjeta 2: Tendencias */}
-        <div className="summary-card" style={{ flexDirection: "column", alignItems: "flex-start", gap: "15px", height: "auto" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <div style={{ background: "#F3E8FF", padding: "8px", borderRadius: "8px" }}><TrendingUp color="#7E22CE"/></div>
-                <h3 style={{ margin: 0 }}>Tendencias</h3>
+            {/* Fechas */}
+            <div className="flex gap-4">
+                <div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">Desde</label>
+                    <div className="flex items-center gap-2 border rounded-lg p-2 bg-gray-50">
+                        <Calendar size={18} className="text-gray-500"/>
+                        <input 
+                            type="date" 
+                            value={dates.start}
+                            onChange={(e) => setDates({...dates, start: e.target.value})}
+                            className="bg-transparent outline-none text-gray-700"
+                        />
+                    </div>
+                </div>
+                <div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">Hasta</label>
+                    <div className="flex items-center gap-2 border rounded-lg p-2 bg-gray-50">
+                        <Calendar size={18} className="text-gray-500"/>
+                        <input 
+                            type="date" 
+                            value={dates.end}
+                            onChange={(e) => setDates({...dates, end: e.target.value})}
+                            className="bg-transparent outline-none text-gray-700"
+                        />
+                    </div>
+                </div>
             </div>
-            <p style={{ fontSize: "0.9em", color: "#666" }}>Gráficas de comportamiento histórico.</p>
-            <button onClick={() => handleDownload("Tendencias")} style={{ width: "100%", padding: "10px", background: "#7E22CE", color: "white", border: "none", borderRadius: "6px", cursor: "pointer", display: "flex", justifyContent: "center", gap: "5px" }}>
-                <Download size={16}/> Descargar PDF
-            </button>
         </div>
 
-        {/* Tarjeta 3: Alertas */}
-        <div className="summary-card" style={{ flexDirection: "column", alignItems: "flex-start", gap: "15px", height: "auto" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <div style={{ background: "#FEE2E2", padding: "8px", borderRadius: "8px" }}><AlertTriangle color="#EF4444"/></div>
-                <h3 style={{ margin: 0 }}>Alertas Críticas</h3>
+        {/* Grid de Reportes */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            {/* Tarjeta 1: Calidad del Aire Diario */}
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col items-start gap-4 hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3">
+                    <div className="bg-indigo-100 p-3 rounded-lg text-indigo-600">
+                        <Activity size={24}/>
+                    </div>
+                    <h3 className="font-bold text-gray-800">Estado Diario</h3>
+                </div>
+                <p className="text-sm text-gray-500 flex-1">
+                    Informe detallado tabular de las mediciones del día seleccionado ({dates.end}) y cumplimiento de norma.
+                </p>
+                <button 
+                    onClick={() => handleDownload("Calidad Aire")}
+                    disabled={downloading}
+                    className="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg flex items-center justify-center gap-2 font-medium transition-colors disabled:opacity-50"
+                >
+                    {downloading ? "Generando..." : <><Download size={18}/> Descargar PDF</>}
+                </button>
             </div>
-            <p style={{ fontSize: "0.9em", color: "#666" }}>Registro de excesos de límites permitidos.</p>
-            <button onClick={() => handleDownload("Alertas")} style={{ width: "100%", padding: "10px", background: "#EF4444", color: "white", border: "none", borderRadius: "6px", cursor: "pointer", display: "flex", justifyContent: "center", gap: "5px" }}>
-                <Download size={16}/> Descargar PDF
-            </button>
-        </div>
 
+            {/* Tarjeta 2: Tendencias (Rango) */}
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col items-start gap-4 hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3">
+                    <div className="bg-purple-100 p-3 rounded-lg text-purple-600">
+                        <TrendingUp size={24}/>
+                    </div>
+                    <h3 className="font-bold text-gray-800">Tendencias Históricas</h3>
+                </div>
+                <p className="text-sm text-gray-500 flex-1">
+                    Gráficas de comportamiento de variables entre {dates.start} y {dates.end}. Ideal para análisis semanal o mensual.
+                </p>
+                <button 
+                    onClick={() => handleDownload("Tendencias")}
+                    disabled={downloading}
+                    className="w-full py-2.5 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-lg flex items-center justify-center gap-2 font-medium transition-colors disabled:opacity-50"
+                >
+                    {downloading ? "Generando..." : <><Download size={18}/> Descargar PDF</>}
+                </button>
+            </div>
+
+            {/* Tarjeta 3: Alertas */}
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col items-start gap-4 hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3">
+                    <div className="bg-red-100 p-3 rounded-lg text-red-600">
+                        <AlertTriangle size={24}/>
+                    </div>
+                    <h3 className="font-bold text-gray-800">Alertas Críticas</h3>
+                </div>
+                <p className="text-sm text-gray-500 flex-1">
+                    Registro de eventos donde se superaron los límites permitidos en las últimas 24 horas.
+                </p>
+                <button 
+                    onClick={() => handleDownload("Alertas")}
+                    disabled={downloading}
+                    className="w-full py-2.5 px-4 bg-red-600 hover:bg-red-700 text-white rounded-lg flex items-center justify-center gap-2 font-medium transition-colors disabled:opacity-50"
+                >
+                    {downloading ? "Generando..." : <><Download size={18}/> Descargar PDF</>}
+                </button>
+            </div>
+
+        </div>
       </div>
     </div>
   );
