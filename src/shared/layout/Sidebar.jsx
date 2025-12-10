@@ -26,6 +26,10 @@ export default function Sidebar() {
           <Home size={20} />
           <span>Ir al Inicio</span>
         </NavLink>
+        <NavLink to="/profile" className={({isActive}) => `sidebar-link ${isActive ? "active" : ""}`}>
+          <FileText size={20} />
+          <span>Perfil</span>
+        </NavLink>
 
         <div className="sidebar-divider"></div>
 
