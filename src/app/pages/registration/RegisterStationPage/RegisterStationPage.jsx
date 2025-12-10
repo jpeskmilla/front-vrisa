@@ -1,11 +1,59 @@
+import L from "leaflet";
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
+import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import { useNavigate } from "react-router-dom";
 import { InstitutionAPI, SensorAPI, StationAPI } from "../../../../shared/api";
 import "./RegisterStationPage.css";
 
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconUrl: markerIcon,
+  iconRetinaUrl: markerIcon2x,
+  shadowUrl: markerShadow,
+});
+
+/**
+ * Componente de marcador interactivo que maneja clicks en el mapa
+ * y actualiza las coordenadas del formulario.
+ */
+function LocationMarker({position, setPosition}) {
+  useMapEvents({
+    click(e) {
+      const {lat, lng} = e.latlng;
+      setPosition({lat, lng});
+    },
+  });
+
+  return position ? <Marker position={[position.lat, position.lng]} /> : null;
+}
+
+/**
+ * Componente que controla el movimiento del mapa cuando
+ * las coordenadas se actualizan manualmente desde los inputs.
+ */
+function MapViewController({position}) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (position && !isNaN(position.lat) && !isNaN(position.lng)) {
+      map.flyTo([position.lat, position.lng], map.getZoom(), {
+        animate: true,
+        duration: 1,
+      });
+    }
+  }, [position, map]);
+
+  return null;
+}
+
 /**
  * Página de registro para estaciones de monitoreo ambiental.
  * Formulario en dos pasos: información básica y detalles del sensor.
+ * Incluye un mapa interactivo para selección de ubicación geográfica.
  *
  * @component
  */
@@ -39,6 +87,11 @@ export default function RegisterStationPage() {
   });
 
   /**
+   * @state Posición del marcador en el mapa (objeto con lat/lng)
+   */
+  const [mapPosition, setMapPosition] = useState(null);
+
+  /**
    * @state formData - Paso 2: Detalles del sensor
    */
   const [sensorData, setSensorData] = useState({
@@ -68,10 +121,35 @@ export default function RegisterStationPage() {
   }, []);
 
   /**
+   * Sincroniza la posición del mapa con los inputs cuando el usuario
+   * actualiza las coordenadas manualmente.
+   */
+  useEffect(() => {
+    const lat = parseFloat(basicData.geographicLat);
+    const lng = parseFloat(basicData.geographicLong);
+
+    if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+      setMapPosition({lat, lng});
+    }
+  }, [basicData.geographicLat, basicData.geographicLong]);
+
+  /**
    * Maneja los cambios de los inputs del paso 1
    */
   const handleBasicChange = (e) => {
     setBasicData({...basicData, [e.target.name]: e.target.value});
+  };
+
+  /**
+   * Maneja el click en el mapa y actualiza los inputs de coordenadas
+   */
+  const handleMapClick = (position) => {
+    setBasicData({
+      ...basicData,
+      geographicLat: position.lat.toFixed(6),
+      geographicLong: position.lng.toFixed(6),
+    });
+    setMapPosition(position);
   };
 
   /**
@@ -249,6 +327,22 @@ export default function RegisterStationPage() {
                 onChange={handleBasicChange}
                 required
               />
+            </div>
+
+            {/* Mapa interactivo de selección de ubicación */}
+            <div className="register-station-form-group">
+              <label className="register-station-form-label">Seleccionar ubicación en el mapa</label>
+              <div className="register-station-map-container">
+                <MapContainer center={[3.4516, -76.532]} zoom={13} scrollWheelZoom={true} className="register-station-leaflet-map">
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  <LocationMarker position={mapPosition} setPosition={handleMapClick} />
+                  <MapViewController position={mapPosition} />
+                </MapContainer>
+              </div>
+              <small className="register-station-form-hint">Haz clic en el mapa para seleccionar las coordenadas de la estación</small>
             </div>
 
             <div className="register-station-form-group">
