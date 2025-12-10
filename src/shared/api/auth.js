@@ -31,6 +31,25 @@ export function register(userData) {
 }
 
 /**
+ * Función para registrar un nuevo investigador.
+ * @param {FormData} formData - FormData con los datos del investigador y archivos. Campos:
+ *  - full_name: Nombre completo
+ *  - document_type: Tipo de documento
+ *  - document_number: Número de documento
+ *  - institution: Institución a la que pertenece
+ *  - email: Correo institucional
+ *  - front_card: Imagen frontal de tarjeta profesional
+ *  - back_card: Imagen trasera de tarjeta profesional
+ * @returns una promesa que resuelve los datos del investigador registrado.
+ */
+export function registerResearcher(formData) {
+  return apiFetch("/users/register/researcher/", {
+    method: "POST",
+    body: formData,
+  });
+}
+
+/**
  * Función para cerrar la sesión del usuario.
  * Se elimina el token de autenticación del almacenamiento local.
  * @returns una promesa resuelta inmediatamente.
