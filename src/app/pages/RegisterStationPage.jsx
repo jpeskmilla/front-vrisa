@@ -158,7 +158,7 @@ export default function RegisterStationPage() {
       payload.append("sensor_serial", sensorData.sensorSerial);
       payload.append("calibration_certificate", sensorData.calibrationCertificate);
 
-      await StationAPI.registerStation(payload);
+      await StationAPI.createAffiliationRequest(payload);
 
       alert("Estación registrada exitosamente. Espera validación del administrador.");
       navigate("/");
