@@ -10,8 +10,10 @@ import RegisterUserPage from "../pages/RegisterUserPage.jsx";
 import AdminPanelPage from "../pages/AdminPanelPage.jsx";
 import AirQualityPage from "../pages/AirQualityPage.jsx";
 import DashboardPage from "../pages/DashboardPage.jsx";
+import GlobalStationsPage from "../pages/GlobalStationsPage.jsx";
 import HomePage from "../pages/HomePage.jsx";
 import InstitutionAdminPage from "../pages/InstitutionAdminPage.jsx";
+import InstitutionsListPage from "../pages/InstitutionsListPage.jsx";
 import MaintenanceLogsPage from "../pages/MaintenanceLogsPage.jsx";
 import ProfilePage from "../pages/ProfilePage.jsx";
 import RegisterInstitutionPage from "../pages/RegisterInstitutionPage.jsx";
@@ -45,7 +47,10 @@ export default function AppRouter() {
           <Route path="/home" element={<HomePage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/admin" element={<AdminPanelPage />} />
+          <Route path="/admin/institutions" element={<InstitutionsListPage />} />
+          <Route path="/admin/stations" element={<GlobalStationsPage />} />
           <Route path="/institution-admin" element={<InstitutionAdminPage />} />
+          <Route path="/institution-admin/stations" element={<GlobalStationsPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/dashboard/air-quality" element={<AirQualityPage />} />
           <Route path="/dashboard/stations" element={<StationsPage />} />
