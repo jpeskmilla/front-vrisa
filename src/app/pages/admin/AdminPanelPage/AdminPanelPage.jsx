@@ -1,14 +1,17 @@
-import { Building, CheckCircle, Clock, Users } from "lucide-react";
+import { Clock, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { InstitutionAPI, UserAPI } from "../../../../shared/api";
+import { RequestManagement } from "../../../../shared/components/RequestManagement";
+import { UserStatsWidget } from "../../../../shared/components/TableDataset";
 import "../../analytics/DashboardPage/DashboardPage.css";
 
 export default function AdminPanelPage() {
   const navigate = useNavigate();
-  const [stats, setStats] = useState({totalUsers: 0, pendingRequests: 0});
-  const [pendingItems, setPendingItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({total_users: 0, breakdown: {}});
+  const [pendingInstitutions, setPendingInstitutions] = useState([]);
+  const [pendingResearchers, setPendingResearchers] = useState([]);
 
   useEffect(() => {
     // Verificación de seguridad
@@ -30,177 +33,104 @@ export default function AdminPanelPage() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      // Obtenemos las solicitudes de integración
-      const [institutionsData, userStatsData] = await Promise.all([InstitutionAPI.getInstitutions(), UserAPI.getUserStats()]);
+      const [institutionsData, userStatsData, researchersData] = await Promise.all([
+        InstitutionAPI.getInstitutions(),
+        UserAPI.getUserStats(),
+        UserAPI.getPendingResearcherRequests(),
+      ]);
 
-      // Filtramos solo las instituciones pendientes de aprobacion
-      const pendingInstitutions = institutionsData
-        .filter((i) => i.validation_status === "PENDING")
-        .map((item) => ({...item, type: "INSTITUTION", name: `Registro Nuevo: ${item.institute_name}`}));
+      // Filtrar pendientes
+      const pendingInst = institutionsData.filter((i) => i.validation_status === "PENDING");
 
-      // Actualizar estados con datos obtenidos
-      setPendingItems(pendingInstitutions);
-      setStats({
-        totalUsers: userStatsData.total_users,
-        pendingRequests: pendingInstitutions.length,
-      });
+      setPendingInstitutions(pendingInst);
+      setPendingResearchers(researchersData);
+      setStats(userStatsData);
     } catch (error) {
-      console.error("Error cargando datos de administración:", error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleApprove = async (item) => {
-    if (!window.confirm("¿Estás seguro de aprobar esta institución?")) return;
-
+  const handleApprove = async (item, type) => {
+    if (!window.confirm("¿Confirmar aprobación?")) return;
     try {
-      if (item.type === "INSTITUTION") {
-        await InstitutionAPI.approveInstitution(item.id);
-      }
-      alert("Institución aprobada con éxito");
+      if (type === "ENTITY") await InstitutionAPI.approveInstitution(item.id);
+      else await UserAPI.approveResearcherRequest(item.id);
       fetchData();
-    } catch (error) {
-      console.error("Error aprobando solicitud:", error);
-      alert("Error al aprobar la solicitud.");
+    } catch (e) {
+      alert("Error");
     }
   };
 
-  // Renderizado del contenido
-  const renderContent = () => {
-    return (
-      <>
-        <div className="content-header">
-          <h2>Panel de Administración Global</h2>
-          <p>Visión general del estado del sistema VriSA</p>
-        </div>
+  const handleReject = async (item) => {
+    const confirmMsg = item.type === "INSTITUTION" ? "¿Estás seguro de rechazar esta institución?" : "¿Estás seguro de rechazar este investigador?";
 
-        <div className="summary-cards">
+    if (!window.confirm(confirmMsg)) return;
+
+    try {
+      if (item.type === "RESEARCHER") {
+        await UserAPI.rejectResearcherRequest(item.id);
+        alert("Solicitud de investigador rechazada");
+      }
+      fetchData();
+    } catch (error) {
+      console.error("Error rechazando solicitud:", error);
+      alert("Error al rechazar la solicitud.");
+    }
+  };
+
+  return (
+    <>
+      <div className="content-header">
+        <h2>Panel de Administración Global</h2>
+        <p>Visión general del estado del sistema VriSA</p>
+      </div>
+
+      {/* Grid superior: Resumen Cards + Tabla de Usuarios */}
+      <div style={{display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "24px", marginBottom: "32px"}}>
+        {/* Columna Izquierda: Tarjetas de Resumen (simplificado) */}
+        <div className="summary-cards" style={{display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", alignContent: "start", margin: 0}}>
+          {/* Card Total */}
           <div className="summary-card">
             <div className="card-icon">
               <Users size={24} />
             </div>
             <div className="card-info">
               <h3>Usuarios Totales</h3>
-              <span className="card-value">{stats.totalUsers}</span>
+              <span className="card-value">{stats.total_users}</span>
             </div>
           </div>
+          {/* Card Pendientes */}
           <div className="summary-card">
             <div className="card-icon pending-icon">
               <Clock size={24} />
             </div>
             <div className="card-info">
-              <h3>Solicitudes Pendientes</h3>
+              <h3>Solicitudes</h3>
               <span className="card-value" style={{color: "#ef4444"}}>
-                {stats.pendingRequests}
+                {pendingInstitutions.length + pendingResearchers.length}
               </span>
             </div>
           </div>
+          {/* Puedes agregar más cards aquí si quieres */}
         </div>
 
-        <div className="content-header" style={{marginTop: "32px"}}>
-          <h2>Solicitudes Pendientes</h2>
-          <p>Revisa y aprueba las solicitudes de nuevas instituciones</p>
+        {/* Columna Derecha: Widget de Tabla de Usuarios */}
+        <div style={{minWidth: "300px"}}>
+          <UserStatsWidget stats={stats} />
         </div>
+      </div>
 
-        <div
-          className="table-container"
-          style={{
-            background: "white",
-            borderRadius: "16px",
-            padding: "24px",
-            boxShadow: "0 4px 16px rgba(0, 0, 0, 0.04)",
-          }}
-        >
-          {pendingItems.length === 0 ? (
-            <div style={{textAlign: "center", padding: "40px", color: "#666"}}>No hay solicitudes pendientes</div>
-          ) : (
-            <table style={{width: "100%", borderCollapse: "collapse"}}>
-              <thead>
-                <tr style={{borderBottom: "2px solid #f0f0f0", textAlign: "left"}}>
-                  <th style={{padding: "12px", color: "#666"}}>Tipo</th>
-                  <th style={{padding: "12px", color: "#666"}}>Detalle</th>
-                  <th style={{padding: "12px", color: "#666"}}>Fecha</th>
-                  <th style={{padding: "12px", color: "#666"}}>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pendingItems.map((item) => (
-                  <tr key={`${item.type}-${item.id}`} style={{borderBottom: "1px solid #f0f0f0"}}>
-                    <td style={{padding: "16px 12px"}}>
-                      {item.type === "INSTITUTION" ? (
-                        <span
-                          style={{
-                            background: "#e0e7ff",
-                            color: "#4339F2",
-                            padding: "4px 8px",
-                            borderRadius: "4px",
-                            fontSize: "0.8rem",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "4px",
-                            width: "fit-content",
-                          }}
-                        >
-                          <Building size={14} /> Institución
-                        </span>
-                      ) : (
-                        <span
-                          style={{
-                            background: "#f3e8ff",
-                            color: "#7e22ce",
-                            padding: "4px 8px",
-                            borderRadius: "4px",
-                            fontSize: "0.8rem",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "4px",
-                            width: "fit-content",
-                          }}
-                        >
-                          <ClipboardCheck size={14} /> Solicitud
-                        </span>
-                      )}
-                    </td>
-                    <td style={{padding: "16px 12px", fontWeight: "600"}}>
-                      {item.type === "INSTITUTION" ? item.institute_name : item.institution_name}
-                      <div style={{fontSize: "0.8em", color: "#666", fontWeight: "normal"}}>{item.type === "INSTITUTION" ? item.physic_address : "Solicitud de integración"}</div>
-                    </td>
-                    <td style={{padding: "16px 12px", color: "#666"}}>
-                      {item.created_at ? new Date(item.created_at).toLocaleDateString() : new Date(item.request_date).toLocaleDateString()}
-                    </td>
-                    <td style={{padding: "16px 12px", display: "flex", gap: "8px"}}>
-                      <button
-                        onClick={() => handleApprove(item)}
-                        style={
-                          {
-                            /* ... estilos botón aprobar ... */
-                          }
-                        }
-                      >
-                        <CheckCircle size={16} /> Aprobar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </>
-    );
-  };
-
-  return (
-    <>
-      {loading ? (
-        <div className="dashboard-loading">
-          <div className="loading-spinner"></div>
-          <p>Cargando panel de administración...</p>
-        </div>
-      ) : (
-        renderContent()
-      )}
+      {/* Sección Inferior: Gestión de Solicitudes (Componente Compartido) */}
+      <RequestManagement
+        role="super_admin"
+        entityRequests={pendingInstitutions}
+        researcherRequests={pendingResearchers}
+        onApprove={handleApprove}
+        onReject={handleReject}
+        loading={loading}
+      />
     </>
   );
 }

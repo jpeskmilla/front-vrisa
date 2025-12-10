@@ -30,3 +30,35 @@ export function getUserStats() {
     method: "GET",
   });
 }
+
+/**
+ * Obtiene las solicitudes de investigadores pendientes de aprobación (solo admins).
+ * Endpoint: GET /api/users/researchers/pending/
+ */
+export function getPendingResearcherRequests() {
+  return apiFetch("/users/researchers/pending/", {
+    method: "GET",
+  });
+}
+
+/**
+ * Aprueba una solicitud de investigador (solo admins).
+ * @param {number} userRoleId - ID de la asignación de rol a aprobar
+ * Endpoint: POST /api/users/researchers/{userRoleId}/approve/
+ */
+export function approveResearcherRequest(userRoleId) {
+  return apiFetch(`/users/researchers/${userRoleId}/approve/`, {
+    method: "POST",
+  });
+}
+
+/**
+ * Rechaza una solicitud de investigador (solo admins).
+ * @param {number} userRoleId - ID de la asignación de rol a rechazar
+ * Endpoint: POST /api/users/researchers/{userRoleId}/reject/
+ */
+export function rejectResearcherRequest(userRoleId) {
+  return apiFetch(`/users/researchers/${userRoleId}/reject/`, {
+    method: "POST",
+  });
+}
