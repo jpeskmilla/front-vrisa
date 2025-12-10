@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { InstitutionAPI } from "../../shared/api";
-import { formatApiErrors } from "../../shared/utils";
-import "./registerinstitutionpage-styles.css";
+import { InstitutionAPI } from "../../../../shared/api";
+import { formatApiErrors } from "../../../../shared/utils";
+import "./RegisterInstitutionPage.css";
 
 /**
  * Página de registro para instituciones.

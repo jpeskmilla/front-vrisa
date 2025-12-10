@@ -1,9 +1,9 @@
 import { Activity, MapPin, Radio, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { StationAPI } from "../../shared/api";
-import TableDataset from "../../shared/components/TableDataset/TableDataset";
-import "./dashboard-styles.css";
+import { StationAPI } from "../../../../shared/api";
+import TableDataset from "../../../../shared/components/TableDataset/TableDataset";
+import "../../monitoring/DashboardPage/DashboardPage.css";
 
 /**
  * Página de listado de estaciones.

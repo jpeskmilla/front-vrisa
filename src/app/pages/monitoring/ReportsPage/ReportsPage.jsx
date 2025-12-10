@@ -1,9 +1,9 @@
 import { Activity, Calendar, Download, FileText, Filter, Search } from "lucide-react";
 import { useEffect, useState } from "react";
-import { MeasurementAPI, ReportAPI, StationAPI } from "../../shared/api";
-import { ControlBar, ControlSelect } from "../../shared/components/ControlBar";
-import { TableDataset } from "../../shared/components/TableDataset";
-import "./reports-page.css";
+import { MeasurementAPI, ReportAPI, StationAPI } from "../../../../shared/api";
+import { ControlBar, ControlSelect } from "../../../../shared/components/ControlBar";
+import { TableDataset } from "../../../../shared/components/TableDataset";
+import "./ReportsPage.css";
 
 /**
  * Página de Reportes - Historial y Descarga de Informes PDF.

@@ -1,11 +1,11 @@
 import { Activity, ArrowDown, ArrowUp, ChevronDown, MapPin, RefreshCw, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Area, AreaChart, CartesianGrid, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { MeasurementAPI, StationAPI } from "../../shared/api";
-import DateRangePicker from "../../shared/components/DateRange/DateRangePicker";
-import StatCard from "../../shared/components/StatCard/StatCard";
-import { VARIABLE_COLORS } from "../../shared/constants";
-import "./airquality-page.css";
+import { MeasurementAPI, StationAPI } from "../../../../shared/api";
+import DateRangePicker from "../../../../shared/components/DateRange/DateRangePicker";
+import StatCard from "../../../../shared/components/StatCard/StatCard";
+import { VARIABLE_COLORS } from "../../../../shared/constants";
+import "./AirQualityPage.css";
 
 /**
  * Página principal de estadísticas de calidad del aire.

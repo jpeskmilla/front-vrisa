@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthAPI } from "../../shared/api";
-import { formatApiErrors } from "../../shared/utils";
-import "./registerresearcherpage-styles.css";
+import { AuthAPI } from "../../../../shared/api";
+import { formatApiErrors } from "../../../../shared/utils";
+import "./RegisterResearcherPage.css";
 
 /**
  * Página de registro para investigadores.

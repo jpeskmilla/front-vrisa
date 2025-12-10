@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthAPI } from "../../shared/api";
-import { formatApiErrors } from "../../shared/utils";
-import { ORGANIZATION_ROLES } from "../../shared/constants/roles";
+import { AuthAPI } from "../../../../shared/api";
+import { formatApiErrors } from "../../../../shared/utils";
+import { ORGANIZATION_ROLES } from "../../../../shared/constants/roles";
 import { Eye, EyeOff } from "lucide-react"; 
-import "./registeruserpage-styles.css";
+import "./RegisterUserPage.css";
 
 export default function RegisterUserPage() {
   const navigate = useNavigate();

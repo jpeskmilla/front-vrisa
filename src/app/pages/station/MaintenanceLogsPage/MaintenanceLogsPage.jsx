@@ -1,10 +1,10 @@
 import { Calendar, ClipboardList, FileText, User, Wrench } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { SensorAPI } from "../../shared/api";
-import { TableDataset } from "../../shared/components/TableDataset";
-import { getMediaUrl } from "../../shared/utils";
-import "./maintenance-page.css";
+import { SensorAPI } from "../../../../shared/api";
+import { TableDataset } from "../../../../shared/components/TableDataset";
+import { getMediaUrl } from "../../../../shared/utils";
+import "./MaintenanceLogsPage.css";
 
 /**
  * Página de Historial de Mantenimientos.

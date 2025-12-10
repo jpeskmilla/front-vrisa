@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { InstitutionAPI, SensorAPI, StationAPI } from "../../shared/api";
-import "./registerstationpage-styles.css";
+import { InstitutionAPI, SensorAPI, StationAPI } from "../../../../shared/api";
+import "./RegisterStationPage.css";
 
 /**
  * Página de registro para estaciones de monitoreo ambiental.

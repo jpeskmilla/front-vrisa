@@ -1,8 +1,8 @@
 import { Building, CheckCircle, Clock, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { InstitutionAPI, UserAPI } from "../../shared/api";
-import "./dashboard-styles.css";
+import { InstitutionAPI, UserAPI } from "../../../../shared/api";
+import "../../monitoring/DashboardPage/DashboardPage.css";
 
 export default function AdminPanelPage() {
   const navigate = useNavigate();

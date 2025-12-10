@@ -1,8 +1,8 @@
 import { FileText, Upload, Wrench } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { SensorAPI } from "../../shared/api";
-import "./registermaintenance-page.css";
+import { SensorAPI } from "../../../../shared/api";
+import "./RegisterMaintenancePage.css";
 
 /**
  * Página para registrar un nuevo mantenimiento o calibración de un sensor.

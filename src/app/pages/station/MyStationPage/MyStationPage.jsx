@@ -1,15 +1,15 @@
 import { Activity, Cpu, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
-import { SensorAPI } from "../../shared/api";
-import { TableDataset } from "../../shared/components/TableDataset";
-import "./stations-page.css";
+import { SensorAPI } from "../../../../shared/api";
+import { TableDataset } from "../../../../shared/components/TableDataset";
+import "./MyStationPage.css";
 
 /**
  * Página de Estación - Listado de sensores de la estación del usuario.
  * Accesible para usuarios con rol station_admin.
  * @returns {JSX.Element} Componente de la página de estación.
  */
-export default function StationsPage() {
+export default function MyStationPage() {
   const [sensors, setSensors] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -53,9 +53,9 @@ export default function StationsPage() {
       INACTIVE: { label: "Inactivo", className: "status-inactive" },
       MAINTENANCE: { label: "En Mantenimiento", className: "status-maintenance" },
     };
-    
+
     const config = statusConfig[status] || { label: status, className: "" };
-    
+
     return (
       <span className={`sensor-status-badge ${config.className}`}>
         {config.label}

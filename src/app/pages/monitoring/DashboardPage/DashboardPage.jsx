@@ -1,9 +1,9 @@
 import { Activity, AlertCircle, Cloud, Droplet, Factory, Flame, Haze, Thermometer, Wind, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { MeasurementAPI, UserAPI } from "../../shared/api";
-import StatCard from "../../shared/components/StatCard/StatCard";
-import "./dashboard-styles.css";
+import { MeasurementAPI, UserAPI } from "../../../../shared/api";
+import StatCard from "../../../../shared/components/StatCard/StatCard";
+import "./DashboardPage.css";
 
 export default function DashboardPage() {
   const navigate = useNavigate();

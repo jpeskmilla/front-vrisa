@@ -1,8 +1,8 @@
 import { Activity, AlertTriangle, CheckCircle, Clock, MapPin, Radio, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { StationAPI } from "../../shared/api";
-import "./dashboard-styles.css";
+import { StationAPI } from "../../../../shared/api";
+import "../../monitoring/DashboardPage/DashboardPage.css";
 
 /**
  * Panel de administración para instituciones ambientales.

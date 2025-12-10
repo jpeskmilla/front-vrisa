@@ -1,8 +1,8 @@
 import { Cpu } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { SensorAPI, StationAPI } from "../../shared/api";
-import "./registersensor-page.css";
+import { SensorAPI, StationAPI } from "../../../../shared/api";
+import "./RegisterSensorPage.css";
 
 /**
  * Página para registrar un nuevo sensor.

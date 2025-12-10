@@ -1,8 +1,8 @@
 import { AlertCircle, Building2, FileText, LayoutDashboard, Microscope, Radio } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ORGANIZATION_ROLES } from "../../shared/constants/roles";
-import "./homepage-styles.css";
+import { ORGANIZATION_ROLES } from "../../../../shared/constants/roles";
+import "./HomePage.css";
 
 /**
  * Página principal de la aplicación.

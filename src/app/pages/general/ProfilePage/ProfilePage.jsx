@@ -1,8 +1,8 @@
 import { Briefcase, Building, Mail, Phone, Shield, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserAPI } from "../../shared/api";
-import "./profile-styles.css";
+import { UserAPI } from "../../../../shared/api";
+import "./ProfilePage.css";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
