@@ -17,6 +17,7 @@ import ProfilePage from "../pages/ProfilePage.jsx";
 import RegisterInstitutionPage from "../pages/RegisterInstitutionPage.jsx";
 import RegisterMaintenancePage from "../pages/RegisterMaintenancePage.jsx";
 import RegisterResearcherPage from "../pages/RegisterResearcherPage.jsx";
+import RegisterSensorPage from "../pages/RegisterSensorPage.jsx";
 import RegisterStationPage from "../pages/RegisterStationPage.jsx";
 import ReportsPage from "../pages/ReportsPage.jsx";
 import StationsPage from "../pages/StationsPage.jsx";
@@ -57,6 +58,7 @@ export default function AppRouter() {
           <Route path="/dashboard/reports" element={<ReportsPage />} />
           <Route path="/dashboard/maintenance" element={<MaintenanceLogsPage />} />
           <Route path="/dashboard/maintenance/new" element={<RegisterMaintenancePage />} />
+          <Route path="/dashboard/sensors/new" element={<RegisterSensorPage />} />
         </Route>
         {/* Paneles de administración */}
         <Route

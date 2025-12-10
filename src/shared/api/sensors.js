@@ -68,3 +68,20 @@ export const createMaintenanceLog = (formData) => {
   });
 };
 
+/**
+ * Crea un nuevo sensor.
+ * Endpoint: POST /api/sensors/devices/
+ * @param {Object} sensorData - Datos del sensor:
+ *   - model: Modelo del sensor
+ *   - serial_number: Número de serie
+ *   - sensor_type: Tipo de contaminante que mide
+ *   - station: ID de la estación asociada
+ * @returns {Promise<Object>} Sensor creado
+ */
+export const createSensor = (sensorData) => {
+  return apiFetch("/sensors/devices/", {
+    method: "POST",
+    body: JSON.stringify(sensorData),
+  });
+};
+
