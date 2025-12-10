@@ -27,7 +27,7 @@ export default function InstitutionAdminPage() {
     }
 
     const parsed = JSON.parse(userData);
-    const isInstitutionUser = parsed.primary_role === "institution" || parsed.primary_role === "super_admin" || parsed.institution_id;
+    const isInstitutionUser = parsed.primary_role === "institution_head" || parsed.primary_role === "super_admin" || parsed.institution_id;
 
     if (!isInstitutionUser) {
       alert("Acceso denegado: Se requieren permisos de Institución.");
