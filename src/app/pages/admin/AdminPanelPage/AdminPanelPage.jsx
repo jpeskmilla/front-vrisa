@@ -90,7 +90,7 @@ export default function AdminPanelPage() {
       {/* Grid superior: Resumen Cards + Tabla de Usuarios */}
       <div style={{display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "24px", marginBottom: "32px"}}>
         {/* Columna Izquierda: Tarjetas de Resumen (simplificado) */}
-        <div className="summary-cards" style={{display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", alignContent: "start", margin: 0}}>
+        <div className="summary-cards" style={{display: "grid", gridTemplateColumns: "1fr", gap: "16px", alignContent: "start", margin: 0}}>
           {/* Card Total */}
           <div className="summary-card">
             <div className="card-icon">
