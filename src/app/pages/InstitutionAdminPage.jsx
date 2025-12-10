@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { InstitutionAPI } from "../../shared/api";
+import { StationAPI } from "../../shared/api";
 import "./dashboard-styles.css";
 
 /**
@@ -58,94 +58,111 @@ export default function InstitutionAdminPage() {
     fetchData(parsed.institution_id);
   }, [navigate]);
 
+  // ✅ NUEVA FUNCIÓN: Cargar datos reales de la API
   const fetchData = async (institutionId) => {
     try {
       setLoading(true);
       
-      // Simular datos de estaciones pendientes
-      // En producción esto vendría de la API
-      const mockPendingStations = [
-        {
-          id: 1,
-          station_name: "Estación Norte Cali",
-          location: "Zona Norte",
-          address: "Calle 70 Norte #3N-45",
-          latitude: 3.4823,
-          longitude: -76.5119,
-          request_status: "PENDING",
-          requested_by: "Carlos Martínez",
-          requested_at: new Date().toISOString(),
-          type: "STATION"
-        },
-        {
-          id: 2,
-          station_name: "Estación Centro Histórico",
-          location: "Centro",
-          address: "Carrera 4 #10-25",
-          latitude: 3.4516,
-          longitude: -76.5320,
-          request_status: "PENDING",
-          requested_by: "Ana García",
-          requested_at: new Date(Date.now() - 86400000).toISOString(),
-          type: "STATION"
-        }
-      ];
+      // Obtener solicitudes de registro pendientes
+      const requests = await StationAPI.getRegistrationRequests();
+      
+      // Filtrar solo las pendientes
+      const pending = requests.filter(req => req.status === 'PENDING');
+      
+      // Mapear los datos al formato esperado por el componente
+      const mappedRequests = pending.map(req => ({
+        id: req.request_id,
+        station_name: req.station_name,
+        location: `${req.geographic_location_lat.toFixed(4)}, ${req.geographic_location_long.toFixed(4)}`,
+        address: req.address_reference || 'Sin dirección',
+        latitude: req.geographic_location_lat,
+        longitude: req.geographic_location_long,
+        request_status: req.status,
+        requested_by: req.requester_name || 'Desconocido',
+        requested_at: req.created_at,
+        sensor_model: req.sensor_model,
+        sensor_manufacturer: req.sensor_manufacturer,
+        sensor_serial: req.sensor_serial,
+        type: "STATION"
+      }));
 
-      setPendingStations(mockPendingStations);
-      setStats({
-        totalStations: 8,
-        pendingRequests: mockPendingStations.length,
-        activeStations: 6
-      });
+      setPendingStations(mappedRequests);
+      
+      // Obtener estaciones existentes (opcional, si tienes este endpoint)
+      try {
+        const stations = await StationAPI.getStations();
+        const activeStations = stations.filter(s => s.operative_status === 'ACTIVE').length;
+        
+        setStats({
+          totalStations: stations.length,
+          pendingRequests: pending.length,
+          activeStations: activeStations
+        });
+      } catch (err) {
+        // Si falla, solo usar datos de solicitudes
+        setStats({
+          totalStations: 0,
+          pendingRequests: pending.length,
+          activeStations: 0
+        });
+      }
 
     } catch (error) {
       console.error("Error cargando datos de la institución:", error);
+      alert("Error al cargar las solicitudes. Verifica tu conexión.");
     } finally {
       setLoading(false);
     }
   };
 
+  // ✅ NUEVA FUNCIÓN: Aprobar estación con API real
   const handleApproveStation = async (station) => {
-    if (!window.confirm(`¿Estás seguro de aprobar la estación "${station.station_name}"?`)) return;
+    if (!window.confirm(`¿Aprobar "${station.station_name}"?\n\nEsto creará la estación en el sistema.`)) {
+      return;
+    }
 
     try {
-      // Aquí iría la llamada a la API
-      // await InstitutionAPI.approveStation(station.id);
+      await StationAPI.reviewRegistrationRequest(
+        station.id, 
+        'ACCEPTED', 
+        'Aprobado por la institución'
+      );
       
-      alert("Estación aprobada con éxito");
+      alert(`✅ Estación "${station.station_name}" aprobada con éxito`);
       
-      // Actualizar lista
-      setPendingStations(prev => prev.filter(s => s.id !== station.id));
-      setStats(prev => ({
-        ...prev,
-        pendingRequests: prev.pendingRequests - 1,
-        totalStations: prev.totalStations + 1,
-        activeStations: prev.activeStations + 1
-      }));
+      // Recargar datos
+      fetchData(institutionUser.institution_id);
+      
     } catch (error) {
       console.error("Error aprobando estación:", error);
-      alert("Error al aprobar la estación.");
+      alert(`❌ Error al aprobar: ${error.message || 'Error desconocido'}`);
     }
   };
 
+  // ✅ NUEVA FUNCIÓN: Rechazar estación con API real
   const handleRejectStation = async (station) => {
-    if (!window.confirm(`¿Estás seguro de rechazar la estación "${station.station_name}"?`)) return;
+    const reason = prompt(
+      `¿Por qué rechazas la estación "${station.station_name}"?\n\n` +
+      `Escribe el motivo (opcional):`
+    );
+    
+    if (reason === null) return; // Usuario canceló
 
     try {
-      // Aquí iría la llamada a la API
-      // await InstitutionAPI.rejectStation(station.id);
+      await StationAPI.reviewRegistrationRequest(
+        station.id, 
+        'REJECTED', 
+        reason || 'Rechazado por la institución'
+      );
       
-      alert("Estación rechazada");
+      alert(`❌ Estación "${station.station_name}" rechazada`);
       
-      // Actualizar lista
-      setPendingStations(prev => prev.filter(s => s.id !== station.id));
-      setStats(prev => ({
-        ...prev,
-        pendingRequests: prev.pendingRequests - 1
-      }));
+      // Recargar datos
+      fetchData(institutionUser.institution_id);
+      
     } catch (error) {
       console.error("Error rechazando estación:", error);
-      alert("Error al rechazar la estación.");
+      alert(`❌ Error al rechazar: ${error.message || 'Error desconocido'}`);
     }
   };
 
