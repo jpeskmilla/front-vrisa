@@ -1,6 +1,6 @@
 import { Activity, ArrowDown, ArrowUp, ChevronDown, MapPin, RefreshCw, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { MeasurementAPI, StationAPI } from "../../shared/api";
 import DateRangePicker from "../../shared/components/DateRange/DateRangePicker";
 import StatCard from "../../shared/components/StatCard/StatCard";
@@ -60,7 +60,11 @@ export default function AirQualityPage() {
         const dateObj = new Date(item.measure_date);
         return {
           ...item,
-          displayDate: dateObj.toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}),
+          // Guardamos el timestamp numérico para el Eje X (Matemático)
+          timestamp: dateObj.getTime(),
+          // Guardamos los strings para los Tooltips (Visual)
+          displayTime: dateObj.toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}),
+          displayDate: dateObj.toLocaleDateString([], {day: "2-digit", month: "2-digit"}),
           fullDate: dateObj.toLocaleString(),
         };
       });
@@ -109,10 +113,23 @@ export default function AirQualityPage() {
     setFilters({...filters, start_date: start, end_date: end});
   };
 
+  const dateFormatter = (tickItem) => {
+    const date = new Date(tickItem);
+    // Si el filtro es de más de 24 horas, mostramos Día/Mes + Hora
+    // Si es corto, solo Hora
+    if (new Date(filters.end_date) - new Date(filters.start_date) > 86400000) {
+      return `${date.getDate()}/${date.getMonth() + 1} ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+    }
+    return date.toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"});
+  };
+
   // Color actual según variable seleccionada
   const currentColor = VARIABLE_COLORS[filters.variable_code] || VARIABLE_COLORS["DEFAULT"];
   // Obtener unidad de la variable seleccionada para mostrar en la gráfica
   const currentUnit = variables.find((v) => v.code === filters.variable_code)?.unit || "";
+
+  const currentVariableObj = variables.find((v) => v.code === filters.variable_code);
+  const maxLimit = currentVariableObj ? currentVariableObj.max_expected_value : 0;
 
   return (
     <div className="p-6 bg-gray-50 min-h-full">
@@ -187,9 +204,35 @@ export default function AirQualityPage() {
                     <stop offset="95%" stopColor={currentColor} stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="displayDate" tick={{fontSize: 11, fill: "#94a3b8"}} minTickGap={30} tickLine={false} axisLine={false} dy={10} />
+                <XAxis
+                  dataKey="timestamp"
+                  type="number"
+                  domain={["dataMin", "dataMax"]}
+                  scale="time"
+                  tickFormatter={dateFormatter}
+                  tick={{fontSize: 11, fill: "#94a3b8"}}
+                  minTickGap={50}
+                  tickLine={false}
+                  axisLine={false}
+                  dy={10}
+                />
                 <YAxis unit={` ${currentUnit}`} tick={{fontSize: 11, fill: "#94a3b8"}} tickLine={false} axisLine={false} />
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                {maxLimit > 0 && (
+                  <ReferenceLine
+                    y={maxLimit}
+                    stroke="#EF4444"
+                    strokeDasharray="5 5"
+                    strokeWidth={2}
+                    label={{
+                      position: "insideTopRight",
+                      value: `Límite Máximo: ${maxLimit} ${currentUnit}`,
+                      fill: "#EF4444",
+                      fontSize: 12,
+                      fontWeight: "bold",
+                    }}
+                  />
+                )}
                 <Tooltip
                   contentStyle={{borderRadius: "12px", border: "none", boxShadow: "0 10px 30px -5px rgba(0, 0, 0, 0.1)", padding: "12px"}}
                   labelStyle={{color: "#64748b", fontWeight: "500", marginBottom: "8px", fontSize: "0.85rem"}}
@@ -219,22 +262,8 @@ export default function AirQualityPage() {
               colorClass="bg-gray-100" // Color de fondo del icono
               barColor="#64748b"
             />
-            <StatCard
-              label="Máximo Registrado"
-              value={stats.max}
-              unit={currentUnit}
-              icon={<ArrowUp size={24} color="#ef4444" />}
-              colorClass="bg-red-50"
-              barColor="#ef4444"
-            />
-            <StatCard
-              label="Mínimo Registrado"
-              value={stats.min}
-              unit={currentUnit}
-              icon={<ArrowDown size={24} color="#10b981" />}
-              colorClass="bg-emerald-50"
-              barColor="#10b981"
-            />
+            <StatCard label="Máximo Registrado" value={stats.max} unit={currentUnit} icon={<ArrowUp size={24} color="#ef4444" />} colorClass="bg-red-50" barColor="#ef4444" />
+            <StatCard label="Mínimo Registrado" value={stats.min} unit={currentUnit} icon={<ArrowDown size={24} color="#10b981" />} colorClass="bg-emerald-50" barColor="#10b981" />
           </div>
         </div>
       ) : (
