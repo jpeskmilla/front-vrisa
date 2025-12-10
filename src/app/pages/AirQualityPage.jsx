@@ -118,7 +118,7 @@ export default function AirQualityPage() {
     // Si el filtro es de más de 24 horas, mostramos Día/Mes + Hora
     // Si es corto, solo Hora
     if (new Date(filters.end_date) - new Date(filters.start_date) > 86400000) {
-      return `${date.getDate()}/${date.getMonth() + 1} ${date.getHours()}:${String(date.getMinutes()).padStart(2, "0")}`;
+      return `${date.getDate()}/${date.getMonth() + 1} ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
     }
     return date.toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"});
   };
@@ -226,7 +226,7 @@ export default function AirQualityPage() {
                     strokeWidth={2}
                     label={{
                       position: "insideTopRight",
-                      value: `Límite Máximo (${maxLimit})`,
+                      value: `Límite Máximo: ${maxLimit} ${currentUnit}`,
                       fill: "#EF4444",
                       fontSize: 12,
                       fontWeight: "bold",
