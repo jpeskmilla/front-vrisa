@@ -2,7 +2,7 @@ import { Activity, AlertTriangle, CheckCircle, Clock, MapPin, Radio, XCircle } f
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { StationAPI } from "../../../../shared/api";
-import "../../monitoring/DashboardPage/DashboardPage.css";
+import "../../analytics/DashboardPage/DashboardPage.css";
 
 /**
  * Panel de administración para instituciones ambientales.
