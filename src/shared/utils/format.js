@@ -26,3 +26,21 @@ export function formatApiErrors(error, defaultMessage = "Ocurrió un error inesp
   // Para otros errores (500, red, etc.)
   return [error.message || defaultMessage];
 }
+
+/**
+ * Convierte una ruta relativa de Django (ej: /media/archivo.pdf) 
+ * en una URL absoluta completa.
+ * @param {string} path - La ruta del archivo.
+ * @returns {string} URL completa.
+ */
+export const getMediaUrl = (path) => {
+  if (!path) return "";
+
+  if (path.startsWith("http")) return path;
+
+  // Obtenemos la base (http://localhost:8000) quitando el /api
+  const apiBase = (import.meta.env.VITE_API_URL || "http://localhost:8000/api").replace("/api", "");
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+
+  return `${apiBase}${cleanPath}`;
+};

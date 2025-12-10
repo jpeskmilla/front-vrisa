@@ -1,8 +1,9 @@
-import { Calendar, ClipboardList, Download, FileText, User, Wrench } from "lucide-react";
+import { Calendar, ClipboardList, FileText, User, Wrench } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SensorAPI } from "../../shared/api";
 import { TableDataset } from "../../shared/components/TableDataset";
+import { getMediaUrl } from "../../shared/utils";
 import "./maintenance-page.css";
 
 /**
@@ -49,11 +50,12 @@ export default function MaintenanceLogsPage() {
   };
 
   /**
-   * Maneja la descarga del certificado PDF.
+   * Maneja la visualización del certificado PDF.
    */
-  const handleDownloadCertificate = (certificateUrl) => {
-    if (certificateUrl) {
-      window.open(certificateUrl, "_blank");
+  const handleViewCertificate = (certificatePath) => {
+    const fullUrl = getMediaUrl(certificatePath);
+    if (fullUrl) {
+        window.open(fullUrl, "_blank");
     }
   };
 
@@ -103,7 +105,7 @@ export default function MaintenanceLogsPage() {
       cell: (row) => (
         row.certificate_file ? (
           <button
-            onClick={() => handleDownloadCertificate(row.certificate_file)}
+            onClick={() => handleViewCertificate(row.certificate_file)}
             className="btn-certificate"
           >
             <FileText size={16} />
