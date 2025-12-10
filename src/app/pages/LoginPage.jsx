@@ -91,7 +91,7 @@ export default function LoginPage() {
           <h1 className="form-title">¡Bienvenido!</h1>
           <p className="form-subtitle">Ingresa tu correo y contraseña para iniciar sesión</p>
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="login-form">
             <div className="form-group">
               <label className="form-label">
                 <span className="required">*</span> Correo electrónico
