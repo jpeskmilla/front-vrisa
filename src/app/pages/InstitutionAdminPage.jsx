@@ -71,12 +71,9 @@ export default function InstitutionAdminPage() {
     }
 
     try {
-      // Se actualizado estado a ACTIVE
-      await StationAPI.updateStation(station.station_id, {
-        operative_status: "ACTIVE",
-      });
+      await StationAPI.approveStation(station.station_id);
 
-      alert(` Estación "${station.station_name}" aprobada con éxito`);
+      alert(` Estación "${station.station_name}" y su administrador han sido aprobados con éxito`);
 
       if (institutionId) {
         fetchData(institutionId);
