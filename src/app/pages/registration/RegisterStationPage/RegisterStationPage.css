@@ -9,233 +9,266 @@
   font-family: "Inter", sans-serif;
   overflow: hidden;
 }
-  
-  /* Header superior */
-  .register-station-header {
-    display: flex;
-    align-items: center;
-    padding: 16px 20px;
-    color: white;
-  }
-  
-  .register-station-back-button {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    background: none;
-    border: none;
-    color: white;
-    font-size: 14px;
-    cursor: pointer;
-  }
-  
-  .register-station-logo {
-    flex: 1;
-    text-align: center;
-    font-size: 24px;
-    font-weight: bold;
-    margin-right: 60px;
-  }
-  
-  /* Tarjeta del formulario */
-  .register-station-form-card {
-    background: white;
-    border-radius: 24px 24px 0 0;
-    padding: 32px 24px;
-    height: calc(100vh - 60px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow-y: auto;
-    width: 100%;
-    box-sizing: border-box;
-  }
-  
-  .register-station-form-title {
-    text-align: center;
-    font-size: 2rem;
-    font-weight: 700;
-    color: #1a1a2e;
-    margin-bottom: 8px;
-  }
-  
-  .register-station-form-subtitle {
-    text-align: center;
-    font-size: 1rem;
-    color: #4b5563;
-    margin-bottom: 24px;
-  }
-  
-  /* Indicador de pasos */
-  .register-station-steps-indicator {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    max-width: 400px;
-    margin-bottom: 32px;
-    gap: 12px;
-  }
-  
-  .register-station-step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    flex: 1;
-  }
-  
-  .register-station-step-number {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: #e5e7eb;
-    color: #9ca3af;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    font-size: 1.1rem;
-    transition: all 0.3s;
-  }
-  
-  .register-station-step.active .register-station-step-number {
-    background-color: #4339f2;
-    color: white;
-  }
-  
-  .register-station-step span {
-    font-size: 0.8rem;
-    color: #6b7280;
-    text-align: center;
-  }
-  
-  .register-station-step.active span {
-    color: #1f2937;
-    font-weight: 500;
-  }
-  
-  .register-station-step-line {
-    height: 2px;
-    width: 60px;
-    background-color: #e5e7eb;
-    margin-top: -26px;
-  }
-  
-  /* Formulario */
-  .register-station-form {
-    width: 100%;
-    max-width: 350px;
-  }
-  
-  .register-station-form-group {
-    margin-bottom: 16px;
-  }
-  
-  .register-station-form-label {
-    display: block;
-    font-size: 1rem;
-    color: #1f2937;
-    margin-bottom: 6px;
-  }
-  
-  .register-station-required {
-    color: #e53935;
-  }
-  
-  /* Inputs */
-  .register-station-form-input {
-    width: 100%;
-    padding: 12px 16px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.2s;
-    box-sizing: border-box;
-  }
-  
-  .register-station-form-input:focus {
-    border-color: #4339f2;
-  }
-  
-  .register-station-form-input::placeholder {
-    color: #999;
-  }
-  
-  select.register-station-form-input {
-    cursor: pointer;
-    background-color: white;
-  }
-  
-  /* Hint de formulario */
-  .register-station-form-hint {
-    display: block;
-    font-size: 0.8rem;
-    color: #6b7280;
-    margin-top: 4px;
-  }
-  
-  /* Texto de carga */
-  .register-station-loading-text {
-    padding: 12px 16px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    color: #6b7280;
-    text-align: center;
-    font-size: 14px;
-  }
-  
-  /* Error box */
-  .register-station-error-box {
-    color: #e53935;
-    background-color: #ffebee;
-    padding: 10px;
-    border-radius: 8px;
-    margin-bottom: 16px;
-    text-align: center;
-    font-size: 0.9rem;
-  }
-  
-  /* Botón de volver al paso anterior */
-  .register-station-back-step-button {
-    flex: 1;
-    padding: 18px;
-    background: white;
-    color: #4339f2;
-    border: 2px solid #4339f2;
-    border-radius: 28px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  
-  .register-station-back-step-button:hover {
-    background: #f3f4f6;
-  }
-  
-  /* Botón de envío */
-  .register-station-submit-button {
-    flex: 1;
-    padding: 18px;
-    background: #4339f2;
-    color: white;
-    border: none;
-    border-radius: 28px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.2s ease;
-    width: 100%;
-    max-width: 350px;
-    align-self: center;
-  }
-  
-  .register-station-submit-button:hover {
-    opacity: 0.9;
-  }
-  
-  .register-station-submit-button:disabled {
-    cursor: not-allowed;
-  }
+
+/* Header superior */
+.register-station-header {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  color: white;
+}
+
+.register-station-back-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.register-station-logo {
+  flex: 1;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin-right: 60px;
+}
+
+/* Tarjeta del formulario */
+.register-station-form-card {
+  background: white;
+  border-radius: 24px 24px 0 0;
+  padding: 32px 24px;
+  height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.register-station-form-title {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 8px;
+}
+
+.register-station-form-subtitle {
+  text-align: center;
+  font-size: 1rem;
+  color: #4b5563;
+  margin-bottom: 24px;
+}
+
+/* Indicador de pasos */
+.register-station-steps-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 32px;
+  gap: 12px;
+}
+
+.register-station-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.register-station-step-number {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #e5e7eb;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: all 0.3s;
+}
+
+.register-station-step.active .register-station-step-number {
+  background-color: #4339f2;
+  color: white;
+}
+
+.register-station-step span {
+  font-size: 0.8rem;
+  color: #6b7280;
+  text-align: center;
+}
+
+.register-station-step.active span {
+  color: #1f2937;
+  font-weight: 500;
+}
+
+.register-station-step-line {
+  height: 2px;
+  width: 60px;
+  background-color: #e5e7eb;
+  margin-top: -26px;
+}
+
+/* Formulario */
+.register-station-form {
+  width: 100%;
+  max-width: 350px;
+}
+
+.register-station-form-group {
+  margin-bottom: 16px;
+}
+
+.register-station-form-label {
+  display: block;
+  font-size: 1rem;
+  color: #1f2937;
+  margin-bottom: 6px;
+}
+
+.register-station-required {
+  color: #e53935;
+}
+
+/* Inputs */
+.register-station-form-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.register-station-form-input:focus {
+  border-color: #4339f2;
+}
+
+.register-station-form-input::placeholder {
+  color: #999;
+}
+
+select.register-station-form-input {
+  cursor: pointer;
+  background-color: white;
+}
+
+/* Hint de formulario */
+.register-station-form-hint {
+  display: block;
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+/* Texto de carga */
+.register-station-loading-text {
+  padding: 12px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  color: #6b7280;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* Error box */
+.register-station-error-box {
+  color: #e53935;
+  background-color: #ffebee;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+/* Botón de volver al paso anterior */
+.register-station-back-step-button {
+  flex: 1;
+  padding: 18px;
+  background: white;
+  color: #4339f2;
+  border: 2px solid #4339f2;
+  border-radius: 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.register-station-back-step-button:hover {
+  background: #f3f4f6;
+}
+
+/* Botón de envío */
+.register-station-submit-button {
+  flex: 1;
+  padding: 18px;
+  background: #4339f2;
+  color: white;
+  border: none;
+  border-radius: 28px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  width: 100%;
+  max-width: 350px;
+  align-self: center;
+}
+
+.register-station-submit-button:hover {
+  opacity: 0.9;
+}
+
+.register-station-submit-button:disabled {
+  cursor: not-allowed;
+}
+
+/* Contenedor del mapa */
+.register-station-map-container {
+  width: 100%;
+  height: 350px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid #e0e0e0;
+  margin-bottom: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Leaflet map */
+.register-station-leaflet-map {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Asegurar que los controles del mapa no interfieran con otros elementos */
+.register-station-map-container .leaflet-control-container {
+  z-index: 10;
+}
+
+.register-station-map-container .leaflet-pane {
+  z-index: 5;
+}
+
+.register-station-map-container .leaflet-top,
+.register-station-map-container .leaflet-bottom {
+  z-index: 10;
+}
