@@ -1,15 +1,4 @@
-import {
-  ClipboardList,
-  Cpu,
-  FileText,
-  Home,
-  LayoutDashboard,
-  LogOut,
-  MapPin,
-  PlusCircle,
-  Wind,
-  Wrench
-} from "lucide-react";
+import { Building2, ClipboardList, Cpu, FileText, Home, LayoutDashboard, LogOut, MapPin, PlusCircle, Wind } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { ORGANIZATION_ROLES } from "../constants/roles";
 import "./layout.css";
@@ -19,7 +8,10 @@ export default function Sidebar() {
 
   // Obtener datos del usuario desde localStorage
   const userData = JSON.parse(localStorage.getItem("userData") || "{}");
-  const isStationAdmin = userData?.primary_role === ORGANIZATION_ROLES.STATION_ADMIN;
+  const userRole = userData?.primary_role;
+  const isStationAdmin = userRole === ORGANIZATION_ROLES.STATION_ADMIN;
+  const isSuperAdmin = userRole === "super_admin";
+  const isInstitutionHead = userRole === "institution_head";
 
   const handleLogout = () => {
     localStorage.clear();
@@ -30,41 +22,66 @@ export default function Sidebar() {
     <aside className="layout-sidebar">
       <nav className="sidebar-nav">
         {/* Ir al Inicio */}
-        <NavLink 
-          to="/home" 
-          className="sidebar-link return-home"
-        >
+        <NavLink to="/home" className="sidebar-link return-home">
           <Home size={20} />
           <span>Ir al Inicio</span>
         </NavLink>
 
         <div className="sidebar-divider"></div>
 
-        {/* Links Principales */}
-        <NavLink 
-          to="/dashboard" 
-          end
-          className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}
-        >
-          <LayoutDashboard size={20} />
-          <span>Dashboard</span>
-        </NavLink>
+        {/* Dashboard según rol */}
+        {isSuperAdmin && (
+          <>
+            <NavLink to="/admin" end className={({isActive}) => `sidebar-link ${isActive ? "active" : ""}`}>
+              <LayoutDashboard size={20} />
+              <span>Dashboard</span>
+            </NavLink>
 
-        <NavLink 
-          to="/dashboard/air-quality" 
-          className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}
-        >
-          <Wind size={20} />
-          <span>Calidad del Aire</span>
-        </NavLink>
+            <NavLink to="/admin/institutions" className={({isActive}) => `sidebar-link ${isActive ? "active" : ""}`}>
+              <Building2 size={20} />
+              <span>Instituciones</span>
+            </NavLink>
 
-        <NavLink 
-          to="/dashboard/reports" 
-          className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}
-        >
-          <FileText size={20} />
-          <span>Reportes</span>
-        </NavLink>
+            <NavLink to="/admin/stations" className={({isActive}) => `sidebar-link ${isActive ? "active" : ""}`}>
+              <MapPin size={20} />
+              <span>Estaciones</span>
+            </NavLink>
+          </>
+        )}
+
+        {isInstitutionHead && (
+          <>
+            <NavLink to="/institution-admin" end className={({isActive}) => `sidebar-link ${isActive ? "active" : ""}`}>
+              <LayoutDashboard size={20} />
+              <span>Dashboard</span>
+            </NavLink>
+
+            <NavLink to="/institution-admin/stations" className={({isActive}) => `sidebar-link ${isActive ? "active" : ""}`}>
+              <MapPin size={20} />
+              <span>Mis Estaciones</span>
+            </NavLink>
+          </>
+        )}
+
+        {/* Links comunes para otros roles */}
+        {!isSuperAdmin && !isInstitutionHead && (
+          <>
+            <NavLink to="/dashboard" end className={({isActive}) => `sidebar-link ${isActive ? "active" : ""}`}>
+              <LayoutDashboard size={20} />
+              <span>Dashboard</span>
+            </NavLink>
+
+            <NavLink to="/dashboard/air-quality" className={({isActive}) => `sidebar-link ${isActive ? "active" : ""}`}>
+              <Wind size={20} />
+              <span>Calidad del Aire</span>
+            </NavLink>
+
+            <NavLink to="/dashboard/reports" className={({isActive}) => `sidebar-link ${isActive ? "active" : ""}`}>
+              <FileText size={20} />
+              <span>Reportes</span>
+            </NavLink>
+          </>
+        )}
 
         {/* Sección exclusiva para Administradores de Estación */}
         {isStationAdmin && (
@@ -73,35 +90,22 @@ export default function Sidebar() {
 
             <div className="sidebar-section-label">Gestión de Estación</div>
 
-            <NavLink 
-              to="/dashboard/stations" 
-              className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}
-            >
+            <NavLink to="/dashboard/stations" className={({isActive}) => `sidebar-link ${isActive ? "active" : ""}`}>
               <MapPin size={20} />
               <span>Mi Estación</span>
             </NavLink>
 
-            <NavLink 
-              to="/dashboard/maintenance" 
-              end
-              className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}
-            >
+            <NavLink to="/dashboard/maintenance" end className={({isActive}) => `sidebar-link ${isActive ? "active" : ""}`}>
               <ClipboardList size={20} />
               <span>Mantenimientos</span>
             </NavLink>
 
-            <NavLink 
-              to="/dashboard/maintenance/new" 
-              className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}
-            >
+            <NavLink to="/dashboard/maintenance/new" className={({isActive}) => `sidebar-link ${isActive ? "active" : ""}`}>
               <PlusCircle size={20} />
               <span>Nuevo Mantenimiento</span>
             </NavLink>
 
-            <NavLink 
-              to="/dashboard/sensors/new" 
-              className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}
-            >
+            <NavLink to="/dashboard/sensors/new" className={({isActive}) => `sidebar-link ${isActive ? "active" : ""}`}>
               <Cpu size={20} />
               <span>Registrar Sensor</span>
             </NavLink>
