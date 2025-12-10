@@ -53,27 +53,22 @@ export default function AirQualityPage() {
       return;
     }
     setLoading(true);
-    try {
-      // CORRECCIÓN: Limpiar las fechas para enviar solo YYYY-MM-DD
-      // Esto evita problemas con la hora y la zona horaria en el backend
-      const cleanFilters = {
-        ...filters,
-        start_date: filters.start_date.split('T')[0], 
-        end_date: filters.end_date.split('T')[0]
-      };
-
-      // Usamos cleanFilters en lugar de filters directos
-      const result = await MeasurementAPI.getHistoricalData(cleanFilters);
+    try {      
+      const result = await MeasurementAPI.getHistoricalData(filters);
 
       const formattedData = result.map((item) => {
         const dateObj = new Date(item.measure_date);
         return {
           ...item,
-          // Formato hh:mm am/pm para el eje X
-          displayDate: dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          // Guardamos el timestamp numérico para el Eje X (Matemático)
+          timestamp: dateObj.getTime(), 
+          // Guardamos los strings para los Tooltips (Visual)
+          displayTime: dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          displayDate: dateObj.toLocaleDateString([], { day: '2-digit', month: '2-digit' }),
           fullDate: dateObj.toLocaleString(),
         };
       });
+  
 
       setData(formattedData);
       calculateStats(formattedData);
@@ -117,6 +112,16 @@ export default function AirQualityPage() {
 
   const handleDateRangeChange = (start, end) => {
     setFilters({...filters, start_date: start, end_date: end});
+  };
+
+  const dateFormatter = (tickItem) => {
+    const date = new Date(tickItem);
+    // Si el filtro es de más de 24 horas, mostramos Día/Mes + Hora
+    // Si es corto, solo Hora
+    if (new Date(filters.end_date) - new Date(filters.start_date) > 86400000) {
+        return `${date.getDate()}/${date.getMonth() + 1} ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
+    }
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
   // Color actual según variable seleccionada
@@ -200,7 +205,17 @@ export default function AirQualityPage() {
                     <stop offset="95%" stopColor={currentColor} stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="displayDate" tick={{fontSize: 11, fill: "#94a3b8"}} minTickGap={30} tickLine={false} axisLine={false} dy={10} />
+                <XAxis 
+                  dataKey="timestamp"          // 1. Usamos el número, no el texto
+                  type="number"                // 2. Indicamos que es una escala numérica
+                  domain={['dataMin', 'dataMax']} // 3. Ajustar al rango exacto de datos
+                  scale="time"                 // 4. Escala de tiempo lineal
+                  tickFormatter={dateFormatter} // 5. Usamos la función para volver a texto legible
+                  tick={{fontSize: 11, fill: "#94a3b8"}} 
+                  minTickGap={50}              // Evita que se amontonen
+                  tickLine={false} 
+                  axisLine={false} 
+                  dy={10}/>
                 <YAxis unit={` ${currentUnit}`} tick={{fontSize: 11, fill: "#94a3b8"}} tickLine={false} axisLine={false} />
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 {maxLimit > 0 && (
