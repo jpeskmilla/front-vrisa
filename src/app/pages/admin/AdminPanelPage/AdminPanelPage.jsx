@@ -1,4 +1,4 @@
-import { Building, CheckCircle, Clock, Users } from "lucide-react";
+import { Building, CheckCircle, Clock, Users, UserCheck, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { InstitutionAPI, UserAPI } from "../../../../shared/api";
@@ -6,7 +6,7 @@ import "../../analytics/DashboardPage/DashboardPage.css";
 
 export default function AdminPanelPage() {
   const navigate = useNavigate();
-  const [stats, setStats] = useState({totalUsers: 0, pendingRequests: 0});
+  const [stats, setStats] = useState({totalUsers: 0, pendingRequests: 0, pendingResearchers: 0});
   const [pendingItems, setPendingItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -30,19 +30,34 @@ export default function AdminPanelPage() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      // Obtenemos las solicitudes de integración
-      const [institutionsData, userStatsData] = await Promise.all([InstitutionAPI.getInstitutions(), UserAPI.getUserStats()]);
+      // Obtenemos las solicitudes de integración e investigadores pendientes
+      const [institutionsData, userStatsData, researchersData] = await Promise.all([
+        InstitutionAPI.getInstitutions(), 
+        UserAPI.getUserStats(),
+        UserAPI.getPendingResearcherRequests()
+      ]);
 
       // Filtramos solo las instituciones pendientes de aprobacion
       const pendingInstitutions = institutionsData
         .filter((i) => i.validation_status === "PENDING")
         .map((item) => ({...item, type: "INSTITUTION", name: `Registro Nuevo: ${item.institute_name}`}));
 
+      // Mapear solicitudes de investigadores
+      const pendingResearchers = researchersData.map((item) => ({
+        ...item, 
+        type: "RESEARCHER", 
+        name: item.full_name
+      }));
+
+      // Combinar todas las solicitudes pendientes
+      const allPending = [...pendingInstitutions, ...pendingResearchers];
+
       // Actualizar estados con datos obtenidos
-      setPendingItems(pendingInstitutions);
+      setPendingItems(allPending);
       setStats({
         totalUsers: userStatsData.total_users,
-        pendingRequests: pendingInstitutions.length,
+        pendingRequests: allPending.length,
+        pendingResearchers: pendingResearchers.length,
       });
     } catch (error) {
       console.error("Error cargando datos de administración:", error);
@@ -52,17 +67,43 @@ export default function AdminPanelPage() {
   };
 
   const handleApprove = async (item) => {
-    if (!window.confirm("¿Estás seguro de aprobar esta institución?")) return;
+    const confirmMsg = item.type === "INSTITUTION" 
+      ? "¿Estás seguro de aprobar esta institución?" 
+      : "¿Estás seguro de aprobar este investigador?";
+    
+    if (!window.confirm(confirmMsg)) return;
 
     try {
       if (item.type === "INSTITUTION") {
         await InstitutionAPI.approveInstitution(item.id);
+        alert("Institución aprobada con éxito");
+      } else if (item.type === "RESEARCHER") {
+        await UserAPI.approveResearcherRequest(item.id);
+        alert("Investigador aprobado con éxito");
       }
-      alert("Institución aprobada con éxito");
       fetchData();
     } catch (error) {
       console.error("Error aprobando solicitud:", error);
       alert("Error al aprobar la solicitud.");
+    }
+  };
+
+  const handleReject = async (item) => {
+    const confirmMsg = item.type === "INSTITUTION" 
+      ? "¿Estás seguro de rechazar esta institución?" 
+      : "¿Estás seguro de rechazar este investigador?";
+    
+    if (!window.confirm(confirmMsg)) return;
+
+    try {
+      if (item.type === "RESEARCHER") {
+        await UserAPI.rejectResearcherRequest(item.id);
+        alert("Solicitud de investigador rechazada");
+      }
+      fetchData();
+    } catch (error) {
+      console.error("Error rechazando solicitud:", error);
+      alert("Error al rechazar la solicitud.");
     }
   };
 
@@ -96,11 +137,22 @@ export default function AdminPanelPage() {
               </span>
             </div>
           </div>
+          <div className="summary-card">
+            <div className="card-icon" style={{color: "#7e22ce"}}>
+              <UserCheck size={24} />
+            </div>
+            <div className="card-info">
+              <h3>Investigadores Pendientes</h3>
+              <span className="card-value" style={{color: "#7e22ce"}}>
+                {stats.pendingResearchers}
+              </span>
+            </div>
+          </div>
         </div>
 
         <div className="content-header" style={{marginTop: "32px"}}>
           <h2>Solicitudes Pendientes</h2>
-          <p>Revisa y aprueba las solicitudes de nuevas instituciones</p>
+          <p>Revisa y aprueba las solicitudes de nuevas instituciones e investigadores</p>
         </div>
 
         <div
@@ -158,28 +210,64 @@ export default function AdminPanelPage() {
                             width: "fit-content",
                           }}
                         >
-                          <ClipboardCheck size={14} /> Solicitud
+                          <UserCheck size={14} /> Investigador
                         </span>
                       )}
                     </td>
                     <td style={{padding: "16px 12px", fontWeight: "600"}}>
-                      {item.type === "INSTITUTION" ? item.institute_name : item.institution_name}
-                      <div style={{fontSize: "0.8em", color: "#666", fontWeight: "normal"}}>{item.type === "INSTITUTION" ? item.physic_address : "Solicitud de integración"}</div>
+                      {item.type === "INSTITUTION" ? item.institute_name : item.full_name}
+                      <div style={{fontSize: "0.8em", color: "#666", fontWeight: "normal"}}>
+                        {item.type === "INSTITUTION" ? item.physic_address : item.user_email}
+                      </div>
                     </td>
                     <td style={{padding: "16px 12px", color: "#666"}}>
-                      {item.created_at ? new Date(item.created_at).toLocaleDateString() : new Date(item.request_date).toLocaleDateString()}
+                      {item.created_at 
+                        ? new Date(item.created_at).toLocaleDateString() 
+                        : item.assigned_at 
+                          ? new Date(item.assigned_at).toLocaleDateString()
+                          : "N/A"}
                     </td>
-                    <td style={{padding: "16px 12px", display: "flex", gap: "8px"}}>
-                      <button
-                        onClick={() => handleApprove(item)}
-                        style={
-                          {
-                            /* ... estilos botón aprobar ... */
-                          }
-                        }
-                      >
-                        <CheckCircle size={16} /> Aprobar
-                      </button>
+                    <td style={{padding: "16px 12px"}}>
+                      <div style={{display: "flex", gap: "8px"}}>
+                        <button
+                          onClick={() => handleApprove(item)}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "6px",
+                            padding: "8px 16px",
+                            background: "#22c55e",
+                            color: "white",
+                            border: "none",
+                            borderRadius: "8px",
+                            cursor: "pointer",
+                            fontWeight: "600",
+                            fontSize: "0.85rem",
+                          }}
+                        >
+                          <CheckCircle size={16} /> Aprobar
+                        </button>
+                        {item.type === "RESEARCHER" && (
+                          <button
+                            onClick={() => handleReject(item)}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "6px",
+                              padding: "8px 16px",
+                              background: "white",
+                              color: "#ef4444",
+                              border: "2px solid #ef4444",
+                              borderRadius: "8px",
+                              cursor: "pointer",
+                              fontWeight: "600",
+                              fontSize: "0.85rem",
+                            }}
+                          >
+                            <XCircle size={16} /> Rechazar
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
