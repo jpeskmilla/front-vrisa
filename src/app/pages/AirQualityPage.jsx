@@ -1,6 +1,6 @@
 import { Activity, ArrowDown, ArrowUp, ChevronDown, MapPin, RefreshCw, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, ReferenceLine } from "recharts";
 import { MeasurementAPI, StationAPI } from "../../shared/api";
 import DateRangePicker from "../../shared/components/DateRange/DateRangePicker";
 import StatCard from "../../shared/components/StatCard/StatCard";
@@ -54,13 +54,23 @@ export default function AirQualityPage() {
     }
     setLoading(true);
     try {
-      const result = await MeasurementAPI.getHistoricalData(filters);
+      // CORRECCIÓN: Limpiar las fechas para enviar solo YYYY-MM-DD
+      // Esto evita problemas con la hora y la zona horaria en el backend
+      const cleanFilters = {
+        ...filters,
+        start_date: filters.start_date.split('T')[0], 
+        end_date: filters.end_date.split('T')[0]
+      };
+
+      // Usamos cleanFilters en lugar de filters directos
+      const result = await MeasurementAPI.getHistoricalData(cleanFilters);
 
       const formattedData = result.map((item) => {
         const dateObj = new Date(item.measure_date);
         return {
           ...item,
-          displayDate: dateObj.toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}),
+          // Formato hh:mm am/pm para el eje X
+          displayDate: dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           fullDate: dateObj.toLocaleString(),
         };
       });
@@ -113,6 +123,9 @@ export default function AirQualityPage() {
   const currentColor = VARIABLE_COLORS[filters.variable_code] || VARIABLE_COLORS["DEFAULT"];
   // Obtener unidad de la variable seleccionada para mostrar en la gráfica
   const currentUnit = variables.find((v) => v.code === filters.variable_code)?.unit || "";
+
+  const currentVariableObj = variables.find(v => v.code === filters.variable_code);
+  const maxLimit = currentVariableObj ? currentVariableObj.max_expected_value : 0;
 
   return (
     <div className="p-6 bg-gray-50 min-h-full">
@@ -190,6 +203,21 @@ export default function AirQualityPage() {
                 <XAxis dataKey="displayDate" tick={{fontSize: 11, fill: "#94a3b8"}} minTickGap={30} tickLine={false} axisLine={false} dy={10} />
                 <YAxis unit={` ${currentUnit}`} tick={{fontSize: 11, fill: "#94a3b8"}} tickLine={false} axisLine={false} />
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                {maxLimit > 0 && (
+                  <ReferenceLine 
+                    y={maxLimit} 
+                    stroke="#EF4444"          // Color rojo alerta
+                    strokeDasharray="5 5"     // Línea punteada
+                    strokeWidth={2}
+                    label={{ 
+                      position: 'insideTopRight', 
+                      value: `Límite Máximo (${maxLimit})`, 
+                      fill: '#EF4444', 
+                      fontSize: 12,
+                      fontWeight: 'bold'
+                    }} 
+                  />
+                )}
                 <Tooltip
                   contentStyle={{borderRadius: "12px", border: "none", boxShadow: "0 10px 30px -5px rgba(0, 0, 0, 0.1)", padding: "12px"}}
                   labelStyle={{color: "#64748b", fontWeight: "500", marginBottom: "8px", fontSize: "0.85rem"}}
