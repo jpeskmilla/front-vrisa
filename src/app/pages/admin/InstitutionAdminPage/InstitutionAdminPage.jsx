@@ -1,12 +1,12 @@
-import { Activity, AlertTriangle, CheckCircle, Clock, MapPin, Radio, XCircle } from "lucide-react";
+import { Activity, AlertTriangle, CheckCircle, Clock, MapPin, Radio, XCircle, UserCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { StationAPI } from "../../../../shared/api";
+import { StationAPI, UserAPI } from "../../../../shared/api";
 import "../../analytics/DashboardPage/DashboardPage.css";
 
 /**
  * Panel de administración para instituciones ambientales.
- * Permite gestionar solicitudes de estaciones y ver estadísticas.
+ * Permite gestionar solicitudes de estaciones, investigadores y ver estadísticas.
  */
 export default function InstitutionAdminPage() {
   const navigate = useNavigate();
@@ -14,8 +14,10 @@ export default function InstitutionAdminPage() {
     totalStations: 0,
     pendingRequests: 0,
     activeStations: 0,
+    pendingResearchers: 0,
   });
   const [pendingStations, setPendingStations] = useState([]);
+  const [pendingResearchers, setPendingResearchers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [institutionId, setInstitutionId] = useState(null);
 
@@ -50,12 +52,22 @@ export default function InstitutionAdminPage() {
       // Calcular activos
       const active = allMyStations.filter((s) => s.operative_status === "ACTIVE").length;
 
+      // Obtener solicitudes de investigadores pendientes
+      let researchers = [];
+      try {
+        researchers = await UserAPI.getPendingResearcherRequests();
+      } catch (err) {
+        console.log("No se pudieron cargar solicitudes de investigadores:", err);
+      }
+
       setPendingStations(pending);
+      setPendingResearchers(researchers);
 
       setStats({
         totalStations: allMyStations.length,
         pendingRequests: pending.length,
         activeStations: active,
+        pendingResearchers: researchers.length,
       });
     } catch (error) {
       console.error("Error cargando datos de la institución:", error);
@@ -87,8 +99,6 @@ export default function InstitutionAdminPage() {
   const handleRejectStation = async (station) => {
     if (!window.confirm(`¿Rechazar "${station.station_name}"?`)) return;
 
-    if (reason === null) return; // Usuario canceló
-
     try {
       // Actualizar estado a REJECTED
       await StationAPI.updateStation(station.station_id, {
@@ -102,6 +112,36 @@ export default function InstitutionAdminPage() {
       }
     } catch (error) {
       console.error("Error rechazando estación:", error);
+      alert(`Error al rechazar: ${error.message || "Error desconocido"}`);
+    }
+  };
+
+  const handleApproveResearcher = async (researcher) => {
+    if (!window.confirm(`¿Aprobar al investigador "${researcher.full_name}"?`)) return;
+
+    try {
+      await UserAPI.approveResearcherRequest(researcher.id);
+      alert(`Investigador "${researcher.full_name}" aprobado con éxito`);
+      if (institutionId) {
+        fetchData(institutionId);
+      }
+    } catch (error) {
+      console.error("Error aprobando investigador:", error);
+      alert(`Error al aprobar: ${error.message || "Error desconocido"}`);
+    }
+  };
+
+  const handleRejectResearcher = async (researcher) => {
+    if (!window.confirm(`¿Rechazar al investigador "${researcher.full_name}"?`)) return;
+
+    try {
+      await UserAPI.rejectResearcherRequest(researcher.id);
+      alert(`Solicitud de investigador rechazada`);
+      if (institutionId) {
+        fetchData(institutionId);
+      }
+    } catch (error) {
+      console.error("Error rechazando investigador:", error);
       alert(`Error al rechazar: ${error.message || "Error desconocido"}`);
     }
   };
@@ -140,9 +180,20 @@ export default function InstitutionAdminPage() {
               <Clock size={24} />
             </div>
             <div className="card-info">
-              <h3>Solicitudes Pendientes</h3>
+              <h3>Estaciones Pendientes</h3>
               <span className="card-value" style={{color: "#ef4444"}}>
                 {stats.pendingRequests}
+              </span>
+            </div>
+          </div>
+          <div className="summary-card">
+            <div className="card-icon" style={{color: "#7e22ce"}}>
+              <UserCheck size={24} />
+            </div>
+            <div className="card-info">
+              <h3>Investigadores Pendientes</h3>
+              <span className="card-value" style={{color: "#7e22ce"}}>
+                {stats.pendingResearchers}
               </span>
             </div>
           </div>
@@ -347,6 +398,110 @@ export default function InstitutionAdminPage() {
                     </tr>
                   );
                 })}
+              </tbody>
+            </table>
+          )}
+        </div>
+
+        {/* Sección de Investigadores Pendientes */}
+        <div className="content-header" style={{marginTop: "32px"}}>
+          <h2>Solicitudes de Investigadores</h2>
+          <p>Revisa y aprueba las solicitudes de nuevos investigadores</p>
+        </div>
+
+        <div
+          className="table-container"
+          style={{
+            background: "white",
+            borderRadius: "16px",
+            padding: "24px",
+            boxShadow: "0 4px 16px rgba(0, 0, 0, 0.04)",
+          }}
+        >
+          {pendingResearchers.length === 0 ? (
+            <div style={{textAlign: "center", padding: "40px", color: "#666"}}>
+              <UserCheck size={48} style={{color: "#d1d5db", marginBottom: "16px"}} />
+              <p>No hay solicitudes de investigadores pendientes</p>
+            </div>
+          ) : (
+            <table style={{width: "100%", borderCollapse: "collapse"}}>
+              <thead>
+                <tr style={{borderBottom: "2px solid #f0f0f0", textAlign: "left"}}>
+                  <th style={{padding: "12px", color: "#666"}}>Investigador</th>
+                  <th style={{padding: "12px", color: "#666"}}>Correo</th>
+                  <th style={{padding: "12px", color: "#666"}}>Institución</th>
+                  <th style={{padding: "12px", color: "#666"}}>Fecha</th>
+                  <th style={{padding: "12px", color: "#666"}}>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pendingResearchers.map((researcher) => (
+                  <tr key={researcher.id} style={{borderBottom: "1px solid #f0f0f0"}}>
+                    <td style={{padding: "16px 12px"}}>
+                      <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
+                        <div
+                          style={{
+                            width: "40px",
+                            height: "40px",
+                            borderRadius: "10px",
+                            background: "#f3e8ff",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <UserCheck size={20} style={{color: "#7e22ce"}} />
+                        </div>
+                        <span style={{fontWeight: "600", color: "#1e293b"}}>{researcher.full_name}</span>
+                      </div>
+                    </td>
+                    <td style={{padding: "16px 12px", color: "#64748b"}}>{researcher.user_email}</td>
+                    <td style={{padding: "16px 12px", color: "#64748b"}}>{researcher.institution_name || "No especificada"}</td>
+                    <td style={{padding: "16px 12px", color: "#64748b"}}>
+                      {researcher.assigned_at ? new Date(researcher.assigned_at).toLocaleDateString() : "N/A"}
+                    </td>
+                    <td style={{padding: "16px 12px"}}>
+                      <div style={{display: "flex", gap: "8px"}}>
+                        <button
+                          onClick={() => handleApproveResearcher(researcher)}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "6px",
+                            padding: "8px 16px",
+                            background: "#22c55e",
+                            color: "white",
+                            border: "none",
+                            borderRadius: "8px",
+                            cursor: "pointer",
+                            fontWeight: "600",
+                            fontSize: "0.85rem",
+                          }}
+                        >
+                          <CheckCircle size={16} /> Aprobar
+                        </button>
+                        <button
+                          onClick={() => handleRejectResearcher(researcher)}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "6px",
+                            padding: "8px 16px",
+                            background: "white",
+                            color: "#ef4444",
+                            border: "2px solid #ef4444",
+                            borderRadius: "8px",
+                            cursor: "pointer",
+                            fontWeight: "600",
+                            fontSize: "0.85rem",
+                          }}
+                        >
+                          <XCircle size={16} /> Rechazar
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           )}
