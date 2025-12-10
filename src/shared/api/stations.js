@@ -40,3 +40,13 @@ export const updateStation = (id, data) => {
     body: JSON.stringify(data),
   });
 };
+
+/**
+ * Aprueba una estación y a su administrador.
+ * Endpoint: POST /api/stations/:id/approve/
+ */
+export const approveStation = (id) => {
+  return apiFetch(`/stations/${id}/approve/`, {
+    method: "POST",
+  });
+};
