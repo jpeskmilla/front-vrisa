@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthAPI } from "../../../../shared/api";
 import { formatApiErrors } from "../../../../shared/utils";
 import "./RegisterResearcherPage.css";
 
 /**
- * Página de registro para investigadores.
- * Permite ingresar información personal, institucional y cargar
- * imágenes de la tarjeta profesional (frontal y trasera).
+ * Página para completar el registro de investigadores.
+ * El usuario ya está autenticado, solo debe completar información adicional
+ * y cargar imágenes de la tarjeta profesional (frontal y trasera).
  *
  * @component
  */
@@ -20,6 +20,17 @@ export default function RegisterResearcherPage() {
   /** @state Indicador de carga al enviar el formulario */
   const [loading, setLoading] = useState(false);
 
+  /** @state Datos del usuario autenticado */
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    // Obtener datos del usuario autenticado
+    const storedUserData = localStorage.getItem("userData");
+    if (storedUserData) {
+      setUserData(JSON.parse(storedUserData));
+    }
+  }, []);
+
   /**
    * @state formData
    * Contiene todos los campos ingresados por el investigador.
@@ -29,7 +40,6 @@ export default function RegisterResearcherPage() {
     documentType: "",
     documentNumber: "",
     institution: "",
-    email: "",
     frontCard: null,
     backCard: null,
   });
@@ -75,7 +85,7 @@ export default function RegisterResearcherPage() {
   };
 
   /**
-   * Envía el formulario al backend.
+   * Envía el formulario al backend para completar el registro.
    *
    * @async
    * @param {React.FormEvent} e - Evento del formulario
@@ -93,18 +103,17 @@ export default function RegisterResearcherPage() {
 
     try {
       const payload = new FormData();
-      payload.append("full_name", formData.fullName);
+      payload.append("full_name", formData.fullName || userData?.full_name || "");
       payload.append("document_type", formData.documentType);
       payload.append("document_number", formData.documentNumber);
       payload.append("institution", formData.institution);
-      payload.append("email", formData.email);
       payload.append("front_card", formData.frontCard);
       payload.append("back_card", formData.backCard);
 
       await AuthAPI.registerResearcher(payload);
 
-      alert("Registro enviado correctamente. Espera validación.");
-      navigate("/");
+      alert("Registro completado correctamente. Tu solicitud está pendiente de aprobación por un administrador.");
+      navigate("/home");
     } catch (err) {
       const messages = formatApiErrors(err, "Ocurrió un error inesperado");
       setErrorMessages(messages);
@@ -123,9 +132,10 @@ export default function RegisterResearcherPage() {
       </header>
 
       <div className="register-researcher-form-card">
-        <h1 className="register-researcher-form-title">Registro de Investigador</h1>
+        <h1 className="register-researcher-form-title">Completar Registro de Investigador</h1>
         <p className="register-researcher-form-subtitle">
-          Ingresa tu información para validar tu perfil como investigador.
+          Completa tu información para validar tu perfil como investigador.
+          {userData && <><br/><strong>Usuario: {userData.email}</strong></>}
         </p>
 
         <form onSubmit={handleSubmit} className="register-researcher-form">
@@ -187,7 +197,7 @@ export default function RegisterResearcherPage() {
           {/* Institución */}
           <div className="register-researcher-form-group">
             <label className="register-researcher-form-label">
-              <span className="register-researcher-required">*</span> Institución a a la que pertenece
+              <span className="register-researcher-required">*</span> Institución a la que pertenece
             </label>
             <input
               type="text"
@@ -195,22 +205,6 @@ export default function RegisterResearcherPage() {
               className="register-researcher-form-input"
               placeholder="Ingrese la institución a la que pertenece"
               value={formData.institution}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          {/* Correo institucional */}
-          <div className="register-researcher-form-group">
-            <label className="register-researcher-form-label">
-              <span className="register-researcher-required">*</span> Correo institucional
-            </label>
-            <input
-              type="email"
-              name="email"
-              className="register-researcher-form-input"
-              placeholder="correo@institucion.edu"
-              value={formData.email}
               onChange={handleChange}
               required
             />
