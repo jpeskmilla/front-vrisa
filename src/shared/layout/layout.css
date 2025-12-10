@@ -41,6 +41,28 @@
   color: #4339f2; /* Azul VriSA */
   text-decoration: none;
   letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Badges de Rol */
+.role-badge {
+  font-size: 0.5em;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  vertical-align: middle;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.role-badge-admin {
+  background-color: #4339F2;
+}
+
+.role-badge-institution {
+  background-color: #059669;
 }
 
 .brand-divider {
