@@ -30,7 +30,7 @@ export default function ReportsPage() {
         setStations(stationsData);
         setVariables(variablesData);
 
-        if (stationsData.length > 0) setSelectedStation("Todas las estaciones");
+        if (stationsData.length > 0) setSelectedStation("");
       } catch (error) {
         console.error("Error cargando metadatos:", error);
       }
