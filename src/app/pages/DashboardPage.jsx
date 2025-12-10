@@ -1,34 +1,22 @@
-import {
-  Activity,
-  AlertCircle,
-  Cloud,
-  Droplet,
-  Edit,
-  FileText,
-  Home,
-  LayoutDashboard,
-  MapPin,
-  Thermometer,
-  Wind
-} from 'lucide-react';
+import { Activity, AlertCircle, Cloud, Droplet, Factory, Flame, Haze, Thermometer, Wind, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { UserAPI } from "../../shared/api";
+import { MeasurementAPI, UserAPI } from "../../shared/api";
+import StatCard from "../../shared/components/StatCard/StatCard";
 import "./dashboard-styles.css";
 
-/**
- * Página de Dashboard principal para usuarios autenticados.
- * Muestra información de calidad del aire y accesos según el rol del usuario.
- */
 export default function DashboardPage() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [aqiData, setAqiData] = useState(null);
+  const [aqiLoading, setAqiLoading] = useState(true);
+  const [aqiError, setAqiError] = useState(null);
 
+  // Inicialización de usuario (sin cambios)
   useEffect(() => {
     const initDashboard = async () => {
       try {
-        // Obtener datos del usuario desde el localStorage
         const storedData = localStorage.getItem("userData");
         const token = localStorage.getItem("token");
 
@@ -43,13 +31,11 @@ export default function DashboardPage() {
         if (parsedUser.user_id) {
           try {
             const freshUserData = await UserAPI.getUserById(parsedUser.user_id);
-
             const mergedUser = {
               ...parsedUser,
               ...freshUserData,
               institution_name: freshUserData.institution?.institute_name,
             };
-
             setUser(mergedUser);
             localStorage.setItem("userData", JSON.stringify(mergedUser));
           } catch (apiError) {
@@ -58,7 +44,6 @@ export default function DashboardPage() {
         }
       } catch (err) {
         console.error("Dashboard initialization error:", err);
-        setError("Error cargando sesión");
         localStorage.removeItem("token");
         navigate("/");
       } finally {
@@ -69,17 +54,69 @@ export default function DashboardPage() {
     initDashboard();
   }, [navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("userData");
-    navigate("/");
+  // Carga de AQI
+  useEffect(() => {
+    const fetchAQI = async () => {
+      try {
+        setAqiLoading(true);
+        const stationId = 1; // TODO: Dinámico
+        const data = await MeasurementAPI.getCurrentAQI(stationId);
+        setAqiData(data);
+        setAqiError(null);
+      } catch (error) {
+        console.error("Error fetching AQI:", error);
+        setAqiError("No se pudo cargar el AQI");
+      } finally {
+        setAqiLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchAQI();
+      const interval = setInterval(fetchAQI, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [user]);
+
+  // Colores y lógica para tarjetas
+  const ICON_COLOR = "#64748b";
+  const COLOR_NORMAL = "#22C55E";
+  const COLOR_ALERT = "#EF4444";
+
+  // Helper para obtener datos de un contaminante
+  const getPollutantStatus = (key) => {
+    if (aqiLoading || !aqiData) {
+      return {
+        value: "...",
+        color: "#e2e8f0",
+        label: "Cargando...",
+      };
+    }
+
+    const value = aqiData.sub_indices?.[key];
+    const valDisplay = value !== undefined ? Math.round(value) : "0";
+
+    // Si es el dominante -> Rojo, si no -> Verde
+    const isDominant = aqiData.dominant_pollutant === key;
+
+    return {
+      value: valDisplay,
+      color: isDominant ? COLOR_ALERT : COLOR_NORMAL,
+      label: isDominant ? "Dominante" : "Normal",
+    };
   };
 
-  // Verificar si el usuario necesita completar su registro
-  // Solo usuarios que pertenecen a una organización Y no han completado el registro
-  // Y que NO tienen ya una institución asignada (para evitar registros duplicados)
-  const isCitizen = !user?.belongs_to_organization || user?.requested_role === 'citizen';
+  // Configuración base de tarjetas
+  const metricsConfig = [
+    {key: "PM2.5", label: "PM2.5", icon: <Cloud size={24} />},
+    {key: "PM10", label: "PM10", icon: <Haze size={24} />},
+    {key: "CO", label: "CO (MONÓXIDO)", icon: <Factory size={24} />},
+    {key: "NO2", label: "NO2", icon: <Flame size={24} />},
+    {key: "SO2", label: "SO2", icon: <Zap size={24} />},
+    {key: "O3", label: "OZONO (O3)", icon: <Wind size={24} />},
+  ];
+
+  const isCitizen = !user?.belongs_to_organization || user?.requested_role === "citizen";
   const hasInstitutionAssigned = user?.institution_id || user?.institution;
   const needsRegistrationCompletion = !isCitizen && !user?.registration_complete && !hasInstitutionAssigned;
 
@@ -94,12 +131,12 @@ export default function DashboardPage() {
 
   return (
     <div className="dashboard-container">
-
-      {/* Banner de completar registro */}
       {needsRegistrationCompletion && (
         <div className="registration-banner">
           <div className="banner-content">
-            <div className="banner-icon"><AlertCircle size={24} /></div> 
+            <div className="banner-icon">
+              <AlertCircle size={24} />
+            </div>
             <div className="banner-text">
               <strong>Tu registro está incompleto</strong>
               <p>Completa tu registro para acceder a todas las funcionalidades.</p>
@@ -111,86 +148,60 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Contenido principal */}
       <main className="dashboard-main">
-
-        {/* Área de contenido */}
         <section className="dashboard-content">
           <div className="content-header">
-            <h2>Panel de Control</h2>
-            <p className="content-subtitle">Monitoreo de calidad del aire en Cali</p>
+            <h2>Monitor de Calidad del Aire</h2>
+            <p className="content-subtitle">Estación: {aqiData?.station_name || "Cargando..."}</p>
           </div>
 
-          {/* Cards de resumen */}
           <div className="summary-cards">
-            <div className="summary-card aqi-good">
-              <div className="card-icon"><Activity size={24} /></div>
-              <div className="card-info">
-                <h3>Índice de Calidad</h3>
-                <span className="card-value">42</span>
-                <span className="card-label">Buena</span>
-              </div>
-            </div>
-            <div className="summary-card">
-              <div className="card-icon"><Cloud size={24} /></div>
-              <div className="card-info">
-                <h3>PM2.5</h3>
-                <span className="card-value">12.3</span>
-                <span className="card-label">µg/m³</span>
-              </div>
-            </div>
-            <div className="summary-card">
-              <div className="card-icon"><Thermometer size={24} /></div>
-              <div className="card-info">
-                <h3>Temperatura</h3>
-                <span className="card-value">24°C</span>
-                <span className="card-label">Agradable</span>
-              </div>
-            </div>
-            <div className="summary-card">
-              <div className="card-icon"><Droplet size={24} /></div>
-              <div className="card-info">
-                <h3>Humedad</h3>
-                <span className="card-value">68%</span>
-                <span className="card-label">Moderada</span>
-              </div>
-            </div>
+            {/* AQI */}
+            <StatCard
+              label="ÍNDICE DE CALIDAD (AQI)"
+              value={aqiLoading ? "..." : aqiData ? Math.round(aqiData.aqi) : "--"}
+              unit={aqiData?.category || "Sin datos"}
+              icon={<Activity size={24} />}
+              colorHex={aqiData?.color || "#e2e8f0"}
+              statusColor={aqiData?.color} // Texto del mismo color que el AQI
+              borderType="full"
+            />
+
+            {/* Contaminantes */}
+            {metricsConfig.map((metric) => {
+              const status = getPollutantStatus(metric.key);
+              return (
+                <StatCard
+                  key={metric.key}
+                  label={metric.label}
+                  value={status.value}
+                  unit={status.label}
+                  icon={metric.icon}
+                  colorHex={status.color}
+                  statusColor={status.color} // Texto de "Normal"/"Dominante" coloreado
+                  borderType="left"
+                />
+              );
+            })}
+
+            {/* Variables Climáticas */}
+            <StatCard label="TEMPERATURA" value="24°C" unit="Agradable" icon={<Thermometer size={24} color={ICON_COLOR} />} borderType="none" />
+
+            <StatCard label="HUMEDAD" value="68%" unit="Relativa" icon={<Droplet size={24} color={ICON_COLOR} />} borderType="none" />
           </div>
 
-          {/* Sección de estaciones */}
-          <div className="stations-section">
-            <h3 className="section-title">Estaciones de monitoreo activas</h3>
+          {/* Sección estaciones... */}
+          <div className="stations-section mt-8">
+            <h3 className="section-title">Red de Monitoreo</h3>
             <div className="stations-grid">
               <div className="station-card">
                 <div className="station-status online"></div>
                 <div className="station-info">
-                  <h4>Estación Norte</h4>
-                  <p>Última lectura: hace 5 min</p>
-                  <span className="station-aqi good">AQI: 38</span>
-                </div>
-              </div>
-              <div className="station-card">
-                <div className="station-status online"></div>
-                <div className="station-info">
-                  <h4>Estación Centro</h4>
-                  <p>Última lectura: hace 3 min</p>
-                  <span className="station-aqi moderate">AQI: 55</span>
-                </div>
-              </div>
-              <div className="station-card">
-                <div className="station-status online"></div>
-                <div className="station-info">
-                  <h4>Estación Sur</h4>
-                  <p>Última lectura: hace 8 min</p>
-                  <span className="station-aqi good">AQI: 42</span>
-                </div>
-              </div>
-              <div className="station-card">
-                <div className="station-status offline"></div>
-                <div className="station-info">
-                  <h4>Estación Oeste</h4>
-                  <p>Sin conexión</p>
-                  <span className="station-aqi offline">Sin datos</span>
+                  <h4>{aqiData?.station_name || "Estación Principal"}</h4>
+                  <p>Última lectura: {aqiLoading ? "..." : "hace un momento"}</p>
+                  <span className="station-aqi" style={{backgroundColor: (aqiData?.color || "#eee") + "40", color: "#333"}}>
+                    AQI: {aqiData ? Math.round(aqiData.aqi) : "--"}
+                  </span>
                 </div>
               </div>
             </div>
