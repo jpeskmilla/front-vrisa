@@ -57,12 +57,13 @@ export default function LoginPage() {
           role_status: decodedToken.role_status
         };
         
-        console.log('Login - userData guardado:', userData);
         localStorage.setItem("userData", JSON.stringify(userData));
 
-        // TODO: esto depende de la modificación de los tokens JWT en el backend
-        if (userData?.primary_role && userData.primary_role === 'super_admin') {
+        const role = decodedToken.primary_role;
+        if (role === "super_admin") {
           navigate("/admin");
+        } else if (role === "institution_head") {
+          navigate("/institution-admin");
         } else {
           navigate("/home");
         }
