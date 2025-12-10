@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import "./layout.css";
 
 export default function Header() {
-  const [user, setUser] = useState({ first_name: "", last_name: "" });
+  const [user, setUser] = useState({ first_name: "", last_name: "", primary_role: "", institution_id: null });
 
   useEffect(() => {
     try {
@@ -19,7 +19,7 @@ export default function Header() {
   const getInitials = () => {
     const first = user.first_name ? user.first_name.charAt(0).toUpperCase() : "";
     const last = user.last_name ? user.last_name.charAt(0).toUpperCase() : "";
-    
+
     if (!first && !last) return "U";
     return `${first}${last}`;
   };
@@ -31,11 +31,46 @@ export default function Header() {
     return `${user.first_name}${lastInitial}`;
   };
 
+  // Determinar estilos y badge según el rol
+  const getRoleStyles = () => {
+    const role = user.primary_role;
+    const hasInstitution = user.institution_id;
+
+    if (role === "super_admin") {
+      return {
+        borderColor: "#4339F2",
+        badge: "ADMIN",
+        badgeClass: "role-badge-admin"
+      };
+    }
+
+    if (role === "institution" || hasInstitution) {
+      return {
+        borderColor: "#059669",
+        badge: "INSTITUCIÓN",
+        badgeClass: "role-badge-institution"
+      };
+    }
+
+    return {
+      borderColor: "#e2e8f0",
+      badge: null,
+      badgeClass: ""
+    };
+  };
+
+  const roleStyles = getRoleStyles();
+
   return (
-    <header className="layout-header">
+    <header className="layout-header" style={{ borderTop: `4px solid ${roleStyles.borderColor}` }}>
       <div className="header-left">
         <Link to="/home" className="layout-logo">
           VriSA
+          {roleStyles.badge && (
+            <span className={`role-badge ${roleStyles.badgeClass}`}>
+              {roleStyles.badge}
+            </span>
+          )}
         </Link>
         <div className="brand-divider"></div>
         <span className="header-subtitle">Sistema de Monitoreo</span>
@@ -46,7 +81,7 @@ export default function Header() {
         <button className="icon-btn" title="Notificaciones">
           <Bell size={22} />
         </button>
-        
+
         <div className="header-user-pill">
             <div className="avatar-circle">
                 {getInitials()}
