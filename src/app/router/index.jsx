@@ -3,26 +3,26 @@ import MainLayout from "../../shared/layout/MainLayout.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 
 // Páginas públicas
-import LoginPage from "../pages/LoginPage.jsx";
-import NotFoundPage from "../pages/NotFoundPage.jsx";
-import RegisterUserPage from "../pages/RegisterUserPage.jsx";
+import LoginPage from "../pages/auth/LoginPage";
+import NotFoundPage from "../pages/general/NotFoundPage";
+import RegisterUserPage from "../pages/auth/RegisterUserPage";
 // Páginas protegidas
-import AdminPanelPage from "../pages/AdminPanelPage.jsx";
-import AirQualityPage from "../pages/AirQualityPage.jsx";
-import DashboardPage from "../pages/DashboardPage.jsx";
-import GlobalStationsPage from "../pages/GlobalStationsPage.jsx";
-import HomePage from "../pages/HomePage.jsx";
-import InstitutionAdminPage from "../pages/InstitutionAdminPage.jsx";
-import InstitutionsListPage from "../pages/InstitutionsListPage.jsx";
-import MaintenanceLogsPage from "../pages/MaintenanceLogsPage.jsx";
-import ProfilePage from "../pages/ProfilePage.jsx";
-import RegisterInstitutionPage from "../pages/RegisterInstitutionPage.jsx";
-import RegisterMaintenancePage from "../pages/RegisterMaintenancePage.jsx";
-import RegisterResearcherPage from "../pages/RegisterResearcherPage.jsx";
-import RegisterSensorPage from "../pages/RegisterSensorPage.jsx";
-import RegisterStationPage from "../pages/RegisterStationPage.jsx";
-import ReportsPage from "../pages/ReportsPage.jsx";
-import StationsPage from "../pages/StationsPage.jsx";
+import AdminPanelPage from "../pages/admin/AdminPanelPage";
+import AirQualityPage from "../pages/monitoring/AirQualityPage";
+import DashboardPage from "../pages/monitoring/DashboardPage";
+import GlobalStationsPage from "../pages/admin/GlobalStationsPage";
+import HomePage from "../pages/general/HomePage";
+import InstitutionAdminPage from "../pages/admin/InstitutionAdminPage";
+import InstitutionsListPage from "../pages/admin/InstitutionsListPage";
+import MaintenanceLogsPage from "../pages/station/MaintenanceLogsPage";
+import ProfilePage from "../pages/general/ProfilePage";
+import RegisterInstitutionPage from "../pages/registration/RegisterInstitutionPage";
+import RegisterMaintenancePage from "../pages/station/RegisterMaintenancePage";
+import RegisterResearcherPage from "../pages/registration/RegisterResearcherPage";
+import RegisterSensorPage from "../pages/station/RegisterSensorPage";
+import RegisterStationPage from "../pages/registration/RegisterStationPage";
+import ReportsPage from "../pages/monitoring/ReportsPage";
+import MyStationPage from "../pages/station/MyStationPage";
 
 /**
  * Componente de enrutador principal de la aplicación.
@@ -53,7 +53,7 @@ export default function AppRouter() {
           <Route path="/institution-admin/stations" element={<GlobalStationsPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/dashboard/air-quality" element={<AirQualityPage />} />
-          <Route path="/dashboard/stations" element={<StationsPage />} />
+          <Route path="/dashboard/stations" element={<MyStationPage />} />
           <Route path="/dashboard/reports" element={<ReportsPage />} />
           <Route path="/dashboard/maintenance" element={<MaintenanceLogsPage />} />
           <Route path="/dashboard/maintenance/new" element={<RegisterMaintenancePage />} />
