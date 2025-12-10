@@ -1,7 +1,8 @@
-import { Activity, AlertCircle, Cloud, Droplet, Factory, Flame, Haze, Thermometer, Wind, Zap } from "lucide-react";
+import { Activity, AlertCircle, Cloud, Droplet, Factory, Flame, Haze, MapPin, Thermometer, Wind, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { MeasurementAPI, UserAPI } from "../../../../shared/api";
+import { MeasurementAPI, StationAPI, UserAPI } from "../../../../shared/api";
+import { Select } from "../../../../shared/components/Input";
 import StatCard from "../../../../shared/components/StatCard/StatCard";
 import "./DashboardPage.css";
 
@@ -12,8 +13,23 @@ export default function DashboardPage() {
   const [aqiData, setAqiData] = useState(null);
   const [aqiLoading, setAqiLoading] = useState(true);
   const [aqiError, setAqiError] = useState(null);
+  const [selectedStationId, setSelectedStationId] = useState("");
+  const [stationsList, setStationsList] = useState([]);
 
-  // Inicialización de usuario (sin cambios)
+  // Cargar lista de estaciones al iniciar
+  useEffect(() => {
+    const loadStations = async () => {
+      try {
+        const data = await StationAPI.getStations({status: "ACTIVE"});
+        setStationsList(data);
+      } catch (e) {
+        console.error("Error loading stations", e);
+      }
+    };
+    loadStations();
+  }, []);
+
+  // Inicialización de usuario
   useEffect(() => {
     const initDashboard = async () => {
       try {
@@ -59,9 +75,8 @@ export default function DashboardPage() {
     const fetchAQI = async () => {
       try {
         setAqiLoading(true);
-        const stationId = 1; // TODO: Dinámico
-        const data = await MeasurementAPI.getCurrentAQI(stationId);
-        setAqiData(data);
+        const aqi = await MeasurementAPI.getCurrentAQI(selectedStationId || null);
+        setAqiData(aqi);
         setAqiError(null);
       } catch (error) {
         console.error("Error fetching AQI:", error);
@@ -76,7 +91,7 @@ export default function DashboardPage() {
       const interval = setInterval(fetchAQI, 30000);
       return () => clearInterval(interval);
     }
-  }, [user]);
+  }, [user, selectedStationId]);
 
   // Colores y lógica para tarjetas
   const ICON_COLOR = "#64748b";
@@ -116,6 +131,14 @@ export default function DashboardPage() {
     {key: "O3", label: "OZONO (O3)", icon: <Wind size={24} />},
   ];
 
+  const stationOptions = [
+    {value: "", label: "Todas las estaciones (Ciudad)"},
+    ...stationsList.map((st) => ({
+      value: st.station_id,
+      label: st.station_name,
+    })),
+  ];
+
   const isCitizen = !user?.belongs_to_organization || user?.requested_role === "citizen";
   const hasInstitutionAssigned = user?.institution_id || user?.institution;
   const needsRegistrationCompletion = !isCitizen && !user?.registration_complete && !hasInstitutionAssigned;
@@ -150,9 +173,16 @@ export default function DashboardPage() {
 
       <main className="dashboard-main">
         <section className="dashboard-content">
-          <div className="content-header">
-            <h2>Monitor de Calidad del Aire</h2>
-            <p className="content-subtitle">Estación: {aqiData?.station_name || "Cargando..."}</p>
+          <div className="content-header flex justify-between items-center">
+            <div>
+              <h2>Monitor de Calidad del Aire</h2>
+              <p className="content-subtitle">Viendo: {aqiData?.station_name || "Cargando..."}</p>
+            </div>
+
+            {/* Selector de Estación */}
+            <div style={{width: "280px"}}>
+              <Select value={selectedStationId} onChange={(e) => setSelectedStationId(e.target.value)} options={stationOptions} icon={MapPin} />
+            </div>
           </div>
 
           <div className="summary-cards">
@@ -163,7 +193,7 @@ export default function DashboardPage() {
               unit={aqiData?.category || "Sin datos"}
               icon={<Activity size={24} />}
               colorHex={aqiData?.color || "#e2e8f0"}
-              statusColor={aqiData?.color} // Texto del mismo color que el AQI
+              statusColor={aqiData?.color}
               borderType="full"
             />
 
@@ -178,7 +208,7 @@ export default function DashboardPage() {
                   unit={status.label}
                   icon={metric.icon}
                   colorHex={status.color}
-                  statusColor={status.color} // Texto de "Normal"/"Dominante" coloreado
+                  statusColor={status.color}
                   borderType="left"
                 />
               );

@@ -16,5 +16,6 @@ export const getHistoricalData = (filters) => {
  * @returns {Promise<object>} Datos del AQI actual.
  */
 export const getCurrentAQI = (stationId) => {
-  return apiFetch(`/measurements/aqi/current/?station_id=${stationId}`);
+  const query = stationId ? `?station_id=${stationId}` : '';
+  return apiFetch(`/measurements/aqi/current/${query}`);
 };
