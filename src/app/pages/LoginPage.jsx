@@ -70,7 +70,18 @@ export default function LoginPage() {
         setError("Respuesta inesperada del servidor");
       }
     } catch (err) {
-      setError(err.message || "Error al iniciar sesión. Verifica tus credenciales.");
+      // Mensajes más amigables según el tipo de error
+      if (err.status === 401) {
+        setError("Las credenciales ingresadas no son correctas. Por favor, verifica tu correo electrónico y contraseña.");
+      } else if (err.status === 404) {
+        setError("No se pudo conectar con el servidor. Por favor, intenta nuevamente más tarde.");
+      } else if (err.status >= 500) {
+        setError("Ocurrió un error en el servidor. Por favor, intenta nuevamente en unos momentos.");
+      } else if (err.message) {
+        setError(err.message);
+      } else {
+        setError("No se pudo iniciar sesión. Por favor, verifica tus credenciales e intenta nuevamente.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -132,7 +143,16 @@ export default function LoginPage() {
 
             <p className="forget-text">¿Olvidaste tu contraseña?</p>
 
-            {error && <div className="error-message">{error}</div>}
+            {error && (
+              <div className="error-message">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <span>{error}</span>
+              </div>
+            )}
 
             <button type="submit" className="login-button" disabled={isLoading}>
               {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
