@@ -22,7 +22,6 @@ import RegisterStationPage from "../pages/RegisterStationPage.jsx";
 import ReportsPage from "../pages/ReportsPage.jsx";
 import StationsPage from "../pages/StationsPage.jsx";
 
-
 /**
  * Componente de enrutador principal de la aplicación.
  * @returns {JSX.Element} Estructura de rutas de la aplicación.
@@ -35,16 +34,7 @@ export default function AppRouter() {
         <Route path="/" element={<LoginPage />} />
         <Route path="/register" element={<RegisterUserPage />} />
 
-        {/* RUTAS PROTEGIDAS (Requieren Token activo) */}
-        <Route
-          path="/home"
-          element={
-            <ProtectedRoute>
-              <HomePage />
-            </ProtectedRoute>
-          }
-        />
-        {/* Dashboard y submodulos */}
+        {/* RUTAS PROTEGIDAS CON LAYOUT COMPARTIDO */}
         <Route
           element={
             <ProtectedRoute>
@@ -52,6 +42,10 @@ export default function AppRouter() {
             </ProtectedRoute>
           }
         >
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/admin" element={<AdminPanelPage />} />
+          <Route path="/institution-admin" element={<InstitutionAdminPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/dashboard/air-quality" element={<AirQualityPage />} />
           <Route path="/dashboard/stations" element={<StationsPage />} />
@@ -60,33 +54,6 @@ export default function AppRouter() {
           <Route path="/dashboard/maintenance/new" element={<RegisterMaintenancePage />} />
           <Route path="/dashboard/sensors/new" element={<RegisterSensorPage />} />
         </Route>
-        {/* Paneles de administración */}
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute>
-              <AdminPanelPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/institution-admin"
-          element={
-            <ProtectedRoute>
-              <InstitutionAdminPage />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Perfil de Usuario */}
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <ProfilePage />
-            </ProtectedRoute>
-          }
-        />
 
         {/* Flujo de Completar Registro  */}
         <Route
