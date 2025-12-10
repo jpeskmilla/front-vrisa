@@ -34,10 +34,6 @@ export default function AirQualityPage() {
 
         setStations(stationsData);
         setVariables(varsData);
-
-        if (stationsData.length > 0 && !filters.station_id) {
-          setFilters((prev) => ({...prev, station_id: stationsData[0].station_id}));
-        }
       } catch (error) {
         console.error("Error cargando metadatos", error);
         // TODO: Mostrar notificación de error al usuario
@@ -48,10 +44,6 @@ export default function AirQualityPage() {
 
   // Función para buscar datos históricos
   const fetchData = async () => {
-    if (!filters.station_id) {
-      alert("Por favor selecciona una estación");
-      return;
-    }
     setLoading(true);
     try {
       const result = await MeasurementAPI.getHistoricalData(filters);
@@ -146,6 +138,7 @@ export default function AirQualityPage() {
             <span className="aq-label">Estación</span>
             <div className="aq-select-wrapper">
               <select value={filters.station_id} onChange={handleStationChange} className="aq-select">
+                <option value="">Todas (Cali)</option> 
                 {stations.map((s) => (
                   <option key={s.station_id} value={s.station_id}>
                     {s.station_name}
