@@ -1,7 +1,8 @@
-import { Activity, AlertCircle, Cloud, Droplet, Factory, Flame, Haze, Thermometer, Wind, Zap } from "lucide-react";
+import { Activity, AlertCircle, Cloud, Droplet, Factory, Flame, Haze, MapPin, Thermometer, Wind, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { MeasurementAPI, StationAPI, UserAPI } from "../../../../shared/api";
+import { Select } from "../../../../shared/components/Input";
 import StatCard from "../../../../shared/components/StatCard/StatCard";
 import "./DashboardPage.css";
 
@@ -130,6 +131,14 @@ export default function DashboardPage() {
     {key: "O3", label: "OZONO (O3)", icon: <Wind size={24} />},
   ];
 
+  const stationOptions = [
+    {value: "", label: "Todas las estaciones (Ciudad)"},
+    ...stationsList.map((st) => ({
+      value: st.station_id,
+      label: st.station_name,
+    })),
+  ];
+
   const isCitizen = !user?.belongs_to_organization || user?.requested_role === "citizen";
   const hasInstitutionAssigned = user?.institution_id || user?.institution;
   const needsRegistrationCompletion = !isCitizen && !user?.registration_complete && !hasInstitutionAssigned;
@@ -171,19 +180,8 @@ export default function DashboardPage() {
             </div>
 
             {/* Selector de Estación */}
-            <div className="w-64">
-              <select
-                className="w-full p-2 border border-gray-300 rounded-lg bg-white text-gray-700 focus:outline-none focus:border-brand-500"
-                value={selectedStationId}
-                onChange={(e) => setSelectedStationId(e.target.value)}
-              >
-                <option value="">Todas las estaciones (Ciudad)</option>
-                {stationsList.map((st) => (
-                  <option key={st.station_id} value={st.station_id}>
-                    {st.station_name}
-                  </option>
-                ))}
-              </select>
+            <div style={{width: "280px"}}>
+              <Select value={selectedStationId} onChange={(e) => setSelectedStationId(e.target.value)} options={stationOptions} icon={MapPin} />
             </div>
           </div>
 
@@ -195,7 +193,7 @@ export default function DashboardPage() {
               unit={aqiData?.category || "Sin datos"}
               icon={<Activity size={24} />}
               colorHex={aqiData?.color || "#e2e8f0"}
-              statusColor={aqiData?.color} // Texto del mismo color que el AQI
+              statusColor={aqiData?.color}
               borderType="full"
             />
 
@@ -210,7 +208,7 @@ export default function DashboardPage() {
                   unit={status.label}
                   icon={metric.icon}
                   colorHex={status.color}
-                  statusColor={status.color} // Texto de "Normal"/"Dominante" coloreado
+                  statusColor={status.color}
                   borderType="left"
                 />
               );
