@@ -15,11 +15,11 @@ import InstitutionAdminPage from "../pages/InstitutionAdminPage.jsx";
 import MaintenanceLogsPage from "../pages/MaintenanceLogsPage.jsx";
 import ProfilePage from "../pages/ProfilePage.jsx";
 import RegisterInstitutionPage from "../pages/RegisterInstitutionPage.jsx";
+import RegisterMaintenancePage from "../pages/RegisterMaintenancePage.jsx";
 import RegisterResearcherPage from "../pages/RegisterResearcherPage.jsx";
 import RegisterStationPage from "../pages/RegisterStationPage.jsx";
-import ReportsPage from "../pages/ReportsPage.jsx"; 
-import StationMaintenancePage from "../pages/StationMaintenancePage.jsx";
-import StationsPage from "../pages/StationsPage.jsx"; 
+import ReportsPage from "../pages/ReportsPage.jsx";
+import StationsPage from "../pages/StationsPage.jsx";
 
 
 /**
@@ -56,7 +56,7 @@ export default function AppRouter() {
           <Route path="/dashboard/stations" element={<StationsPage />} />
           <Route path="/dashboard/reports" element={<ReportsPage />} />
           <Route path="/dashboard/maintenance" element={<MaintenanceLogsPage />} />
-          <Route path="/dashboard/maintenance/new" element={<StationMaintenancePage />} />
+          <Route path="/dashboard/maintenance/new" element={<RegisterMaintenancePage />} />
         </Route>
         {/* Paneles de administración */}
         <Route

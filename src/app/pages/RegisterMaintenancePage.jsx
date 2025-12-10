@@ -2,13 +2,13 @@ import { FileText, Upload, Wrench } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SensorAPI } from "../../shared/api";
-import "./maintenance-page.css";
+import "./registermaintenance-page.css";
 
 /**
- * Página de Formulario para crear un nuevo registro de mantenimiento.
- * @returns {JSX.Element} Componente del formulario de mantenimiento.
+ * Página para registrar un nuevo mantenimiento o calibración de un sensor.
+ * @returns {JSX.Element} Componente de la página de registro de mantenimiento.
  */
-export default function StationMaintenancePage() {
+export default function RegisterMaintenancePage() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
@@ -25,7 +25,6 @@ export default function StationMaintenancePage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Cargar sensores al montar
   useEffect(() => {
     const loadSensors = async () => {
       try {
@@ -38,31 +37,22 @@ export default function StationMaintenancePage() {
         setLoadingSensors(false);
       }
     };
-
     loadSensors();
   }, []);
 
-  /**
-   * Maneja cambios en los inputs del formulario.
-   */
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     setError("");
   };
 
-  /**
-   * Maneja la selección del archivo PDF.
-   */
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Validar que sea PDF
       if (file.type !== "application/pdf") {
         setError("Solo se permiten archivos PDF.");
         return;
       }
-      // Validar tamaño (máx 10MB)
       if (file.size > 10 * 1024 * 1024) {
         setError("El archivo no debe superar los 10MB.");
         return;
@@ -72,16 +62,10 @@ export default function StationMaintenancePage() {
     }
   };
 
-  /**
-   * Abre el selector de archivos.
-   */
   const handleUploadClick = () => {
     fileInputRef.current?.click();
   };
 
-  /**
-   * Valida el formulario antes de enviar.
-   */
   const validateForm = () => {
     if (!formData.sensor) {
       setError("Debes seleccionar un sensor.");
@@ -98,12 +82,8 @@ export default function StationMaintenancePage() {
     return true;
   };
 
-  /**
-   * Envía el formulario al backend.
-   */
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     if (!validateForm()) return;
 
     setIsSubmitting(true);
@@ -120,10 +100,8 @@ export default function StationMaintenancePage() {
       }
 
       await SensorAPI.createMaintenanceLog(payload);
-      
       setSuccess("Registro de mantenimiento creado exitosamente.");
       
-      // Redirigir después de 1.5 segundos
       setTimeout(() => {
         navigate("/dashboard/maintenance");
       }, 1500);
@@ -136,41 +114,39 @@ export default function StationMaintenancePage() {
   };
 
   return (
-    <div className="maintenance-form-container">
+    <div className="rm-container">
       {/* Header */}
-      <div className="maintenance-header">
-        <div className="header-content">
-          <div className="header-icon">
-            <Wrench size={24} />
-          </div>
-          <div>
-            <h1 className="maintenance-title">Nuevo Mantenimiento</h1>
-            <p className="maintenance-subtitle">
-              Registra una actividad de mantenimiento o calibración para un sensor.
-            </p>
-          </div>
+      <div className="rm-header">
+        <div className="rm-header-icon">
+          <Wrench size={28} />
+        </div>
+        <div>
+          <h1 className="rm-title">Nuevo Mantenimiento</h1>
+          <p className="rm-subtitle">
+            Registra una actividad de mantenimiento o calibración para un sensor.
+          </p>
         </div>
       </div>
 
       {/* Formulario */}
-      <div className="form-card">
-        {error && <div className="form-error">{error}</div>}
-        {success && <div className="form-success">{success}</div>}
+      <div className="rm-card">
+        {error && <div className="rm-error">{error}</div>}
+        {success && <div className="rm-success">{success}</div>}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="rm-form">
           {/* Selector de Sensor */}
-          <div className="form-section">
-            <label className="form-label">
+          <div className="rm-group">
+            <label className="rm-label">
               Sensor <span className="required">*</span>
             </label>
             {loadingSensors ? (
-              <p className="form-hint">Cargando sensores...</p>
+              <p className="rm-hint">Cargando sensores...</p>
             ) : (
               <select
                 name="sensor"
                 value={formData.sensor}
                 onChange={handleInputChange}
-                className="form-select"
+                className="rm-select"
                 disabled={isSubmitting}
               >
                 <option value="">Selecciona un sensor</option>
@@ -181,14 +157,14 @@ export default function StationMaintenancePage() {
                 ))}
               </select>
             )}
-            <span className="form-hint">
-              Selecciona el sensor al que se realizó el mantenimiento.
+            <span className="rm-hint">
+              Dispositivo intervenido.
             </span>
           </div>
 
-          {/* Fecha del Mantenimiento */}
-          <div className="form-section">
-            <label className="form-label">
+          {/* Fecha */}
+          <div className="rm-group">
+            <label className="rm-label">
               Fecha del Mantenimiento <span className="required">*</span>
             </label>
             <input
@@ -196,82 +172,81 @@ export default function StationMaintenancePage() {
               name="log_date"
               value={formData.log_date}
               onChange={handleInputChange}
-              className="form-input"
+              className="rm-input"
               disabled={isSubmitting}
             />
-            <span className="form-hint">
-              Indica cuándo se realizó la actividad de mantenimiento.
+            <span className="rm-hint">
+              Hora exacta de la ejecución.
             </span>
           </div>
 
           {/* Descripción */}
-          <div className="form-section">
-            <label className="form-label">
+          <div className="rm-group rm-full-width">
+            <label className="rm-label">
               Descripción de Actividades <span className="required">*</span>
             </label>
             <textarea
               name="description"
               value={formData.description}
               onChange={handleInputChange}
-              className="form-textarea"
+              className="rm-textarea"
               placeholder="Describe las actividades realizadas: calibración, limpieza, reemplazo de componentes, etc."
               disabled={isSubmitting}
             />
-            <span className="form-hint">
-              Detalla las actividades realizadas durante el mantenimiento.
-            </span>
           </div>
 
-          {/* Upload de Certificado */}
-          <div className="form-section">
-            <label className="form-label">Certificado de Calibración (PDF)</label>
-            <div className="file-upload-wrapper">
-              <div
-                className={`file-upload-area ${certificateFile ? "has-file" : ""}`}
+          {/* Upload */}
+          <div className="rm-group rm-full-width">
+            <label className="rm-label">Certificado de Calibración (PDF)</label>
+            <div 
+                className={`rm-file-area ${certificateFile ? "has-file" : ""}`}
                 onClick={handleUploadClick}
-              >
-                <div className="upload-icon">
-                  <Upload size={24} />
+            >
+                <div style={{ marginBottom: '12px', color: '#4339F2' }}>
+                  <Upload size={32} />
                 </div>
                 <p className="upload-text">
                   <strong>Haz clic para subir</strong> o arrastra el archivo aquí
                   <br />
-                  <small>PDF (máx. 10MB)</small>
+                  <small style={{ color: '#64748b' }}>PDF (máx. 10MB)</small>
                 </p>
                 {certificateFile && (
-                  <div className="file-name">
+                  <div style={{ 
+                      marginTop: '12px', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '8px',
+                      color: '#1e293b',
+                      fontWeight: '500'
+                  }}>
                     <FileText size={16} />
                     {certificateFile.name}
                   </div>
                 )}
-              </div>
-              <input
+            </div>
+            <input
                 type="file"
                 ref={fileInputRef}
                 onChange={handleFileChange}
                 accept="application/pdf"
-                className="file-input"
+                style={{ display: 'none' }}
                 disabled={isSubmitting}
-              />
-            </div>
-            <span className="form-hint">
-              Opcional: Adjunta el certificado de calibración o documento de respaldo.
-            </span>
+            />
           </div>
 
-          {/* Botones de acción */}
-          <div className="form-actions">
+          {/* Botones */}
+          <div className="rm-actions rm-full-width">
             <button
               type="button"
               onClick={() => navigate("/dashboard/maintenance")}
-              className="btn-cancel"
+              className="rm-btn-cancel"
               disabled={isSubmitting}
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="btn-submit"
+              className="rm-btn-submit"
               disabled={isSubmitting || loadingSensors}
             >
               {isSubmitting ? "Guardando..." : "Registrar Mantenimiento"}
@@ -282,4 +257,3 @@ export default function StationMaintenancePage() {
     </div>
   );
 }
-
