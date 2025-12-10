@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { MeasurementAPI, StationAPI, UserAPI } from "../../../../shared/api";
 import { Select } from "../../../../shared/components/Input";
+import StationsMap from "../../../../shared/components/Map/StationsMap";
 import StatCard from "../../../../shared/components/StatCard/StatCard";
 import "./DashboardPage.css";
 
@@ -219,20 +220,42 @@ export default function DashboardPage() {
 
             <StatCard label="HUMEDAD" value="68%" unit="Relativa" icon={<Droplet size={24} color={ICON_COLOR} />} borderType="none" />
           </div>
-
-          {/* Sección estaciones... */}
+          
+          {/* Sección estaciones con mapa */}
           <div className="stations-section mt-8">
             <h3 className="section-title">Red de Monitoreo</h3>
-            <div className="stations-grid">
-              <div className="station-card">
-                <div className="station-status online"></div>
-                <div className="station-info">
-                  <h4>{aqiData?.station_name || "Estación Principal"}</h4>
-                  <p>Última lectura: {aqiLoading ? "..." : "hace un momento"}</p>
-                  <span className="station-aqi" style={{backgroundColor: (aqiData?.color || "#eee") + "40", color: "#333"}}>
-                    AQI: {aqiData ? Math.round(aqiData.aqi) : "--"}
-                  </span>
+              <div className="stations-layout">
+              {/* Información de la estación principal */}
+              <div className="stations-info">
+                <div className="station-card">
+                  <div className="station-status online"></div>
+                  <div className="station-info">
+                    <h4>{aqiData?.station_name || "Estación Principal"}</h4>
+                    <p>Última lectura: {aqiLoading ? "..." : "hace un momento"}</p>
+                    <span className="station-aqi" style={{backgroundColor: (aqiData?.color || "#eee") + "40", color: "#333"}}>
+                      AQI: {aqiData ? Math.round(aqiData.aqi) : "--"}
+                    </span>
+                  </div>
                 </div>
+
+                {/* Resumen de estaciones */}
+                <div className="stations-summary">
+                  <p className="summary-text">
+                    <strong>{stationsList.length}</strong> estaciones activas
+                  </p>
+                  <p className="summary-subtext">
+                    Monitoreo en tiempo real
+                  </p>
+                </div>
+              </div>
+
+              {/* Mapa de estaciones */}
+              <div className="stations-map">
+                <StationsMap
+                  stations={stationsList}
+                  height="100%"
+                  zoom={13}
+                />
               </div>
             </div>
           </div>
