@@ -40,7 +40,9 @@ export async function apiFetch(endpoint, options = {}) {
   }
 
   if (!response.ok) {
-    if (response.status === 401) {
+    // Redirigir solo si: hay 401, había sesión activa, y NO es el endpoint de login
+    const isLoginEndpoint = endpoint.includes('/login');
+    if (response.status === 401 && token && !isLoginEndpoint) {
       localStorage.removeItem("token");
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("userData");

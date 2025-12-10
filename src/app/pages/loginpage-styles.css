@@ -187,13 +187,19 @@ input[type="password"]::-ms-reveal {
 }
 
 .error-message {
-  color: #e53935;
+  color: #c62828;
   background-color: #ffebee;
-  padding: 10px;
+  padding: 12px 16px;
   border-radius: 8px;
   margin-bottom: 16px;
   text-align: center;
   font-size: 0.9rem;
+  border-left: 4px solid #e53935;
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .vrisa-logo {

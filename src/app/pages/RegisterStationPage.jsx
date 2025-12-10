@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthAPI, InstitutionAPI, StationAPI } from "../../shared/api";
+import { InstitutionAPI, SensorAPI, StationAPI } from "../../shared/api";
 import "./registerstationpage-styles.css";
 
 /**
@@ -52,17 +52,17 @@ export default function RegisterStationPage() {
    * Carga las instituciones
    */
   useEffect(() => {
-  const fetchInstitutions = async () => {
-    try {
-      const data = await InstitutionAPI.getInstitutions();
-      setInstitutions(data);
-    } catch (err) {
-      console.error("Error cargando instituciones:", err);
-      setError("No se pudieron cargar las instituciones.");
-    } finally {
-      setLoadingInstitutions(false);
-    }
-  };
+    const fetchInstitutions = async () => {
+      try {
+        const data = await InstitutionAPI.getInstitutions();
+        setInstitutions(data);
+      } catch (err) {
+        console.error("Error cargando instituciones:", err);
+        setError("No se pudieron cargar las instituciones.");
+      } finally {
+        setLoadingInstitutions(false);
+      }
+    };
 
     fetchInstitutions();
   }, []);
@@ -71,14 +71,14 @@ export default function RegisterStationPage() {
    * Maneja los cambios de los inputs del paso 1
    */
   const handleBasicChange = (e) => {
-    setBasicData({ ...basicData, [e.target.name]: e.target.value });
+    setBasicData({...basicData, [e.target.name]: e.target.value});
   };
 
   /**
    * Maneja los cambios de los inputs del paso 2
    */
   const handleSensorChange = (e) => {
-    setSensorData({ ...sensorData, [e.target.name]: e.target.value });
+    setSensorData({...sensorData, [e.target.name]: e.target.value});
   };
 
   /**
@@ -86,7 +86,7 @@ export default function RegisterStationPage() {
    */
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
-    setSensorData({ ...sensorData, calibrationCertificate: file });
+    setSensorData({...sensorData, calibrationCertificate: file});
   };
 
   /**
@@ -96,8 +96,7 @@ export default function RegisterStationPage() {
     e.preventDefault();
     setError("");
 
-    if (!basicData.stationName || !basicData.geographicLat || 
-        !basicData.geographicLong || !basicData.institutionId) {
+    if (!basicData.stationName || !basicData.geographicLat || !basicData.geographicLong || !basicData.institutionId) {
       setError("Completa todos los campos obligatorios");
       return;
     }
@@ -134,8 +133,7 @@ export default function RegisterStationPage() {
     e.preventDefault();
     setError("");
 
-    if (!sensorData.sensorModel || !sensorData.sensorManufacturer || 
-        !sensorData.sensorSerial || !sensorData.calibrationCertificate) {
+    if (!sensorData.sensorModel || !sensorData.sensorManufacturer || !sensorData.sensorSerial || !sensorData.calibrationCertificate) {
       setError("Completa todos los campos obligatorios");
       return;
     }
@@ -143,25 +141,31 @@ export default function RegisterStationPage() {
     setLoading(true);
 
     try {
-      const payload = new FormData();
-      
-      // Datos básicos
-      payload.append("station_name", basicData.stationName);
-      payload.append("geographic_location_lat", basicData.geographicLat);
-      payload.append("geographic_location_long", basicData.geographicLong);
-      payload.append("address_reference", basicData.addressReference);
-      payload.append("institution_id", basicData.institutionId);
+      // payload para crear la estación
+      const stationPayload = {
+        station_name: basicData.stationName,
+        geographic_location_lat: parseFloat(basicData.geographicLat),
+        geographic_location_long: parseFloat(basicData.geographicLong),
+        address_reference: basicData.addressReference,
+        institution_id: basicData.institutionId,
+      };
 
-      // Datos del sensor
-      payload.append("sensor_model", sensorData.sensorModel);
-      payload.append("sensor_manufacturer", sensorData.sensorManufacturer);
-      payload.append("sensor_serial", sensorData.sensorSerial);
-      payload.append("calibration_certificate", sensorData.calibrationCertificate);
+      const stationResponse = await StationAPI.registerStation(JSON.stringify(stationPayload));
+      const newStationId = stationResponse.station_id;
 
-      await StationAPI.createAffiliationRequest(payload);
+      // Crear el Sensor vinculado a la estación
+      const sensorPayload = {
+        model: sensorData.sensorModel,
+        manufacturer: sensorData.sensorManufacturer,
+        serial_number: sensorData.sensorSerial,
+        installation_date: new Date().toISOString().split("T")[0],
+        status: "ACTIVE",
+        station: newStationId,
+      };
+      await SensorAPI.createSensor(sensorPayload);
 
       alert("Estación registrada exitosamente. Espera validación del administrador.");
-      navigate("/");
+      navigate("/home");
     } catch (err) {
       console.error(err);
       setError(err.message || "Error al registrar la estación");
@@ -181,14 +185,8 @@ export default function RegisterStationPage() {
 
       <div className="register-station-form-card">
         <h1 className="register-station-form-title">Registro de Estación de Monitoreo</h1>
-        <p className="register-station-form-subtitle">
-          Ingresa la información para validar la solicitud como estación de monitoreo.
-        </p>
-        <p className="register-station-form-subtitle">
-          {step === 1 
-            ? "Paso 1: Información básica de la estación"
-            : "Paso 2: Detalles del sensor base"}
-        </p>
+        <p className="register-station-form-subtitle">Ingresa la información para validar la solicitud como estación de monitoreo.</p>
+        <p className="register-station-form-subtitle">{step === 1 ? "Paso 1: Información básica de la estación" : "Paso 2: Detalles del sensor base"}</p>
 
         {/* Indicador de pasos */}
         <div className="register-station-steps-indicator">
@@ -254,9 +252,7 @@ export default function RegisterStationPage() {
             </div>
 
             <div className="register-station-form-group">
-              <label className="register-station-form-label">
-                Dirección de referencia
-              </label>
+              <label className="register-station-form-label">Dirección de referencia</label>
               <input
                 type="text"
                 name="addressReference"
@@ -266,7 +262,7 @@ export default function RegisterStationPage() {
                 onChange={handleBasicChange}
               />
             </div>
-            
+
             <div className="register-station-form-group">
               <label className="register-station-form-label">
                 <span className="register-station-required">*</span> Institución asociada
@@ -274,13 +270,7 @@ export default function RegisterStationPage() {
               {loadingInstitutions ? (
                 <div className="register-station-loading-text">Cargando instituciones...</div>
               ) : (
-                <select
-                  name="institutionId"
-                  className="register-station-form-input"
-                  value={basicData.institutionId}
-                  onChange={handleBasicChange}
-                  required
-                >
+                <select name="institutionId" className="register-station-form-input" value={basicData.institutionId} onChange={handleBasicChange} required>
                   <option value="">Selecciona una institución</option>
                   {institutions.map((inst) => (
                     <option key={inst.id} value={inst.id}>
@@ -351,36 +341,19 @@ export default function RegisterStationPage() {
               <label className="register-station-form-label">
                 <span className="register-station-required">*</span> Certificado de calibración
               </label>
-              <input
-                type="file"
-                accept=".pdf,image/*"
-                className="register-station-form-input"
-                onChange={handleFileUpload}
-                required
-              />
-              <small className="register-station-form-hint">
-                Documento PDF o imagen que certifique la calibración
-              </small>
+              <input type="file" accept=".pdf,image/*" className="register-station-form-input" onChange={handleFileUpload} required />
+              <small className="register-station-form-hint">Documento PDF o imagen que certifique la calibración</small>
             </div>
 
             {error && <div className="register-station-error-box">{error}</div>}
 
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button
-                  type="button"
-                  className="register-station-back-step-button"
-                  onClick={handleBackStep}
-                >
-                  ← Volver al paso 1
+            <div style={{display: "flex", gap: "10px"}}>
+              <button type="button" className="register-station-back-step-button" onClick={handleBackStep}>
+                ← Volver al paso 1
               </button>
 
-              <button
-                  type="submit"
-                  className="register-station-submit-button"
-                  disabled={loading}
-                  style={{ opacity: loading ? 0.7 : 1 }}
-                >
-                  {loading ? "Enviando..." : "Enviar solicitud"}
+              <button type="submit" className="register-station-submit-button" disabled={loading} style={{opacity: loading ? 0.7 : 1}}>
+                {loading ? "Enviando..." : "Enviar solicitud"}
               </button>
             </div>
           </form>
