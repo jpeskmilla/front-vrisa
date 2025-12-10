@@ -1,18 +1,6 @@
-import { 
-  Building2, 
-  CheckCircle, 
-  Clock, 
-  LayoutDashboard, 
-  LogOut, 
-  MapPin, 
-  Radio,
-  Users,
-  XCircle,
-  Activity,
-  AlertTriangle
-} from "lucide-react";
+import { Activity, AlertTriangle, Building2, CheckCircle, Clock, LayoutDashboard, LogOut, MapPin, Radio, Users, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { StationAPI } from "../../shared/api";
 import "./dashboard-styles.css";
 
@@ -24,9 +12,9 @@ export default function InstitutionAdminPage() {
   const navigate = useNavigate();
   const [institutionUser, setInstitutionUser] = useState(null);
   const [stats, setStats] = useState({
-    totalStations: 0, 
+    totalStations: 0,
     pendingRequests: 0,
-    activeStations: 0
+    activeStations: 0,
   });
   const [pendingStations, setPendingStations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,21 +27,18 @@ export default function InstitutionAdminPage() {
       navigate("/");
       return;
     }
-    
+
     const parsed = JSON.parse(userData);
-    
+
     // Verificar que sea un usuario de institución
-    const isInstitutionUser = 
-      parsed.primary_role === "institution" || 
-      parsed.requested_role === "institution" ||
-      parsed.institution_id;
-    
+    const isInstitutionUser = parsed.primary_role === "institution" || parsed.primary_role === "super_admin" || parsed.institution_id;
+
     if (!isInstitutionUser) {
       alert("Acceso denegado: Se requieren permisos de Institución.");
       navigate("/dashboard");
       return;
     }
-    
+
     setInstitutionUser(parsed);
     fetchData(parsed.institution_id);
   }, [navigate]);
@@ -61,50 +46,21 @@ export default function InstitutionAdminPage() {
   const fetchData = async (institutionId) => {
     try {
       setLoading(true);
-      
-      // Obtener solicitudes de registro pendientes
-      const requests = await StationAPI.getRegistrationRequests();
-      
-      // Filtrar solo las pendientes
-      const pending = requests.filter(req => req.status === 'PENDING');
-      
-      // Mapear los datos al formato esperado por el componente
-      const mappedRequests = pending.map(req => ({
-        id: req.request_id,
-        station_name: req.station_name,
-        location: `${req.geographic_location_lat.toFixed(4)}, ${req.geographic_location_long.toFixed(4)}`,
-        address: req.address_reference || 'Sin dirección',
-        latitude: req.geographic_location_lat,
-        longitude: req.geographic_location_long,
-        request_status: req.status,
-        requested_by: req.requester_name || 'Desconocido',
-        requested_at: req.created_at,
-        sensor_model: req.sensor_model,
-        sensor_manufacturer: req.sensor_manufacturer,
-        sensor_serial: req.sensor_serial,
-        type: "STATION"
-      }));
 
-      setPendingStations(mappedRequests);
-      
-      // Obtener estaciones existentes
-      try {
-        const stations = await StationAPI.getAffiliationRequests();
-        const activeStations = stations.filter(s => s.operative_status === 'ACTIVE').length;
-        
-        setStats({
-          totalStations: stations.length,
-          pendingRequests: pending.length,
-          activeStations: activeStations
-        });
-      } catch (err) {
-        setStats({
-          totalStations: 0,
-          pendingRequests: pending.length,
-          activeStations: 0
-        });
-      }
+      // Obtener estaciones pendientes asociadas a la institución
+      const allMyStations = await StationAPI.getStations({institution: institutionId});
+      const pending = allMyStations.filter((s) => s.operative_status === "PENDING");
 
+      // Calcular activos
+      const active = allMyStations.filter((s) => s.operative_status === "ACTIVE").length;
+
+      setPendingStations(pending);
+
+      setStats({
+        totalStations: allMyStations.length,
+        pendingRequests: pending.length,
+        activeStations: active,
+      });
     } catch (error) {
       console.error("Error cargando datos de la institución:", error);
       alert("Error al cargar las solicitudes. Verifica tu conexión.");
@@ -114,50 +70,47 @@ export default function InstitutionAdminPage() {
   };
 
   const handleApproveStation = async (station) => {
-    if (!window.confirm(`¿Aprobar "${station.station_name}"?\n\nEsto creará la estación en el sistema.`)) {
+    if (!window.confirm(`¿Aprobar integración de "${station.station_name}"?`)) {
       return;
     }
 
     try {
-      await StationAPI.reviewRegistrationRequest(
-        station.id, 
-        'ACCEPTED', 
-        'Aprobado por la institución'
-      );
-      
+      // Se actualizado estado a ACTIVE
+      await StationAPI.updateStation(station.station_id, {
+        operative_status: "ACTIVE",
+      });
+
       alert(` Estación "${station.station_name}" aprobada con éxito`);
-      
-      fetchData(institutionUser.institution_id);
-      
+
+      if (institutionUser?.institution_id) {
+        fetchData(institutionUser.institution_id);
+      }
     } catch (error) {
       console.error("Error aprobando estación:", error);
-      alert(`Error al aprobar: ${error.message || 'Error desconocido'}`);
+      alert(`Error al aprobar: ${error.message || "Error desconocido"}`);
     }
   };
 
   const handleRejectStation = async (station) => {
-    const reason = prompt(
-      `¿Por qué rechazas la estación "${station.station_name}"?\n\n` +
-      `Escribe el motivo (opcional):`
-    );
-    
+    if (!window.confirm(`¿Rechazar "${station.station_name}"?`)) return;
+
     if (reason === null) return; // Usuario canceló
 
     try {
-      await StationAPI.reviewRegistrationRequest(
-        station.id, 
-        'REJECTED', 
-        reason || 'Rechazado por la institución'
-      );
-      
+      // Actualizar estado a REJECTED
+      await StationAPI.updateStation(station.station_id, {
+        operative_status: "REJECTED",
+      });
+
       alert(`Estación "${station.station_name}" rechazada`);
-      
+
       // Recargar datos
-      fetchData(institutionUser.institution_id);
-      
+      if (institutionUser?.institution_id) {
+        fetchData(institutionUser.institution_id);
+      }
     } catch (error) {
       console.error("Error rechazando estación:", error);
-      alert(`Error al rechazar: ${error.message || 'Error desconocido'}`);
+      alert(`Error al rechazar: ${error.message || "Error desconocido"}`);
     }
   };
 
@@ -222,13 +175,15 @@ export default function InstitutionAdminPage() {
                     <div className="station-status" style={{background: "#f59e0b", boxShadow: "0 0 8px rgba(245, 158, 11, 0.4)"}}></div>
                     <div className="station-info">
                       <h4>{station.station_name}</h4>
-                      <p>{station.location} - {station.address}</p>
+                      <p>
+                        {station.location} - {station.address}
+                      </p>
                       <span className="station-aqi moderate">Pendiente</span>
                     </div>
                   </div>
                 ))}
               </div>
-              <button 
+              <button
                 onClick={() => setActiveTab("approvals")}
                 style={{
                   marginTop: "16px",
@@ -238,7 +193,7 @@ export default function InstitutionAdminPage() {
                   border: "none",
                   borderRadius: "8px",
                   cursor: "pointer",
-                  fontWeight: "600"
+                  fontWeight: "600",
                 }}
               >
                 Ver todas las solicitudes
@@ -256,14 +211,14 @@ export default function InstitutionAdminPage() {
             <h2>Solicitudes de Estaciones</h2>
             <p>Revisa y aprueba las solicitudes de nuevas estaciones</p>
           </div>
-          
+
           <div
             className="table-container"
             style={{
               background: "white",
               borderRadius: "16px",
               padding: "24px",
-              boxShadow: "0 4px 16px rgba(0, 0, 0, 0.04)"
+              boxShadow: "0 4px 16px rgba(0, 0, 0, 0.04)",
             }}
           >
             {pendingStations.length === 0 ? (
@@ -276,6 +231,7 @@ export default function InstitutionAdminPage() {
                 <thead>
                   <tr style={{borderBottom: "2px solid #f0f0f0", textAlign: "left"}}>
                     <th style={{padding: "12px", color: "#666"}}>Estación</th>
+                    <th style={{padding: "12px", color: "#666"}}>Sensores Detectados</th>
                     <th style={{padding: "12px", color: "#666"}}>Ubicación</th>
                     <th style={{padding: "12px", color: "#666"}}>Solicitante</th>
                     <th style={{padding: "12px", color: "#666"}}>Fecha</th>
@@ -283,104 +239,134 @@ export default function InstitutionAdminPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {pendingStations.map((station) => (
-                    <tr key={station.id} style={{borderBottom: "1px solid #f0f0f0"}}>
-                      <td style={{padding: "16px 12px"}}>
-                        <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
-                          <div style={{
-                            width: "40px",
-                            height: "40px",
-                            borderRadius: "10px",
-                            background: "#e0e7ff",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center"
-                          }}>
-                            <Radio size={20} style={{color: "#4339F2"}} />
-                          </div>
-                          <div>
-                            <span style={{fontWeight: "600", color: "#1e293b"}}>{station.station_name}</span>
-                            <div style={{fontSize: "0.8em", color: "#64748b"}}>
-                              Lat: {station.latitude}, Lon: {station.longitude}
+                  {pendingStations.map((station) => {
+                    const hasSensors = station.sensors && station.sensors.length > 0;
+
+                    return (
+                      <tr key={station.station_id} style={{borderBottom: "1px solid #f0f0f0"}}>
+                        {/* COLUMNA 1: Nombre Estación */}
+                        <td style={{padding: "16px 12px"}}>
+                          <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
+                            <div
+                              style={{
+                                width: "40px",
+                                height: "40px",
+                                borderRadius: "10px",
+                                background: "#e0e7ff",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <Radio size={20} style={{color: "#4339F2"}} />
+                            </div>
+                            <div>
+                              <span style={{fontWeight: "600", color: "#1e293b"}}>{station.station_name}</span>
+                              <div style={{fontSize: "0.8em", color: "#64748b"}}>ID: {station.station_id}</div>
                             </div>
                           </div>
-                        </div>
-                      </td>
-                      <td style={{padding: "16px 12px", color: "#64748b"}}>
-                        <div style={{display: "flex", alignItems: "center", gap: "6px"}}>
-                          <MapPin size={14} />
-                          {station.location}
-                        </div>
-                        <div style={{fontSize: "0.85em", marginTop: "4px"}}>{station.address}</div>
-                      </td>
-                      <td style={{padding: "16px 12px"}}>
-                        <span
-                          style={{
-                            background: "#f1f5f9",
-                            color: "#475569",
-                            padding: "4px 10px",
-                            borderRadius: "6px",
-                            fontSize: "0.85rem",
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: "6px"
-                          }}
-                        >
-                          <Users size={14} />
-                          {station.requested_by}
-                        </span>
-                      </td>
-                      <td style={{padding: "16px 12px", color: "#64748b"}}>
-                        {new Date(station.requested_at).toLocaleDateString('es-CO', {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric'
-                        })}
-                      </td>
-                      <td style={{padding: "16px 12px"}}>
-                        <div style={{display: "flex", gap: "8px"}}>
-                          <button
-                            onClick={() => handleApproveStation(station)}
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "6px",
-                              padding: "8px 16px",
-                              background: "#22c55e",
-                              color: "white",
-                              border: "none",
-                              borderRadius: "8px",
-                              cursor: "pointer",
-                              fontWeight: "600",
-                              fontSize: "0.85rem",
-                              transition: "all 0.2s ease"
-                            }}
-                          >
-                            <CheckCircle size={16} /> Aprobar
-                          </button>
-                          <button
-                            onClick={() => handleRejectStation(station)}
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "6px",
-                              padding: "8px 16px",
-                              background: "white",
-                              color: "#ef4444",
-                              border: "2px solid #ef4444",
-                              borderRadius: "8px",
-                              cursor: "pointer",
-                              fontWeight: "600",
-                              fontSize: "0.85rem",
-                              transition: "all 0.2s ease"
-                            }}
-                          >
-                            <XCircle size={16} /> Rechazar
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+
+                        {/* COLUMNA 2: SENSORES (Lógica de Mitigación) */}
+                        <td style={{padding: "16px 12px"}}>
+                          {hasSensors ? (
+                            <div style={{display: "flex", flexDirection: "column", gap: "4px"}}>
+                              {station.sensors.map((s) => (
+                                <span
+                                  key={s.sensor_id}
+                                  style={{
+                                    fontSize: "0.85rem",
+                                    background: "#f0fdf4",
+                                    color: "#15803d",
+                                    padding: "2px 8px",
+                                    borderRadius: "4px",
+                                    border: "1px solid #bbf7d0",
+                                    width: "fit-content",
+                                  }}
+                                >
+                                  ✅ {s.model} ({s.serial_number})
+                                </span>
+                              ))}
+                            </div>
+                          ) : (
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "6px",
+                                color: "#dc2626",
+                                background: "#fef2f2",
+                                padding: "6px 10px",
+                                borderRadius: "6px",
+                                border: "1px solid #fecaca",
+                                fontSize: "0.85rem",
+                              }}
+                            >
+                              <AlertTriangle size={16} />
+                              <span>Sin sensores (Incompleta)</span>
+                            </div>
+                          )}
+                        </td>
+
+                        {/* COLUMNA 3: Ubicación */}
+                        <td style={{padding: "16px 12px", color: "#64748b", fontSize: "0.9rem"}}>
+                          <div style={{display: "flex", alignItems: "center", gap: "6px"}}>
+                            <MapPin size={14} />
+                            {station.address_reference || "Sin dirección"}
+                          </div>
+                          <div>Lat: {station.geographic_location_lat?.toFixed(4)}</div>
+                        </td>
+
+                        {/* COLUMNA 4: Acciones */}
+                        <td style={{padding: "16px 12px"}}>
+                          <div style={{display: "flex", gap: "8px"}}>
+                            {/* Solo permitimos aprobar si tiene sensores (Opcional, o dejamos que el admin decida) */}
+                            <button
+                              onClick={() => handleApproveStation(station)}
+                              disabled={!hasSensors} // BLOQUEO PREVENTIVO
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "6px",
+                                padding: "8px 16px",
+                                background: hasSensors ? "#22c55e" : "#e5e7eb",
+                                color: hasSensors ? "white" : "#9ca3af",
+                                border: "none",
+                                borderRadius: "8px",
+                                cursor: hasSensors ? "pointer" : "not-allowed",
+                                fontWeight: "600",
+                                fontSize: "0.85rem",
+                                transition: "all 0.2s",
+                              }}
+                              title={!hasSensors ? "No se puede aprobar una estación sin sensores" : "Aprobar estación"}
+                            >
+                              <CheckCircle size={16} /> Aprobar
+                            </button>
+
+                            <button
+                              onClick={() => handleRejectStation(station)}
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "6px",
+                                padding: "8px 16px",
+                                background: "white",
+                                color: "#ef4444",
+                                border: "2px solid #ef4444",
+                                borderRadius: "8px",
+                                cursor: "pointer",
+                                fontWeight: "600",
+                                fontSize: "0.85rem",
+                                transition: "all 0.2s",
+                              }}
+                            >
+                              <XCircle size={16} /> Rechazar
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             )}
@@ -396,7 +382,7 @@ export default function InstitutionAdminPage() {
             <h2>Estaciones de la Institución</h2>
             <p>Gestiona las estaciones de monitoreo registradas</p>
           </div>
-          
+
           <div className="stations-section">
             <div className="stations-grid">
               <div className="station-card">
@@ -455,9 +441,7 @@ export default function InstitutionAdminPage() {
           </h1>
         </div>
         <div className="header-right">
-          <span className="user-greeting">
-            {institutionUser?.institution_name || institutionUser?.first_name || "Institución"}
-          </span>
+          <span className="user-greeting">{institutionUser?.institution_name || institutionUser?.first_name || "Institución"}</span>
           <button className="logout-btn" onClick={handleLogout}>
             <LogOut size={16} style={{marginRight: "6px"}} />
             Salir
@@ -476,14 +460,11 @@ export default function InstitutionAdminPage() {
               </span>
               <span className="nav-text">Volver al Dashboard</span>
             </Link>
-            
+
             <div className="sidebar-divider"></div>
 
             {/* Resumen */}
-            <button 
-              className={`nav-item ${activeTab === "dashboard" ? "active" : ""}`} 
-              onClick={() => setActiveTab("dashboard")}
-            >
+            <button className={`nav-item ${activeTab === "dashboard" ? "active" : ""}`} onClick={() => setActiveTab("dashboard")}>
               <span className="nav-icon">
                 <LayoutDashboard size={20} />
               </span>
@@ -491,11 +472,7 @@ export default function InstitutionAdminPage() {
             </button>
 
             {/* Aprobaciones */}
-            <button
-              className={`nav-item ${activeTab === "approvals" ? "active" : ""}`}
-              onClick={() => setActiveTab("approvals")}
-              style={{justifyContent: "space-between"}}
-            >
+            <button className={`nav-item ${activeTab === "approvals" ? "active" : ""}`} onClick={() => setActiveTab("approvals")} style={{justifyContent: "space-between"}}>
               <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
                 <span className="nav-icon">
                   <Clock size={20} />
@@ -522,10 +499,7 @@ export default function InstitutionAdminPage() {
             </button>
 
             {/* Estaciones */}
-            <button 
-              className={`nav-item ${activeTab === "stations" ? "active" : ""}`} 
-              onClick={() => setActiveTab("stations")}
-            >
+            <button className={`nav-item ${activeTab === "stations" ? "active" : ""}`} onClick={() => setActiveTab("stations")}>
               <span className="nav-icon">
                 <Radio size={20} />
               </span>
@@ -533,10 +507,7 @@ export default function InstitutionAdminPage() {
             </button>
 
             {/* Usuarios */}
-            <button 
-              className={`nav-item ${activeTab === "users" ? "active" : ""}`} 
-              onClick={() => setActiveTab("users")}
-            >
+            <button className={`nav-item ${activeTab === "users" ? "active" : ""}`} onClick={() => setActiveTab("users")}>
               <span className="nav-icon">
                 <Users size={20} />
               </span>
@@ -559,5 +530,3 @@ export default function InstitutionAdminPage() {
     </div>
   );
 }
-
-

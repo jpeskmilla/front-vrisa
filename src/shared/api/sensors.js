@@ -11,6 +11,17 @@ export const getSensors = () => {
 };
 
 /**
+ * Crea un nuevo sensor vinculado a una estación.
+ * Endpoint: POST /api/sensors/devices/
+ */
+export const createSensor = (sensorData) => {
+  return apiFetch("/sensors/devices/", {
+    method: "POST",
+    body: JSON.stringify(sensorData),
+  });
+};
+
+/**
  * Obtiene un sensor por ID.
  * Endpoint: GET /api/sensors/devices/:id/
  * @param {number|string} id - ID del sensor
