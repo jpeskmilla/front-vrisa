@@ -58,7 +58,6 @@ export default function InstitutionAdminPage() {
     fetchData(parsed.institution_id);
   }, [navigate]);
 
-  // ✅ NUEVA FUNCIÓN: Cargar datos reales de la API
   const fetchData = async (institutionId) => {
     try {
       setLoading(true);
@@ -88,9 +87,9 @@ export default function InstitutionAdminPage() {
 
       setPendingStations(mappedRequests);
       
-      // Obtener estaciones existentes (opcional, si tienes este endpoint)
+      // Obtener estaciones existentes
       try {
-        const stations = await StationAPI.getStations();
+        const stations = await StationAPI.getAffiliationRequests();
         const activeStations = stations.filter(s => s.operative_status === 'ACTIVE').length;
         
         setStats({
@@ -99,7 +98,6 @@ export default function InstitutionAdminPage() {
           activeStations: activeStations
         });
       } catch (err) {
-        // Si falla, solo usar datos de solicitudes
         setStats({
           totalStations: 0,
           pendingRequests: pending.length,
@@ -115,7 +113,6 @@ export default function InstitutionAdminPage() {
     }
   };
 
-  // ✅ NUEVA FUNCIÓN: Aprobar estación con API real
   const handleApproveStation = async (station) => {
     if (!window.confirm(`¿Aprobar "${station.station_name}"?\n\nEsto creará la estación en el sistema.`)) {
       return;
@@ -128,18 +125,16 @@ export default function InstitutionAdminPage() {
         'Aprobado por la institución'
       );
       
-      alert(`✅ Estación "${station.station_name}" aprobada con éxito`);
+      alert(` Estación "${station.station_name}" aprobada con éxito`);
       
-      // Recargar datos
       fetchData(institutionUser.institution_id);
       
     } catch (error) {
       console.error("Error aprobando estación:", error);
-      alert(`❌ Error al aprobar: ${error.message || 'Error desconocido'}`);
+      alert(`Error al aprobar: ${error.message || 'Error desconocido'}`);
     }
   };
 
-  // ✅ NUEVA FUNCIÓN: Rechazar estación con API real
   const handleRejectStation = async (station) => {
     const reason = prompt(
       `¿Por qué rechazas la estación "${station.station_name}"?\n\n` +
@@ -155,14 +150,14 @@ export default function InstitutionAdminPage() {
         reason || 'Rechazado por la institución'
       );
       
-      alert(`❌ Estación "${station.station_name}" rechazada`);
+      alert(`Estación "${station.station_name}" rechazada`);
       
       // Recargar datos
       fetchData(institutionUser.institution_id);
       
     } catch (error) {
       console.error("Error rechazando estación:", error);
-      alert(`❌ Error al rechazar: ${error.message || 'Error desconocido'}`);
+      alert(`Error al rechazar: ${error.message || 'Error desconocido'}`);
     }
   };
 
@@ -171,7 +166,6 @@ export default function InstitutionAdminPage() {
     navigate("/");
   };
 
-  // Renderizado condicional del contenido según la tab activa
   const renderContent = () => {
     if (activeTab === "dashboard") {
       return (
