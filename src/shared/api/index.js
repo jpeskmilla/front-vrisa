@@ -5,3 +5,4 @@ export * as InstitutionAPI from "./institutions";
 export * as StationAPI from "./stations";
 export * as MeasurementAPI from "./measurements";
 export * as ReportAPI from "./reports";
+export * as SensorAPI from "./sensors";

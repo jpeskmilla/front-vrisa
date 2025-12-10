@@ -1,9 +1,13 @@
 import {
+  ClipboardList,
   FileText,
-  Home, LayoutDashboard,
+  Home,
+  LayoutDashboard,
   LogOut,
   MapPin,
-  Wind
+  PlusCircle,
+  Wind,
+  Wrench
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import "./layout.css";
@@ -53,7 +57,7 @@ export default function Sidebar() {
           className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}
         >
           <MapPin size={20} />
-          <span>Estaciones</span>
+          <span>Mi Estación</span>
         </NavLink>
 
         <NavLink 
@@ -62,6 +66,26 @@ export default function Sidebar() {
         >
           <FileText size={20} />
           <span>Reportes</span>
+        </NavLink>
+
+        <div className="sidebar-divider"></div>
+
+        {/* Sección de Mantenimiento */}
+        <NavLink 
+          to="/dashboard/maintenance" 
+          end
+          className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}
+        >
+          <ClipboardList size={20} />
+          <span>Mantenimientos</span>
+        </NavLink>
+
+        <NavLink 
+          to="/dashboard/maintenance/new" 
+          className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}
+        >
+          <PlusCircle size={20} />
+          <span>Nuevo Mantenimiento</span>
         </NavLink>
 
         <div className="sidebar-spacer"></div>
