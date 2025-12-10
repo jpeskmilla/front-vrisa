@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* Importar estilos de HomePage para las variables CSS */
-@import "./app/pages/homepage-styles.css";
+@import "./app/pages/general/HomePage/HomePage.css";
 
 /* Reset Global para evitar desbordamientos */
 *, *::before, *::after {
