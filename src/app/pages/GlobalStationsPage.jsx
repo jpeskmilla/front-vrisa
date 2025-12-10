@@ -175,12 +175,12 @@ export default function GlobalStationsPage() {
     {
       header: "Manager",
       cell: (row) => {
-        if (row.manager) {
+        if (row.manager_user) {
           return (
             <div>
-              <div style={{ fontWeight: "600" }}>{row.manager.name}</div>
+              <div style={{ fontWeight: "600" }}>{row.manager_user.name}</div>
               <div style={{ fontSize: "0.8em", color: "#64748b" }}>
-                {row.manager.email}
+                {row.manager_user.email}
               </div>
             </div>
           );

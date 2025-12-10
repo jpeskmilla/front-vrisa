@@ -162,7 +162,7 @@ export default function StationsPage() {
           columns={tableColumns}
           data={sensors}
           isLoading={isLoading}
-          emptyMessage="No hay sensores registrados en esta estación."
+          emptyMessage="No se encontraron sensores asociados. Asegúrate de tener una estación asignada y sensores registrados."
         />
       </div>
     </div>
