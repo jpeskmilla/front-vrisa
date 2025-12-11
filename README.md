@@ -1,4 +1,4 @@
-# VriSA - Sistema de Monitoreo de Riesgos Ambientales 🌍
+# VriSA - Sistema de Monitoreo de Riesgos Ambientales
 
 ![VriSA Status](https://img.shields.io/badge/Status-Active-success)
 ![React](https://img.shields.io/badge/React-18.x-blue?logo=react)
