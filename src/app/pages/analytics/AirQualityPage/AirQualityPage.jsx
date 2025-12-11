@@ -73,9 +73,9 @@ export default function AirQualityPage() {
 
   // Se ejecuta fetchData automáticamente cuando cambian los filtros
   useEffect(() => {
-    if (filters.station_id) {
+    //if (filters.station_id) {
       fetchData();
-    }
+    //}
   }, [filters]);
 
   // Función para calcular estadísticas simples

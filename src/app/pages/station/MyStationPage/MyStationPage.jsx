@@ -1,7 +1,9 @@
 import { Activity, Cpu, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { SensorAPI } from "../../../../shared/api";
 import { TableDataset } from "../../../../shared/components/TableDataset";
+import { ORGANIZATION_ROLES } from "../../../../shared/constants/roles";
 import "./MyStationPage.css";
 
 /**
@@ -10,12 +12,42 @@ import "./MyStationPage.css";
  * @returns {JSX.Element} Componente de la página de estación.
  */
 export default function MyStationPage() {
+  const navigate = useNavigate();
   const [sensors, setSensors] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+   useEffect(() => {
+    const userData = localStorage.getItem("userData");
+    
+    if (!userData) {
+      navigate("/");
+      return;
+    }
+
+    const user = JSON.parse(userData);
+    const role = user.primary_role;
+
+    // Si NO es administrador de estación, lo sacamos de aquí
+    if (role !== ORGANIZATION_ROLES.STATION_ADMIN) {
+      // Redirección inteligente según quién sea el intruso
+      if (role === 'super_admin') {
+        navigate("/admin/stations"); // El admin debe ver el listado global
+      } else if (role === 'institution_head') {
+        navigate("/institution-admin/stations"); // El jefe de institución a su panel
+      } else {
+        navigate("/dashboard"); // Ciudadanos o roles incompletos al dashboard
+      }
+    }
+  }, [navigate]);
+  // ------------------------------------
+
   useEffect(() => {
     const loadSensors = async () => {
+      // Verificación extra para no llamar a la API si ya nos estamos yendo
+      const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+      if (userData.primary_role !== ORGANIZATION_ROLES.STATION_ADMIN) return;
+
       try {
         setIsLoading(true);
         const data = await SensorAPI.getSensors();
@@ -30,6 +62,7 @@ export default function MyStationPage() {
 
     loadSensors();
   }, []);
+
 
   /**
    * Formatea la fecha de instalación.

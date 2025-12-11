@@ -6,9 +6,6 @@ import "./HomePage.css";
 
 /**
  * Página principal de la aplicación.
- * - Si el usuario ya eligió un rol durante el registro, muestra solo ese rol para completar
- * - Si es ciudadano, muestra la vista de ciudadano
- * - Si tiene registro completo, muestra opciones generales
  */
 const HomePage = () => {
   const navigate = useNavigate();
@@ -73,14 +70,19 @@ const HomePage = () => {
 
   if (loading) return null;
 
-  // Obtención del rol y el estado directamente del token JWT
-  const currentRole = user?.primary_role || "citizen";
-  const roleStatus = user?.role_status || "APPROVED";
+  // --- LÓGICA DE ROL ROBUSTA ---
+  const rawRole = user?.primary_role || "citizen";
+  // Convertimos a string y minúsculas para evitar errores de comparación
+  const currentRole = String(rawRole).toLowerCase().trim();
   const isCitizen = currentRole === "citizen";
+
+  const roleStatus = user?.role_status || "APPROVED";
 
   // Determinar si tiene una solicitud pendiente
   const isPending = roleStatus === "PENDING" && !isCitizen;
-  const pendingRoleData = roleConfig[currentRole];
+  
+  // Usamos el rol original (rawRole) para buscar en la config, ya que las keys suelen ser exactas
+  const pendingRoleData = roleConfig[user?.primary_role];
 
   return (
     <>
@@ -94,10 +96,10 @@ const HomePage = () => {
             <div className="banner-text">
               <strong>Tu solicitud está en proceso.</strong>
               <p>
-                Tienes un rol de <b>{pendingRoleData?.title || currentRole}</b> pendiente. Completa tu perfil para agilizar la aprobación.
+                Tienes un rol de <b>{pendingRoleData?.title || rawRole}</b> pendiente. Completa tu perfil para agilizar la aprobación.
               </p>
             </div>
-            <button className="banner-btn" onClick={() => navigate(roleConfig[currentRole]?.route || "/complete-registration")}>
+            <button className="banner-btn" onClick={() => navigate(roleConfig[user?.primary_role]?.route || "/complete-registration")}>
               Completar ahora
             </button>
           </div>
@@ -106,7 +108,7 @@ const HomePage = () => {
 
       {/* Contenido */}
       <section className="dashboard-content centered-content">
-        {/* CASO 1: Usuario con Rol Pendiente (Investigador, Admin, Institución) */}
+        {/* CASO 1: Usuario con Rol Pendiente */}
         {isPending && pendingRoleData ? (
           <div className="single-role-view">
             <div className="content-header text-center">
@@ -122,7 +124,7 @@ const HomePage = () => {
                 desc={pendingRoleData.desc}
                 icon={pendingRoleData.icon}
                 gradientClass={pendingRoleData.gradientClass}
-                onClick={() => navigate(roleConfig[currentRole]?.route || "/complete-registration")}
+                onClick={() => navigate(roleConfig[user?.primary_role]?.route || "/complete-registration")}
                 buttonText="Continuar Registro"
               />
             </div>
@@ -135,7 +137,7 @@ const HomePage = () => {
               <p className="content-subtitle">
                 {isCitizen
                   ? "Como ciudadano, puedes consultar la calidad del aire y acceder a reportes públicos."
-                  : `Tu perfil de ${roleFriendlyNames[currentRole] || currentRole} está activo. Explora las opciones disponibles.`}
+                  : `Tu perfil de ${roleFriendlyNames[user?.primary_role] || rawRole} está activo. Explora las opciones disponibles.`}
               </p>
             </div>
 
@@ -152,12 +154,18 @@ const HomePage = () => {
                 icon={<FileText size={32} color="white" />}
                 onClick={() => navigate("/dashboard/reports")}
               />
-              <FeatureCard
-                title="Estaciones"
-                desc="Explora las estaciones de monitoreo disponibles."
-                icon={<Radio size={32} color="white" />}
-                onClick={() => navigate("/dashboard/stations")}
-              />
+              
+              {/* AQUÍ ESTABA EL ERROR: He borrado la tarjeta duplicada que estaba sin condición */}
+              
+              {/* Esta tarjeta SOLO se muestra si NO es ciudadano */}
+              {!isCitizen && (
+                <FeatureCard
+                  title="Estaciones"
+                  desc="Explora las estaciones de monitoreo disponibles."
+                  icon={<Radio size={32} color="white" />}
+                  onClick={() => navigate("/dashboard/stations")}
+                />
+              )}
             </div>
           </div>
         )}
@@ -166,7 +174,7 @@ const HomePage = () => {
   );
 };
 
-/* --- Sub-componentes para limpiar el JSX --- */
+/* --- Sub-componentes --- */
 
 function FeatureCard({title, desc, icon, onClick}) {
   return (
