@@ -5,11 +5,8 @@
 ![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?logo=vite)
 ![TailwindCSS](https://img.shields.io/badge/Tailwind-3.x-38B2AC?logo=tailwind-css)
 
----
 
-**VriSA** es una plataforma integral para el monitoreo, gestión y análisis de la calidad del aire. Conecta a ciudadanos, investigadores, administradores de estaciones e instituciones ambientales en un ecosistema unificado para la visualización de datos en tiempo real y la gestión de redes de sensores.
-
----
+VriSA es una plataforma integral para el monitoreo, gestión y análisis de la calidad del aire. Conecta a ciudadanos, investigadores, administradores de estaciones e instituciones ambientales en un ecosistema unificado para la visualización de datos en tiempo real y la gestión de redes de sensores.
 
 ## Características Principales
 
