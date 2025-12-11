@@ -15,6 +15,16 @@ const HomePage = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Mapeo de nombres amigables para todos los roles
+  const roleFriendlyNames = {
+    [ORGANIZATION_ROLES.INSTITUTION]: "Representante de Institución",
+    [ORGANIZATION_ROLES.STATION_ADMIN]: "Administrador de Estación",
+    [ORGANIZATION_ROLES.RESEARCHER]: "Investigador",
+    "institution_head": "Director de Institución",
+    "super_admin": "Administrador del Sistema",
+    "citizen": "Ciudadano",
+  };
+
   // Configuración de roles con sus rutas y datos
   const roleConfig = {
     [ORGANIZATION_ROLES.INSTITUTION]: {
@@ -125,7 +135,7 @@ const HomePage = () => {
               <p className="content-subtitle">
                 {isCitizen
                   ? "Como ciudadano, puedes consultar la calidad del aire y acceder a reportes públicos."
-                  : `Tu perfil de ${currentRole} está activo. Explora las opciones disponibles.`}
+                  : `Tu perfil de ${roleFriendlyNames[currentRole] || currentRole} está activo. Explora las opciones disponibles.`}
               </p>
             </div>
 
