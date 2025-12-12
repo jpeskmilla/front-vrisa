@@ -138,7 +138,7 @@ export default function AirQualityPage() {
             <span className="aq-label">Estación</span>
             <div className="aq-select-wrapper">
               <select value={filters.station_id} onChange={handleStationChange} className="aq-select">
-                <option value="">Todas (Cali)</option> 
+                <option value="">Todas (Cali)</option>
                 {stations.map((s) => (
                   <option key={s.station_id} value={s.station_id}>
                     {s.station_name}
@@ -175,12 +175,10 @@ export default function AirQualityPage() {
         </div>
       </div>
 
-      {/* ... (El resto del render de la gráfica y stats se mantiene igual) ... */}
       {data.length > 0 ? (
         <div className="space-y-6">
           {" "}
-          {/* Contenedor vertical principal */}
-          {/* 1. GRÁFICA (Ahora ocupa todo el ancho) */}
+          {/* Gráfica */}
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 min-h-[450px]">
             <div className="flex justify-between items-center mb-6">
               <h3 className="font-bold text-gray-800 text-lg">
@@ -209,7 +207,13 @@ export default function AirQualityPage() {
                   axisLine={false}
                   dy={10}
                 />
-                <YAxis unit={` ${currentUnit}`} tick={{fontSize: 11, fill: "#94a3b8"}} tickLine={false} axisLine={false} />
+                <YAxis
+                  unit={` ${currentUnit}`}
+                  tick={{fontSize: 11, fill: "#94a3b8"}}
+                  tickLine={false}
+                  axisLine={false}
+                  domain={[(dataMin) => Math.floor(dataMin * 0.95), "auto"]}
+                />
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 {maxLimit > 0 && (
                   <ReferenceLine
@@ -245,7 +249,7 @@ export default function AirQualityPage() {
               </AreaChart>
             </ResponsiveContainer>
           </div>
-          {/* 2. FILA DE ESTADÍSTICAS (Nuevo diseño horizontal) */}
+          {/* 2. Tarjetas con estadísticas */}
           <div className="stats-grid">
             <StatCard
               label="Promedio"
