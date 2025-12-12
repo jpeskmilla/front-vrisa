@@ -1,7 +1,9 @@
 import { Activity, Cpu, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { SensorAPI } from "../../../../shared/api";
 import { TableDataset } from "../../../../shared/components/TableDataset";
+import { ORGANIZATION_ROLES } from "../../../../shared/constants/roles";
 import "./MyStationPage.css";
 
 /**
@@ -10,12 +12,38 @@ import "./MyStationPage.css";
  * @returns {JSX.Element} Componente de la página de estación.
  */
 export default function MyStationPage() {
+  const navigate = useNavigate();
   const [sensors, setSensors] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+   useEffect(() => {
+    const userData = localStorage.getItem("userData");
+    
+    if (!userData) {
+      navigate("/");
+      return;
+    }
+
+    const user = JSON.parse(userData);
+    const role = user.primary_role;
+
+    if (role !== ORGANIZATION_ROLES.STATION_ADMIN) {
+      if (role === 'super_admin') {
+        navigate("/admin/stations");
+      } else if (role === 'institution_head') {
+        navigate("/institution-admin/stations");
+      } else {
+        navigate("/dashboard");
+      }
+    }
+  }, [navigate]);
+
   useEffect(() => {
     const loadSensors = async () => {
+      const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+      if (userData.primary_role !== ORGANIZATION_ROLES.STATION_ADMIN) return;
+
       try {
         setIsLoading(true);
         const data = await SensorAPI.getSensors();
