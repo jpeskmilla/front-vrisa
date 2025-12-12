@@ -28,23 +28,19 @@ export default function MyStationPage() {
     const user = JSON.parse(userData);
     const role = user.primary_role;
 
-    // Si NO es administrador de estación, lo sacamos de aquí
     if (role !== ORGANIZATION_ROLES.STATION_ADMIN) {
-      // Redirección inteligente según quién sea el intruso
       if (role === 'super_admin') {
-        navigate("/admin/stations"); // El admin debe ver el listado global
+        navigate("/admin/stations");
       } else if (role === 'institution_head') {
-        navigate("/institution-admin/stations"); // El jefe de institución a su panel
+        navigate("/institution-admin/stations");
       } else {
-        navigate("/dashboard"); // Ciudadanos o roles incompletos al dashboard
+        navigate("/dashboard");
       }
     }
   }, [navigate]);
-  // ------------------------------------
 
   useEffect(() => {
     const loadSensors = async () => {
-      // Verificación extra para no llamar a la API si ya nos estamos yendo
       const userData = JSON.parse(localStorage.getItem("userData") || "{}");
       if (userData.primary_role !== ORGANIZATION_ROLES.STATION_ADMIN) return;
 
@@ -62,7 +58,6 @@ export default function MyStationPage() {
 
     loadSensors();
   }, []);
-
 
   /**
    * Formatea la fecha de instalación.

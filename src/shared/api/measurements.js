@@ -19,3 +19,13 @@ export const getCurrentAQI = (stationId) => {
   const query = stationId ? `?station_id=${stationId}` : '';
   return apiFetch(`/measurements/aqi/current/${query}`);
 };
+
+/**
+ * Obtiene las mediciones más recientes para una estación dada o todas las estaciones si no se proporciona ID.
+ * @param {string} stationId - ID de la estación (opcional).
+ * @returns {Promise<object>} Mediciones más recientes.
+ */
+export const getLatestMeasurements = (stationId) => {
+  const query = stationId ? `?station_id=${stationId}` : '';
+  return apiFetch(`/measurements/latest/${query}`);
+}

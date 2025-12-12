@@ -4,7 +4,7 @@ import { Area, AreaChart, CartesianGrid, ReferenceLine, ResponsiveContainer, Too
 import { MeasurementAPI, StationAPI } from "../../../../shared/api";
 import DateRangePicker from "../../../../shared/components/DateRange/DateRangePicker";
 import StatCard from "../../../../shared/components/StatCard/StatCard";
-import { VARIABLE_COLORS } from "../../../../shared/constants";
+import { AQI_THRESHOLDS, VARIABLE_COLORS } from "../../../../shared/constants";
 import "./AirQualityPage.css";
 
 /**
@@ -73,9 +73,9 @@ export default function AirQualityPage() {
 
   // Se ejecuta fetchData automáticamente cuando cambian los filtros
   useEffect(() => {
-    //if (filters.station_id) {
+    if (filters.station_id | (filters.station_id === "")) {
       fetchData();
-    //}
+    }
   }, [filters]);
 
   // Función para calcular estadísticas simples
@@ -119,9 +119,10 @@ export default function AirQualityPage() {
   const currentColor = VARIABLE_COLORS[filters.variable_code] || VARIABLE_COLORS["DEFAULT"];
   // Obtener unidad de la variable seleccionada para mostrar en la gráfica
   const currentUnit = variables.find((v) => v.code === filters.variable_code)?.unit || "";
-
   const currentVariableObj = variables.find((v) => v.code === filters.variable_code);
+
   const maxLimit = currentVariableObj ? currentVariableObj.max_expected_value : 0;
+  const isAQI = filters.variable_code === "AQI";
 
   return (
     <div className="p-6 bg-gray-50 min-h-full">
@@ -138,7 +139,7 @@ export default function AirQualityPage() {
             <span className="aq-label">Estación</span>
             <div className="aq-select-wrapper">
               <select value={filters.station_id} onChange={handleStationChange} className="aq-select">
-                <option value="">Todas (Cali)</option> 
+                <option value="">Todas (Cali)</option>
                 {stations.map((s) => (
                   <option key={s.station_id} value={s.station_id}>
                     {s.station_name}
@@ -175,12 +176,10 @@ export default function AirQualityPage() {
         </div>
       </div>
 
-      {/* ... (El resto del render de la gráfica y stats se mantiene igual) ... */}
       {data.length > 0 ? (
         <div className="space-y-6">
           {" "}
-          {/* Contenedor vertical principal */}
-          {/* 1. GRÁFICA (Ahora ocupa todo el ancho) */}
+          {/* Gráfica */}
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 min-h-[450px]">
             <div className="flex justify-between items-center mb-6">
               <h3 className="font-bold text-gray-800 text-lg">
@@ -209,9 +208,37 @@ export default function AirQualityPage() {
                   axisLine={false}
                   dy={10}
                 />
-                <YAxis unit={` ${currentUnit}`} tick={{fontSize: 11, fill: "#94a3b8"}} tickLine={false} axisLine={false} />
+                <YAxis
+                  unit={` ${currentUnit}`}
+                  tick={{fontSize: 11, fill: "#94a3b8"}}
+                  tickLine={false}
+                  axisLine={false}
+                  domain={[(dataMin) => Math.floor(dataMin * 0.95), "auto"]}
+                />
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                {maxLimit > 0 && (
+
+                {/* Líneas de umbrales para la variable AQI */}
+                {isAQI &&
+                  AQI_THRESHOLDS.map((threshold) => (
+                    <ReferenceLine
+                      key={threshold.value}
+                      y={threshold.value}
+                      stroke={threshold.color}
+                      strokeDasharray="3 3"
+                      strokeWidth={1}
+                      label={{
+                        position: "insideRight",
+                        value: threshold.label,
+                        fill: threshold.color,
+                        fontSize: 10,
+                        fontWeight: "bold",
+                        dy: -10,
+                      }}
+                    />
+                  ))}
+
+                {/* Límite normativo para otras variables */}
+                {!isAQI && maxLimit > 0 && (
                   <ReferenceLine
                     y={maxLimit}
                     stroke="#EF4444"
@@ -226,6 +253,7 @@ export default function AirQualityPage() {
                     }}
                   />
                 )}
+
                 <Tooltip
                   contentStyle={{borderRadius: "12px", border: "none", boxShadow: "0 10px 30px -5px rgba(0, 0, 0, 0.1)", padding: "12px"}}
                   labelStyle={{color: "#64748b", fontWeight: "500", marginBottom: "8px", fontSize: "0.85rem"}}
@@ -245,7 +273,7 @@ export default function AirQualityPage() {
               </AreaChart>
             </ResponsiveContainer>
           </div>
-          {/* 2. FILA DE ESTADÍSTICAS (Nuevo diseño horizontal) */}
+          {/* 2. Tarjetas con estadísticas */}
           <div className="stats-grid">
             <StatCard
               label="Promedio"

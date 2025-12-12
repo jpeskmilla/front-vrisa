@@ -70,9 +70,8 @@ const HomePage = () => {
 
   if (loading) return null;
 
-  // --- LÓGICA DE ROL ROBUSTA ---
+  // Lógica de rol
   const rawRole = user?.primary_role || "citizen";
-  // Convertimos a string y minúsculas para evitar errores de comparación
   const currentRole = String(rawRole).toLowerCase().trim();
   const isCitizen = currentRole === "citizen";
 
@@ -80,8 +79,6 @@ const HomePage = () => {
 
   // Determinar si tiene una solicitud pendiente
   const isPending = roleStatus === "PENDING" && !isCitizen;
-  
-  // Usamos el rol original (rawRole) para buscar en la config, ya que las keys suelen ser exactas
   const pendingRoleData = roleConfig[user?.primary_role];
 
   return (
@@ -108,7 +105,7 @@ const HomePage = () => {
 
       {/* Contenido */}
       <section className="dashboard-content centered-content">
-        {/* CASO 1: Usuario con Rol Pendiente */}
+        {/* Usuario con Rol Pendiente */}
         {isPending && pendingRoleData ? (
           <div className="single-role-view">
             <div className="content-header text-center">
@@ -155,9 +152,6 @@ const HomePage = () => {
                 onClick={() => navigate("/dashboard/reports")}
               />
               
-              {/* AQUÍ ESTABA EL ERROR: He borrado la tarjeta duplicada que estaba sin condición */}
-              
-              {/* Esta tarjeta SOLO se muestra si NO es ciudadano */}
               {!isCitizen && (
                 <FeatureCard
                   title="Estaciones"

@@ -11,11 +11,17 @@ export default function DashboardPage() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+  // Estado para AQI (Global o por estación)
   const [aqiData, setAqiData] = useState(null);
   const [aqiLoading, setAqiLoading] = useState(true);
-  const [aqiError, setAqiError] = useState(null);
-  const [selectedStationId, setSelectedStationId] = useState("");
+  
+  // Estado para Mediciones Recientes (Valores crudos)
+  const [latestMeasurements, setLatestMeasurements] = useState(null);
+  const [latestLoading, setLatestLoading] = useState(true);
+
   const [stationsList, setStationsList] = useState([]);
+  const [selectedStationId, setSelectedStationId] = useState("");
 
   // Cargar lista de estaciones al iniciar
   useEffect(() => {
@@ -41,88 +47,87 @@ export default function DashboardPage() {
           navigate("/");
           return;
         }
-
-        const parsedUser = JSON.parse(storedData);
-        setUser(parsedUser);
-
-        if (parsedUser.user_id) {
-          try {
-            const freshUserData = await UserAPI.getUserById(parsedUser.user_id);
-            const mergedUser = {
-              ...parsedUser,
-              ...freshUserData,
-              institution_name: freshUserData.institution?.institute_name,
-            };
-            setUser(mergedUser);
-            localStorage.setItem("userData", JSON.stringify(mergedUser));
-          } catch (apiError) {
-            console.error("Could not fetch fresh user data:", apiError);
-          }
-        }
+        setUser(JSON.parse(storedData));
       } catch (err) {
-        console.error("Dashboard initialization error:", err);
-        localStorage.removeItem("token");
         navigate("/");
       } finally {
         setLoading(false);
       }
     };
-
     initDashboard();
   }, [navigate]);
 
-  // Carga de AQI
+  // Carga periódica de Datos
   useEffect(() => {
-    const fetchAQI = async () => {
+    const fetchDashboardData = async () => {
       try {
         setAqiLoading(true);
-        const aqi = await MeasurementAPI.getCurrentAQI(selectedStationId || null);
-        setAqiData(aqi);
-        setAqiError(null);
+        setLatestLoading(true);
+
+        const stationIdParam = selectedStationId || null;
+
+        const [aqiResponse, latestResponse] = await Promise.all([
+          MeasurementAPI.getCurrentAQI(stationIdParam),
+          MeasurementAPI.getLatestMeasurements(stationIdParam)
+        ]);
+
+        setAqiData(aqiResponse);
+        setLatestMeasurements(latestResponse);
+
       } catch (error) {
-        console.error("Error fetching AQI:", error);
-        setAqiError("No se pudo cargar el AQI");
+        console.error("Error fetching dashboard data:", error);
       } finally {
         setAqiLoading(false);
+        setLatestLoading(false);
       }
     };
 
     if (user) {
-      fetchAQI();
-      const interval = setInterval(fetchAQI, 30000);
+      fetchDashboardData();
+      const interval = setInterval(fetchDashboardData, 30000); // Actualizar cada 30s
       return () => clearInterval(interval);
     }
   }, [user, selectedStationId]);
 
-  // Colores y lógica para tarjetas
+  // Constantes de color
   const ICON_COLOR = "#64748b";
   const COLOR_NORMAL = "#22C55E";
   const COLOR_ALERT = "#EF4444";
 
-  // Helper para obtener datos de un contaminante
+  /**
+   * Helper para obtener datos de un contaminante desde latestMeasurements.
+   * Si no hay medición reciente, intenta usar el AQI como fallback visual, o muestra "--".
+   */
   const getPollutantStatus = (key) => {
-    if (aqiLoading || !aqiData) {
-      return {
-        value: "...",
-        color: "#e2e8f0",
-        label: "Cargando...",
-      };
+    if (latestLoading || aqiLoading) {
+      return { value: "...", unit: "", color: "#e2e8f0", label: "Cargando..." };
     }
 
-    const value = aqiData.sub_indices?.[key];
-    const valDisplay = value !== undefined ? Math.round(value) : "0";
+    // Intentar obtener el valor real crudo
+    const measurement = latestMeasurements?.[key];
+    
+    if (measurement && measurement.value !== undefined) {
+        // Determinar estado basado en si es el contaminante dominante del AQI
+        const isDominant = aqiData?.dominant_pollutant === key;
+        
+        return {
+            value: measurement.value.toFixed(1), // Mostrar 1 decimal
+            unit: measurement.unit,
+            color: isDominant ? COLOR_ALERT : COLOR_NORMAL,
+            label: isDominant ? "Dominante" : "Normal"
+        };
+    }
 
-    // Si es el dominante -> Rojo, si no -> Verde
-    const isDominant = aqiData.dominant_pollutant === key;
-
+    // Fallback: Si no hay medición cruda, mostrar "--"
     return {
-      value: valDisplay,
-      color: isDominant ? COLOR_ALERT : COLOR_NORMAL,
-      label: isDominant ? "Dominante" : "Normal",
+      value: "--",
+      unit: "",
+      color: "#e2e8f0",
+      label: "Sin datos",
     };
   };
 
-  // Configuración base de tarjetas
+  // Configuración de tarjetas
   const metricsConfig = [
     {key: "PM2.5", label: "PM2.5", icon: <Cloud size={24} />},
     {key: "PM10", label: "PM10", icon: <Haze size={24} />},
@@ -132,6 +137,13 @@ export default function DashboardPage() {
     {key: "O3", label: "OZONO (O3)", icon: <Wind size={24} />},
   ];
 
+  // Helper para variables climáticas
+  const getClimateData = (key) => {
+      const m = latestMeasurements?.[key];
+      if(m) return { value: Math.round(m.value), unit: m.unit };
+      return { value: "--", unit: "" };
+  };
+
   const stationOptions = [
     {value: "", label: "Todas las estaciones (Ciudad)"},
     ...stationsList.map((st) => ({
@@ -140,54 +152,34 @@ export default function DashboardPage() {
     })),
   ];
 
-  const isCitizen = !user?.belongs_to_organization || user?.requested_role === "citizen";
-  const hasInstitutionAssigned = user?.institution_id || user?.institution;
-  const needsRegistrationCompletion = !isCitizen && !user?.registration_complete && !hasInstitutionAssigned;
+  if (loading) return <div className="dashboard-loading"><div className="loading-spinner"></div></div>;
 
-  if (loading) {
-    return (
-      <div className="dashboard-loading">
-        <div className="loading-spinner"></div>
-        <p>Cargando dashboard...</p>
-      </div>
-    );
-  }
+  const temp = getClimateData("TEMP");
+  const hum = getClimateData("HUM");
 
   return (
     <div className="dashboard-container">
-      {needsRegistrationCompletion && (
-        <div className="registration-banner">
-          <div className="banner-content">
-            <div className="banner-icon">
-              <AlertCircle size={24} />
-            </div>
-            <div className="banner-text">
-              <strong>Tu registro está incompleto</strong>
-              <p>Completa tu registro para acceder a todas las funcionalidades.</p>
-            </div>
-            <Link to="/complete-registration" className="banner-btn">
-              Completar registro
-            </Link>
-          </div>
-        </div>
-      )}
-
       <main className="dashboard-main">
         <section className="dashboard-content">
           <div className="content-header flex justify-between items-center">
             <div>
               <h2>Monitor de Calidad del Aire</h2>
-              <p className="content-subtitle">Viendo: {aqiData?.station_name || "Cargando..."}</p>
+              <p className="content-subtitle">
+                Viendo: {aqiData?.station_name || "Cargando..."}
+              </p>
             </div>
-
-            {/* Selector de Estación */}
             <div style={{width: "280px"}}>
-              <Select value={selectedStationId} onChange={(e) => setSelectedStationId(e.target.value)} options={stationOptions} icon={MapPin} />
+              <Select 
+                value={selectedStationId} 
+                onChange={(e) => setSelectedStationId(e.target.value)} 
+                options={stationOptions} 
+                icon={MapPin} 
+              />
             </div>
           </div>
 
           <div className="summary-cards">
-            {/* AQI */}
+            {/* Tarjeta AQI */}
             <StatCard
               label="ÍNDICE DE CALIDAD (AQI)"
               value={aqiLoading ? "..." : aqiData ? Math.round(aqiData.aqi) : "--"}
@@ -198,7 +190,7 @@ export default function DashboardPage() {
               borderType="full"
             />
 
-            {/* Contaminantes */}
+            {/* Tarjetas de Contaminantes */}
             {metricsConfig.map((metric) => {
               const status = getPollutantStatus(metric.key);
               return (
@@ -206,7 +198,7 @@ export default function DashboardPage() {
                   key={metric.key}
                   label={metric.label}
                   value={status.value}
-                  unit={status.label}
+                  unit={status.unit}
                   icon={metric.icon}
                   colorHex={status.color}
                   statusColor={status.color}
@@ -216,46 +208,46 @@ export default function DashboardPage() {
             })}
 
             {/* Variables Climáticas */}
-            <StatCard label="TEMPERATURA" value="24°C" unit="Agradable" icon={<Thermometer size={24} color={ICON_COLOR} />} borderType="none" />
-
-            <StatCard label="HUMEDAD" value="68%" unit="Relativa" icon={<Droplet size={24} color={ICON_COLOR} />} borderType="none" />
+            <StatCard 
+                label="TEMPERATURA" 
+                value={`${temp.value}°C`} 
+                unit="Ambiente" 
+                icon={<Thermometer size={24} color={ICON_COLOR} />} 
+                borderType="none" 
+            />
+            <StatCard 
+                label="HUMEDAD" 
+                value={`${hum.value}%`} 
+                unit="Relativa" 
+                icon={<Droplet size={24} color={ICON_COLOR} />} 
+                borderType="none" 
+            />
           </div>
           
           {/* Sección estaciones con mapa */}
           <div className="stations-section mt-8">
             <h3 className="section-title">Red de Monitoreo</h3>
               <div className="stations-layout">
-              {/* Información de la estación principal */}
               <div className="stations-info">
                 <div className="station-card">
                   <div className="station-status online"></div>
                   <div className="station-info">
                     <h4>{aqiData?.station_name || "Estación Principal"}</h4>
-                    <p>Última lectura: {aqiLoading ? "..." : "hace un momento"}</p>
+                    <p>Estado AQI Actual</p>
                     <span className="station-aqi" style={{backgroundColor: (aqiData?.color || "#eee") + "40", color: "#333"}}>
                       AQI: {aqiData ? Math.round(aqiData.aqi) : "--"}
                     </span>
                   </div>
                 </div>
-
-                {/* Resumen de estaciones */}
                 <div className="stations-summary">
                   <p className="summary-text">
                     <strong>{stationsList.length}</strong> estaciones activas
                   </p>
-                  <p className="summary-subtext">
-                    Monitoreo en tiempo real
-                  </p>
+                  <p className="summary-subtext">Monitoreo en tiempo real</p>
                 </div>
               </div>
-
-              {/* Mapa de estaciones */}
               <div className="stations-map">
-                <StationsMap
-                  stations={stationsList}
-                  height="100%"
-                  zoom={13}
-                />
+                <StationsMap stations={stationsList} height="100%" zoom={13} />
               </div>
             </div>
           </div>
